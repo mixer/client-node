@@ -1,0 +1,37 @@
+{
+  "name": "beam-client-node",
+  "version": "0.0.1",
+  "description": "Client library for interacting with the beam API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node node_modules/mocha/bin/mocha test --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MCProHosting/beam-client-node.git"
+  },
+  "keywords": [
+    "beam",
+    "client",
+    "api",
+    "library",
+    "oath"
+  ],
+  "author": "Connor Peet <connor@peet.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MCProHosting/beam-client-node/issues"
+  },
+  "homepage": "https://github.com/MCProHosting/beam-client-node",
+  "devDependencies": {
+    "chai": "^2.1.1",
+    "mocha": "^2.2.1",
+    "sinon": "^1.14.0"
+  },
+  "dependencies": {
+    "bluebird": "^2.9.14",
+    "error": "^5.2.0",
+    "lodash": "^3.5.0",
+    "request": "^2.53.0"
+  }
+}
