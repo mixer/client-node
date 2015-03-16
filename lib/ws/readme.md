@@ -14,6 +14,8 @@ var data = getDataFromChannelJoinEndpoint();
 
 var socket = new BeamSocket(data.endpoints).boot();
 
+// You don't need to wait for the socket to connect before calling methods,
+// we spool them and run them when connected automatically!
 socket.call('auth', [channel.id, user.id, data.authkey])
     .then(function () {
         console.log('You are now authenticated!');
@@ -35,9 +37,21 @@ A basic websocket client. It's an EventEmitter.
 
 Construct a new socket client, using the list of addresses returned from the `GET /chats/:id` endpoint. Behind the scenes we load balance and do failover for you. How nice!
 
+### BeamSocket.{IDLE|CONNECTED|CLOSED|ABORTED}
+
+Status constants for comparison with what you get from `.getStatus()`. Note that these are attached to the _class_, not the _prototype_.
+
 ### socket.boot()
 
 Starts up the client; attempts to connect to the server.
+
+### socket.getStatus()
+
+Returns a status constant (as listed above). Should be compared like `socket.getStatus === BeamSocket.CONNECTED`.
+
+### socket.isConnected()
+
+Return whether the socket is currently connected.
 
 ### socket.call(method, [args], [options])
 
@@ -45,6 +59,14 @@ Calls a chat "method" (string) with the array set of arguments. Options:
 
  * `noReply` (default false) will not listen for a reply. If you don't pass noReply, `.call()` will returnt a [Bluebird](https://github.com/petkaantonov/bluebird) promise that's resolved to the packet data on success, or rejected with an error string on failure.
  * `force` Mainly for internal use. Bypasses spooling and tries sending a method to the websocket regardless of state.
+
+### socket.send(data)
+
+A lower-level method. Directly sends, or spools, an object to be stringified and set over the socket.
+
+### socket.close()
+
+Gracefully closes the socket connection, if one exists. We won't attempt to reconnect after this is called.
 
 ### Event: 'connected'
 
