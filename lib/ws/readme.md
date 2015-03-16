@@ -14,7 +14,7 @@ var data = getDataFromChannelJoinEndpoint();
 
 var socket = new BeamSocket(data.endpoints).boot();
 
-socket.call('auth', channel.id, user.id, data.authkey)
+socket.call('auth', [channel.id, user.id, data.authkey])
     .then(function () {
         console.log('You are now authenticated!');
     }).catch(function (err) {
