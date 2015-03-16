@@ -2,6 +2,8 @@
 
 This is a (the?) official reference for implementing the Beam websocket. It's made to be user-friendly, very high performant, and stable. Events are implemented using the standard EventEmitter and "method" calls are done like any other promise-based Node.js library.
 
+You can read more about the chat server on our developers site: [https://developer.beam.pro/api/chatproto](https://developer.beam.pro/api/chatproto).
+
 Your usage may look something like this:
 
 ```js
