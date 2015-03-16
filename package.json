@@ -4,7 +4,7 @@
   "description": "Client library for interacting with the beam API.",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha test --recursive"
+    "test": "node node_modules/mocha/bin/mocha test/unit --recursive"
   },
   "repository": {
     "type": "git",

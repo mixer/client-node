@@ -37,9 +37,12 @@ Construct a new socket client, using the list of addresses returned from the `GE
 
 Starts up the client; attempts to connect to the server.
 
-### socket.call(method[, args...])
+### socket.call(method, [args], [options])
 
-Calls a chat "method" (string) with the set of arguments. It returns a [Bluebird](https://github.com/petkaantonov/bluebird) promise that's resolved to the packet data on success, or rejected with an error string on failure.
+Calls a chat "method" (string) with the array set of arguments. Options:
+
+ * `noReply` (default false) will not listen for a reply. If you don't pass noReply, `.call()` will returnt a [Bluebird](https://github.com/petkaantonov/bluebird) promise that's resolved to the packet data on success, or rejected with an error string on failure.
+ * `force` Mainly for internal use. Bypasses spooling and tries sending a method to the websocket regardless of state.
 
 ### Event: 'connected'
 
@@ -53,6 +56,18 @@ Called when a connection to the chat server is established. This might be fired 
 
 Fired when the socket connection closes.
 
-### Event: 'error'
+### Event: 'error(err)'
 
 Fired when an error happens; we can't parse a packet, or we get a reply to a packet that we didn't expect. Currently there are no big fatal unrecoverable errors sent here, but you should log it for your own inforation.
+
+### Event: 'packet(data)'
+
+Fired whenever we get an incoming packet, after we parse the JSON and before we actually process it as an event or reply.
+
+### Event: 'sent(data)'
+
+Fired when we pass data over to the websocket to be sent to the server. This is different from the following event...
+
+### Event: 'spooled(data)'
+
+Fired when we tried to send data to the socket, but it wasn't connected yet. When the socket reconnects the data will be automatically be sent.
