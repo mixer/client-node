@@ -9,20 +9,8 @@ describe('services', function () {
         service = new Service();
     });
 
-    it('extracts the body when successful', function () {
-        var res = { body: '"foo"'};
-        service.extractBody(res);
-        expect(res).to.deep.equal({ body: 'foo' });
-    });
-
-    it('extracts the body when invalid', function () {
-        var res = { body: '<html>'};
-        service.extractBody(res);
-        expect(res).to.deep.equal({ body: '<html>', statusCode: 404 });
-    });
-
     it('handles a successful response', function () {
-        var res = { statusCode: 200, body: '"foo"' };
+        var res = { statusCode: 200, body: 'foo' };
         expect(service.handleResponse(res, {})).to.deep.equal({ statusCode: 200, body: 'foo' });
     });
 

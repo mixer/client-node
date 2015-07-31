@@ -27,6 +27,15 @@ describe('beam client', function () {
         });
     });
 
+    it('parses json results', function (done) {
+        this.response.body = '{"foo":"bar"}';
+
+        this.client.request('get', '/users/current', { a: 'b' }).bind(this).then(function (res) {
+            expect(res.body).to.deep.equal({ foo: "bar" });
+            done();
+        });
+    });
+
     it('makes a request with errors', function (done) {
         request.run = function (d, cb) { data = d; cb(new Error('oh no!')); };
         this.client.request('get', '/users/current', { a: 'b' }).catch(function (e) {
