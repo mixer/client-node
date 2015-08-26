@@ -4,13 +4,15 @@ describe('beam client', function () {
     var request = require('../../lib/request');
 
     it('builds urls correctly', function () {
-        expect(this.client.buildAddress('/foo/bar')).to.equal('https://beam.pro/api/v1/foo/bar');
-        expect(this.client.buildAddress('foo/bar')).to.equal('https://beam.pro/api/v1/foo/bar');
+        expect(this.client.buildAddress('https://beam.pro/', '/foo/bar')).to.equal('https://beam.pro/foo/bar');
+        expect(this.client.buildAddress('https://beam.pro/', 'foo/bar')).to.equal('https://beam.pro/foo/bar');
+        expect(this.client.buildAddress('https://beam.pro', '/foo/bar')).to.equal('https://beam.pro/foo/bar');
+        expect(this.client.buildAddress('https://beam.pro', 'foo/bar')).to.equal('https://beam.pro/foo/bar');
     });
 
     it('sets the url', function () {
-        expect(this.client.setUrl('http://example.com'));
-        expect(this.client.buildAddress('foo/bar')).to.equal('http://example.com/foo/bar');
+        expect(this.client.setUrl('api', 'http://example.com'));
+        expect(this.client.urls.api).to.equal('http://example.com');
     });
 
     it('makes a request successfully', function (done) {
@@ -42,5 +44,12 @@ describe('beam client', function () {
             expect(e.message).to.equal('oh no!');
             done();
         });
+    });
+
+    it('creates and uses a provider', function () {
+        var creds = { username: 'connor', password: 'password' };
+        var p = this.client.use('password', creds);
+        expect(p.auth).to.deep.equal(creds);
+        expect(this.client.getProvider()).to.equal(p);
     });
 });
