@@ -68,7 +68,7 @@ describe('providers', function () {
             expect(provider.getRedirect(redir, ['foo', 'bar']))
                 .to.equal('https://beam.pro/oauth/authorize?redirect_uri=' +
                           'http%3A%2F%2Flocalhost&response_type=code&scope=foo%2Cbar' +
-                          '&client_id=eye-dee&client_secret=seekrit');
+                          '&client_id=eye-dee');
         });
 
         it('denies when error in query string', function (done) {
