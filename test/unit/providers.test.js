@@ -67,7 +67,7 @@ describe('providers', function () {
         it('generates an authorization url', function () {
             expect(provider.getRedirect(redir, ['foo', 'bar']))
                 .to.equal('https://beam.pro/oauth/authorize?redirect_uri=' +
-                          'http%3A%2F%2Flocalhost&response_type=code&scope=foo%2Cbar' +
+                          'http%3A%2F%2Flocalhost&response_type=code&scope=foo%20bar' +
                           '&client_id=eye-dee');
         });
 
