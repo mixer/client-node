@@ -52,4 +52,9 @@ describe('beam client', function () {
         expect(p.auth).to.deep.equal(creds);
         expect(this.client.getProvider()).to.equal(p);
     });
+
+    it('exposes services eagerly', function () {
+        expect(this.client.chat).to.be.an.instanceof(require('../../lib/services/chat'));
+        expect(this.client.chat.join).to.be.a('function');
+    });
 });
