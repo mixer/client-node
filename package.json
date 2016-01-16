@@ -29,10 +29,10 @@
     "sinon": "^1.14.0"
   },
   "dependencies": {
-    "bluebird": "^2.9.14",
-    "error": "^5.2.0",
-    "lodash": "^3.5.0",
+    "bluebird": "^3.1.1",
+    "error": "^7.0.2",
+    "lodash": "^4.0.0",
     "request": "^2.53.0",
-    "ws": "^0.7.1"
+    "ws": "^1.0.1"
   }
 }
