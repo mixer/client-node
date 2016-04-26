@@ -14,10 +14,9 @@ describe('websocket', function () {
         raw.close = sinon.spy();
         raw.send = sinon.spy();
 
-        socket = new BeamSocket(['a', 'b']);
-        socket.ws = raw;
-
         factoryStub = sinon.stub(factory, 'create').returns(raw);
+
+        socket = new BeamSocket(['a', 'b']).boot();
     });
 
     afterEach(function () {
@@ -31,15 +30,82 @@ describe('websocket', function () {
     });
 
     it('gets status and connected correctly', function () {
+        socket = new BeamSocket(['a', 'b'])
         expect(socket.getStatus()).to.equal(BeamSocket.IDLE);
         expect(socket.isConnected()).to.be.false;
         socket.status = BeamSocket.CONNECTED;
         expect(socket.isConnected()).to.be.true;
     });
 
+    it('connects successfully', function () {
+        var lastErr;
+        socket.on('error', function (err) { lastErr = err });
+        var parse = sinon.stub(socket, 'parsePacket');
+
+        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+
+        raw.emit('open');
+        expect(socket.status).to.equal(BeamSocket.CONNECTED);
+
+        raw.emit('message', 'asdf');
+        expect(parse.calledWith('asdf')).to.be.true;
+
+        var err = new Error('oh no!');
+        raw.emit('error', err);
+        expect(lastErr).to.equal(err);
+        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+    })
+
+    it('reconnects after an interval', function () {
+        socket.on('error', function () {});
+        var clock = sinon.useFakeTimers();
+
+        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(factoryStub.callCount).to.equal(1);
+
+        raw.emit('error');
+        raw.emit('closed');
+        expect(raw.close.callCount).to.equal(1);
+
+        // initially tries to reconnect after 500ms
+        clock.tick(499);
+        expect(factoryStub.callCount).to.equal(1);
+        clock.tick(1);
+        expect(factoryStub.callCount).to.equal(2);
+        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        raw.emit('error');
+
+        // increments if it can't
+        clock.tick(999);
+        expect(factoryStub.callCount).to.equal(2);
+        clock.tick(1);
+        expect(factoryStub.callCount).to.equal(3);
+
+        // resets when it can
+        raw.emit('open');
+        expect(socket.status).to.equal(BeamSocket.CONNECTED);
+        raw.emit('error');
+
+        clock.tick(500);
+        expect(factoryStub.callCount).to.equal(4);
+
+        clock.restore();
+    });
+
     it('closes the websocket connection', function () {
         socket.close();
         expect(raw.close.called).to.be.true;
+    });
+
+    it('cancels reconnection on close', function () {
+        socket.on('error', function () {});
+        var clock = sinon.useFakeTimers();
+
+        expect(factoryStub.callCount).to.equal(1);
+        raw.emit('error');
+        socket.close();
+        clock.tick(500);
+        expect(factoryStub.callCount).to.equal(1);
     });
 
     describe('sending', function () {
@@ -60,7 +126,7 @@ describe('websocket', function () {
             sinon.stub(socket, 'isConnected').returns(false);
             socket.on('spooled', function (data) {
                 expect(raw.send.called).to.be.false;
-                expect(socket.spool).to.deep.equal([data]);
+                expect(socket._spool).to.deep.equal([data]);
                 done();
             });
 
@@ -125,9 +191,9 @@ describe('websocket', function () {
         });
 
         it('passes replies to handlers and deletes handler', function () {
-            var spy = socket.replies[1] = { handle: sinon.spy() };
+            var spy = socket._replies[1] = { handle: sinon.spy() };
             socket.parsePacket(authPacket, { binary: false });
-            expect(socket.replies[1]).to.be.undefined;
+            expect(socket._replies[1]).to.be.undefined;
             expect(spy.handle.calledWith(JSON.parse(authPacket))).to.be.true;
         });
     });
@@ -135,14 +201,14 @@ describe('websocket', function () {
     describe('unspooling', function () {
 
         beforeEach(function () {
-            socket.spool = ['foo', 'bar'];
+            socket._spool = ['foo', 'bar'];
         });
 
         it('connects directly if no previous auth packet', function (done) {
             socket.on('connected', function () {
                 expect(raw.send.calledWith('"foo"')).to.be.true;
                 expect(raw.send.calledWith('"bar"')).to.be.true;
-                expect(socket.spool.length).to.equal(0);
+                expect(socket._spool.length).to.equal(0);
                 expect(socket.isConnected()).to.be.true;
                 done();
             });
@@ -159,7 +225,7 @@ describe('websocket', function () {
             });
 
             var stub = sinon.stub(socket, 'call').returns(Bluebird.resolve());
-            socket.authpacket = [1, 2, 3];
+            socket._authpacket = [1, 2, 3];
             socket.unspool();
         });
 
@@ -170,7 +236,7 @@ describe('websocket', function () {
             });
 
             var stub = sinon.stub(socket, 'call').returns(Bluebird.reject());
-            socket.authpacket = [1, 2, 3];
+            socket._authpacket = [1, 2, 3];
             socket.unspool();
         });
     });
@@ -197,7 +263,7 @@ describe('websocket', function () {
 
         it('saves the auth packet', function () {
             socket.call('auth', [1, 2, 3], { noReply: true });
-            expect(socket.authpacket).to.deep.equal([1, 2, 3]);
+            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
         });
 
         it('registers the reply with resolved response', function (done) {
@@ -229,9 +295,9 @@ describe('websocket', function () {
         it('quietly removes the reply after a timeout', function () {
             var clock = sinon.useFakeTimers();
             socket.call('foo', [1, 2, 3]);
-            expect(socket.replies[0]).to.be.defined;
-            clock.tick(5001);
-            expect(socket.replies[0]).not.to.be.defined;
+            expect(socket._replies[0]).to.be.defined;
+            clock.tick(1000 * 60 + 1);
+            expect(socket._replies[0]).not.to.be.defined;
             clock.restore();
         });
     });
