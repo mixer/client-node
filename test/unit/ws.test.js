@@ -241,6 +241,30 @@ describe('websocket', function () {
         });
     });
 
+    describe('auth packet', function () {
+        it('waits for connection before sending', function (done) {
+            var called = false;
+            socket.auth(1, 2, 3).then(function (res) {
+                called = true;
+                expect(res).to.equal('ok');
+                done();
+            });
+
+            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
+            expect(called).to.be.false;
+            socket.emit('authresult', 'ok');
+        });
+
+        it('sends immediately otherwise', function () {
+            raw.emit('open');
+
+            sinon.stub(socket, 'call').returns('ok!');
+            expect(socket.auth(1, 2, 3)).to.equal('ok!');
+            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
+            expect(socket.call.calledWith('auth', [1, 2, 3])).to.be.true;
+        });
+    });
+
     describe('method calling', function () {
         beforeEach(function () {
             socket.status = BeamSocket.CONNECTED;
@@ -259,11 +283,6 @@ describe('websocket', function () {
                 socket.call('foo', { noReply: true });
                 expect(socket.send.calledWith({ type: 'method', method: 'foo', arguments: [], id: i })).to.be.true;
             }
-        });
-
-        it('saves the auth packet', function () {
-            socket.call('auth', [1, 2, 3], { noReply: true });
-            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
         });
 
         it('registers the reply with resolved response', function (done) {
