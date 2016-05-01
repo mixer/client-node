@@ -7,7 +7,7 @@ describe('websocket', function () {
     var BeamSocket = require('../../lib/ws');
     var factory = require('../../lib/ws/factory');
     var errors = require('../../lib/errors');
-    var socket, raw, factoryStub;
+    var socket, raw, factoryStub, clock;
 
     beforeEach(function () {
         raw = new events.EventEmitter();
@@ -16,11 +16,13 @@ describe('websocket', function () {
 
         factoryStub = sinon.stub(factory, 'create').returns(raw);
 
+        clock = sinon.useFakeTimers();
         socket = new BeamSocket(['a', 'b']).boot();
     });
 
     afterEach(function () {
         factoryStub.restore();
+        clock.restore();
     });
 
     it('balances requests', function () {
@@ -53,18 +55,20 @@ describe('websocket', function () {
         var err = new Error('oh no!');
         raw.emit('error', err);
         expect(lastErr).to.equal(err);
+        expect(raw.close.called).to.be.true;
+        raw.emit('close');
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
     })
 
     it('reconnects after an interval', function () {
         socket.on('error', function () {});
-        var clock = sinon.useFakeTimers();
 
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
         expect(factoryStub.callCount).to.equal(1);
+        sinon.stub(socket, '_getNextReconnectInterval').returns(500);
 
         raw.emit('error');
-        raw.emit('closed');
+        raw.emit('close');
         expect(raw.close.callCount).to.equal(1);
 
         // initially tries to reconnect after 500ms
@@ -72,39 +76,31 @@ describe('websocket', function () {
         expect(factoryStub.callCount).to.equal(1);
         clock.tick(1);
         expect(factoryStub.callCount).to.equal(2);
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
-        raw.emit('error');
+        expect(socket._getNextReconnectInterval.called).to.be.true;
+    });
 
-        // increments if it can't
-        clock.tick(999);
-        expect(factoryStub.callCount).to.equal(2);
-        clock.tick(1);
-        expect(factoryStub.callCount).to.equal(3);
-
-        // resets when it can
-        raw.emit('open');
-        expect(socket.status).to.equal(BeamSocket.CONNECTED);
-        raw.emit('error');
-
-        clock.tick(500);
-        expect(factoryStub.callCount).to.equal(4);
-
-        clock.restore();
+    it('runs exponential backoff', function () {
+        expect(socket._getNextReconnectInterval()).to.be.oneOf([500, 1000]);
+        expect(socket._getNextReconnectInterval()).to.be.oneOf([1000, 2000]);
+        expect(socket._getNextReconnectInterval()).to.be.oneOf([2000, 4000]);
     });
 
     it('closes the websocket connection', function () {
         socket.close();
         expect(raw.close.called).to.be.true;
+        expect(socket.status).to.equal(BeamSocket.CLOSING);
+        raw.emit('close');
+        expect(socket.status).to.equal(BeamSocket.CLOSED);
     });
 
     it('cancels reconnection on close', function () {
         socket.on('error', function () {});
-        var clock = sinon.useFakeTimers();
 
         expect(factoryStub.callCount).to.equal(1);
         raw.emit('error');
+        raw.emit('close');
         socket.close();
-        clock.tick(500);
+        clock.tick(1000);
         expect(factoryStub.callCount).to.equal(1);
     });
 
@@ -312,12 +308,10 @@ describe('websocket', function () {
         });
 
         it('quietly removes the reply after a timeout', function () {
-            var clock = sinon.useFakeTimers();
             socket.call('foo', [1, 2, 3]);
             expect(socket._replies[0]).to.be.defined;
             clock.tick(1000 * 60 + 1);
             expect(socket._replies[0]).not.to.be.defined;
-            clock.restore();
         });
     });
 });
