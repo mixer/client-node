@@ -307,11 +307,14 @@ describe('websocket', function () {
             }));
         });
 
-        it('quietly removes the reply after a timeout', function () {
-            socket.call('foo', [1, 2, 3]);
+        it('quietly removes the reply after a timeout', function (done) {
+            socket.call('foo', [1, 2, 3]).catch(function (err) {
+                expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
+                expect(socket._replies[0]).not.to.be.defined;
+                done();
+            });
             expect(socket._replies[0]).to.be.defined;
             clock.tick(1000 * 60 + 1);
-            expect(socket._replies[0]).not.to.be.defined;
         });
     });
 });
