@@ -16,9 +16,10 @@ var socket = new BeamSocket(data.endpoints).boot();
 
 // You don't need to wait for the socket to connect before calling methods,
 // we spool them and run them when connected automatically!
-socket.call('auth', [channel.id, user.id, data.authkey])
+socket.auth(channel.id, user.id, data.authkey)
     .then(function () {
         console.log('You are now authenticated!');
+        return socket.call('msg', ['Hello world!']);
     }).catch(function (err) {
         console.log('Oh no! An error occurred!')
     });
@@ -52,6 +53,10 @@ Returns a status constant (as listed above). Should be compared like `socket.get
 ### socket.isConnected()
 
 Return whether the socket is currently connected.
+
+### socket.auth(channel[, user, authkey])
+
+Joins the chat of a certain channel by its ID. If you want to join anonymously (without being able to chat) you can omit the `user` and `authkey`. The `user` is the user ID you're authenticating as, the authkey is the alphanumeric token returns from `GET /api/v1/chats/:id`.
 
 ### socket.call(method, [args], [options])
 
