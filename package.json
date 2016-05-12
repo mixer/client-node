@@ -1,10 +1,11 @@
 {
   "name": "beam-client-node",
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Client library for interacting with the beam API.",
   "main": "index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha test/unit --recursive"
+    "test": "node node_modules/mocha/bin/mocha test/unit --recursive",
+    "cover": "istanbul cover _mocha -- test/unit --recursive"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.0",
+    "istanbul": "^0.4.3",
     "mocha": "^2.2.1",
     "sinon": "^1.14.0"
   },
