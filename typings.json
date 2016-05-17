@@ -1,0 +1,9 @@
+{
+  "name": "beam-client-node",
+  "globalDependencies": {
+    "bluebird": "registry:dt/bluebird#2.0.0+20160319051630",
+    "form-data": "registry:dt/form-data#0.0.0+20160316155526",
+    "node": "registry:dt/node#6.0.0+20160514165920",
+    "request": "registry:dt/request#0.0.0+20160316155526"
+  }
+}
