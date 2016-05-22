@@ -1,6 +1,6 @@
-import { IBeamChannel } from "./channel";
+import { BeamChannel } from "./channel";
 
-export interface IBeamUser {
+export interface BeamUser {
   /**
    * The user Id.
    */
@@ -72,7 +72,7 @@ export interface IBeamUser {
   deletedAt: string;
 }
 
-export interface IBeamUserSelf extends IBeamUser {
+export interface BeamUserSelf extends BeamUser {
   /**
    * 
    */
@@ -80,7 +80,7 @@ export interface IBeamUserSelf extends IBeamUser {
   /**
    * The users channel.
    */
-  channel: IBeamChannel;
+  channel: BeamChannel;
   /**
    * The users email address.
    */
@@ -88,7 +88,7 @@ export interface IBeamUserSelf extends IBeamUser {
   /**
    * The groups which the user is apart off.
    */
-  groups: IUserGroup[];
+  groups: UserGroup[];
   /**
    * Has the user got 2FA enabled.
    */
@@ -96,7 +96,7 @@ export interface IBeamUserSelf extends IBeamUser {
   /**
    * The user preferences.
    */
-  preferences: IUserPreferences;
+  preferences: any;
   /**
    * Details about the 2FA for the user.
    */
@@ -112,7 +112,7 @@ export interface IBeamUserSelf extends IBeamUser {
   }
 }
 
-export interface IUserGroup {
+export interface UserGroup {
   /**
    * The group Id.
    */
@@ -121,47 +121,4 @@ export interface IUserGroup {
    * The name of the group.
    */
   name: string;
-}
-
-export interface IUserPreferences {
-  /**
-   * If the player is being forced to the Flash one.
-   */
-  "channel:player:forceflash": boolean;
-  /**
-   * Should the chat be chromakeyed.
-   */
-  "chat:chromakey": boolean;
-  /**
-   * TODO: Find out about this.
-   */
-  "chat:colors": boolean;
-  /**
-   * If the user has enabled lurk mode.
-   */
-  "chat:lurkmode": boolean;
-  /**
-   * TODO: Find out about this.
-   */
-  "chat:sounds:html5": boolean;
-  /**
-   * TODO: Find out about this.
-   */
-  "chat:sounds:play": boolean;
-  /**
-   * TODO: Find out about this.
-   */
-  "chat:sounds:volume": number;
-  /**
-   * The volume which should be applied to the player.
-   */
-  "chat:tagging": boolean;
-  /**
-   * If timestamps should be shown in chat.
-   */
-  "chat:timestamps": boolean;
-  /**
-   * Is the user has whispers enabled.
-   */
-  "chat:whispers": boolean;
 }

@@ -1,6 +1,6 @@
-import { IBeamUser, IUserGroup } from "./user";
+import { BeamUser, UserGroup } from "./user";
 
-export interface IBeamChannel {
+export interface BeamChannel {
   /**
    * The channel Id.
    */
@@ -198,7 +198,7 @@ export interface IBeamChannel {
   };
 }
 
-export interface IBeamChannelUser<T> extends IBeamChannel {
+export interface BeamChannelUser<T> extends BeamChannel {
   /**
    * The user object.
    */
@@ -206,67 +206,23 @@ export interface IBeamChannelUser<T> extends IBeamChannel {
   /**
    * The channel preferences.
    */
-  preferences: IChannelPreferences;
+  preferences: ChannelPreferences;
 }
 
-export interface IChannelPreferences {
+export interface ChannelPreferences {
   /**
-   * TODO: Find out what this is for.
+   * Any other preferences which contain ":" in the key name which TypeScript does not support as a valid type _yet_
    */
-  "costream:allow": string;
+  [preference: string]: any;
   /**
    * The share text used for when sharing the stream to social media.
    */
   sharetext: string;
-  /**
-   * If links are allowed to be posted into chat.
-   */
-  "channel:links:allowed": boolean;
-  /**
-   * If links are clickable.
-   */
-  "channel:links:clickable": boolean;
-  /**
-   * Slow chat limit (How long to wait before posting another message)
-   */
-  "channel:slowchat": number;
-  /**
-   * The message for BeamBot to use when notifying about a user following.
-   */
-  "channel:notify:followmessage": string;
-  /**
-   * If BeamBot should post notifications about follows.
-   */
-  "channel:notify:follow": boolean;
-  /**
-   * The message for BeamBot to use when notifying about a user subscribing.
-   */
-  "channel:notify:subscribemessage": string;
-  /**
-   * If BeamBot should post notifications about subscriptions.
-   */
-  "channel:notify:subscribe": boolean;
-  /**
-   * The message to send in the email to a user about subscribing.
-   */
-  "channel:partner:submail": string;
-  /**
-   * Should the player be muted when you are viewing your own channel.
-   */
-  "channel:player:muteOwn": boolean;
-  /**
-   * If Beam should post to your Twitter when you go live.
-   */
-  "channel:tweet:enable": boolean;
-  /**
-   * The message to post in the tweet about you going live.
-   */
-  "channel:tweet:body": string;
 }
 
-export interface IChannelUser extends IBeamUser {
+export interface ChannelUser extends BeamUser {
   /**
    * The array of groups which the user has on the channel. I.E. Mod
    */
-  groups: IUserGroup[];
+  groups: UserGroup[];
 }

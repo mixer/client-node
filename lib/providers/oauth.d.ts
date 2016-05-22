@@ -1,13 +1,13 @@
 import Client = require("../client");
 
 import { BeamRequest } from "../../defs/request";
-import { IOAuthToken } from "../../defs/oauth";
+import { OAuthToken } from "../../defs/oauth";
 
 declare class OAuthProvider {
   /**
    * The client tokens.
    */
-  tokens: IOAuthOptions;
+  tokens: OAuthOptions;
   /**
    * The details for the OAuthProvider.
    */
@@ -15,7 +15,7 @@ declare class OAuthProvider {
   /**
    * Create a new instance of the provider.
    */
-  constructor(client: Client, options: IOAuthOptions);
+  constructor(client: Client, options: OAuthOptions);
   /**
    * Returns if the client is currently authenticated: they must have a non-expired key pair.
    */
@@ -39,18 +39,18 @@ declare class OAuthProvider {
   /**
    * Returns the set of tokens. These can be saved and used to reload the provider later using OAuthProvider.fromTokens.
    */
-  getTokens(): IOAuthTokens;
+  getTokens(): OAuthTokens;
   /**
    * Attempts to authenticate based on a query string, gotten from redirecting back from the authorization url (see .getRedirect).
    */
-  attempt(redirect: string, queryStr: string): Promise<BeamRequest<IOAuthToken>>;
+  attempt(redirect: string, queryStr: string): Promise<BeamRequest<OAuthToken>>;
   /**
    * Refreshes the authentication tokens, bumping the expires time.
    */
-  refresh(): Promise<BeamRequest<IOAuthToken>>;
+  refresh(): Promise<BeamRequest<OAuthToken>>;
 }
 
-declare interface IOAuthOptions {
+declare interface OAuthOptions {
   /**
    * Your application client ID.
    */
@@ -62,10 +62,10 @@ declare interface IOAuthOptions {
   /**
    * A stored set of tokens to reused for authentication.
    */
-  tokens?: IOAuthTokens;
+  tokens?: OAuthTokens;
 }
 
-declare interface IOAuthTokens {
+declare interface OAuthTokens {
   access: string;
   refresh: string;
   expires: Date;

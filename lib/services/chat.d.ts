@@ -1,7 +1,7 @@
 import Service = require("./service");
 
 import { BeamRequest } from "../../defs/request";
-import { IChatPreferences } from "../../defs/chat";
+import { ChatPreferences } from "../../defs/chat";
 
 declare class ChatService extends Service {
   /**
@@ -25,9 +25,9 @@ declare class ChatService extends Service {
    */
   searchUsers(channelId: number, data: { username: string, page?: number, limit?: number }): Promise<BeamRequest<IUsersResponse[]>>;
   /**
-   * Update a chat's settings specified by channelId
+   * Update a chat's settings specified by channelId.
    */
-  updateSettings(channelId: number, data: { "channel:links:allowed"?: boolean, "channel:links:clickable"?: boolean, "channel:slowchat"?: number; }): Promise<BeamRequest<IChatPreferences>>;
+  updateSettings(channelId: number, data: any): Promise<BeamRequest<ChatPreferences>>;
 }
 
 interface IJoinResponse {

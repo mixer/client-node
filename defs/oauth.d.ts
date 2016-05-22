@@ -1,4 +1,4 @@
-export interface IOAuthToken {
+export interface OAuthToken {
   /**
    * The access token which the client should use.
    */

@@ -26,7 +26,7 @@ declare class BeamSocket extends EventEmitter {
   /**
    * The status of the socket connection.
    */
-  status: ISocketStatus;
+  status: number;
   /**
    * Counter of the current number of reconnect retries, and the number of retries before we reset our reconnect attempts.
    */
@@ -70,7 +70,7 @@ declare class BeamSocket extends EventEmitter {
   /**
    * Gets the status of the socket connection.
    */
-  getStatus(): ISocketStatus;
+  getStatus(): number;
   /**
    * Returns whether the socket is currently connected.
    */
@@ -108,16 +108,16 @@ declare class BeamSocket extends EventEmitter {
   /**
    * Auth sends a packet over the socket to authenticate with a chat server and join a specified channel. If you wish to join anonymously, user and authkey can be omitted.
    */
-  auth(channelId: number, userId?: number, authKey?: string): Promise<ISocketAuthed>;
+  auth(channelId: number, userId?: number, authKey?: string): Promise<SocketAuthed>;
   /**
    * Runs a method on the socket. Returns a promise that is rejected or resolved upon reply.
    */
   call(method: string, args: (string|number)[], options?: { noReply?: boolean, force?: boolean }): Promise<any>;
-  call(method: "auth", args: [number], options?: { noReply?: boolean, force?: boolean }): Promise<ISocketAuthed>;
-  call(method: "auth", args: [number, number, string], options?: { noReply?: boolean, force?: boolean }): Promise<ISocketAuthed>;
-  call(method: "msg", args: [string], options?: { noReply?: boolean, force?: boolean }): Promise<any> | Promise<IChatMessage>;
+  call(method: "auth", args: [number], options?: { noReply?: boolean, force?: boolean }): Promise<SocketAuthed>;
+  call(method: "auth", args: [number, number, string], options?: { noReply?: boolean, force?: boolean }): Promise<SocketAuthed>;
+  call(method: "msg", args: [string], options?: { noReply?: boolean, force?: boolean }): Promise<any> | Promise<ChatMessage>;
   call(method: "whisper", args: [string, string], options?: { noReply?: boolean, force?: boolean }): Promise<any>;
-  call(method: "history", args: [number], options?: { noReply?: boolean, force?: boolean }): Promise<IChatMessage[]>;
+  call(method: "history", args: [number], options?: { noReply?: boolean, force?: boolean }): Promise<ChatMessage[]>;
   /**
    * Closes the websocket gracefully.
    */
@@ -129,41 +129,33 @@ declare class BeamSocket extends EventEmitter {
   on(event: "connected", cb: () => any): this;
   on(event: "closed", cb: () => any): this;
   on(event: "error", cb: (err: Error) => any): this;
-  on(event: "authresult", cb: (res: ISocketAuthed) => any): this;
+  on(event: "authresult", cb: (res: SocketAuthed) => any): this;
   on(event: "packet", cb: (packet: any) => any): this;
-  on(event: "ChatMessage", cb: (message: IChatMessage) => any): this;
-  on(event: "UserUpdate", cb: (update: IUserUpdate) => any): this;
-  on(event: "PollStart", cb: (poll: IPollStart) => any): this;
-  on(event: "PollEnd", cb: (poll: IPollEnd) => any): this;
-  on(event: "UserJoin", cb: (join: IUserJoin) => any): this;
-  on(event: "UserLeave", cb: (join: IUserJoin) => any): this;
+  on(event: "ChatMessage", cb: (message: ChatMessage) => any): this;
+  on(event: "UserUpdate", cb: (update: UserUpdate) => any): this;
+  on(event: "PollStart", cb: (poll: PollStart) => any): this;
+  on(event: "PollEnd", cb: (poll: PollEnd) => any): this;
+  on(event: "UserJoin", cb: (join: UserJoin) => any): this;
+  on(event: "UserLeave", cb: (join: UserJoin) => any): this;
   on(event: "ClearMessages", cb: () => any): this;
-  on(event: "DeleteMessage", cb: (message: IDeleteMessage) => any): this;
-}
-
-declare enum ISocketStatus {
-  IDLE = 0,
-  CONNECTED = 1,
-  CLOSING = 2,
-  CLOSED = 3,
-  CONNECTING = 4
+  on(event: "DeleteMessage", cb: (message: DeleteMessage) => any): this;
 }
 
 interface TimeoutError extends Error {}
 
-interface ISocketAuthed {
+interface SocketAuthed {
   authenticated: boolean;
   roles: string[];
 }
 
-interface IChatMessage {
+interface ChatMessage {
   channel: number;
   id: string;
   user_id: number;
   user_name: string;
   user_roles: string[];
   message: {
-    message: IBeamMessage[];
+    message: BeamMessage[];
     meta: {
       me?: boolean;
       whisper?: boolean;
@@ -171,7 +163,7 @@ interface IChatMessage {
   };
 }
 
-interface IBeamMessage {
+interface BeamMessage {
   type: "text" | "link" | "emoticon" | "tag" | "inaspacesuit";
   data: string;
   source?: string;
@@ -183,14 +175,14 @@ interface IBeamMessage {
   text?: string;
 }
 
-interface IUserUpdate {
+interface UserUpdate {
   username: string;
   user: number;
   roles: string[];
   permissions: string[];
 }
 
-interface IPollStart {
+interface PollStart {
   /**
    * The question being asked.
    */
@@ -209,7 +201,7 @@ interface IPollStart {
   endsAt: number;
 }
 
-interface IPollEnd {
+interface PollEnd {
   /**
    * How many users ented the poll.
    */
@@ -222,7 +214,7 @@ interface IPollEnd {
   }>;
 }
 
-interface IUserJoin {
+interface UserJoin {
   /**
    * The users Id.
    */
@@ -237,7 +229,7 @@ interface IUserJoin {
   roles: string[];
 }
 
-interface IUserLeave {
+interface UserLeave {
   /**
    * The users Id.
    */
@@ -248,7 +240,7 @@ interface IUserLeave {
   username: string;
 }
 
-interface IDeleteMessage {
+interface DeleteMessage {
   /**
    * The message Id.
    */

@@ -1,4 +1,4 @@
-export interface ITetrisGame {
+export interface TetrisGame {
   /**
    * The Id of the game.
    */
@@ -41,7 +41,7 @@ export interface ITetrisGame {
   deletedAt: string;
 }
 
-export interface ITetrisVersion {
+export interface TetrisVersion {
   /**
    * The Id of the version.
    */
@@ -76,7 +76,7 @@ export interface ITetrisVersion {
   updatedAt: string;
 }
 
-export interface ITetrisChannel {
+export interface TetrisChannel {
   /**
    * The Tetris WebSocket address to connect too.
    */
@@ -96,10 +96,10 @@ export interface ITetrisChannel {
   /**
    * Version information about the game and controls schema.
    */
-  version: ITetrisChannelVersion;
+  version: TetrisChannelVersion;
 }
 
-export interface ITetrisChannelVersion extends ITetrisVersion {
+export interface TetrisChannelVersion extends TetrisVersion {
   /**
    * The controllers schema for the game version. (TODO)
    */
@@ -111,15 +111,15 @@ export interface ITetrisChannelVersion extends ITetrisVersion {
     /**
      * The buttons being used.
      */
-    tactiles: ITetrisTactile[];
+    tactiles: TetrisTactile[];
     /**
      * The joysticks being used.
      */
-    joysticks: ITetrisJoystick[];
+    joysticks: TetrisJoystick[];
     /**
      * The screens being used.
      */
-    screens: ITetrisScreens[];
+    screens: TetrisScreens[];
   };
   /**
    * The Tetris game Id.
@@ -127,7 +127,7 @@ export interface ITetrisChannelVersion extends ITetrisVersion {
   gameId: number;
 }
 
-export interface ITetrisControl {
+export interface TetrisControl {
   /**
    * The Id of the control.
    */
@@ -139,7 +139,7 @@ export interface ITetrisControl {
   /**
    * The blueprints for the control.
    */
-  blueprint: ITetrisBlueprint[];
+  blueprint: TetrisBlueprint[];
   /**
    * Text displayed on the control.
    */
@@ -150,7 +150,7 @@ export interface ITetrisControl {
   help: string;
 }
 
-export interface ITetrisTactile extends ITetrisControl {
+export interface TetrisTactile extends TetrisControl {
   /**
    * Analysis defines the kind of analysis done on the tactile.
    */
@@ -185,7 +185,7 @@ export interface ITetrisTactile extends ITetrisControl {
   key: number;
 }
 
-export interface ITetrisJoystick extends ITetrisControl {
+export interface TetrisJoystick extends TetrisControl {
   /**
    * Analysis defines the kind of analysis done on the joystick.
    */
@@ -200,7 +200,7 @@ export interface ITetrisJoystick extends ITetrisControl {
   };
 }
 
-export interface ITetrisScreens extends ITetrisControl {
+export interface TetrisScreens extends TetrisControl {
   /**
    * Analysis defines the kind of analysis done on the ScreenCord.
    */
@@ -222,7 +222,7 @@ export interface ITetrisScreens extends ITetrisControl {
   };
 }
 
-export interface ITetrisBlueprint {
+export interface TetrisBlueprint {
   /**
    * The width of the control.
    */

@@ -3,7 +3,7 @@ import * as request from "request";
 import Client = require("../client");
 
 import { BeamRequest } from "../../defs/request";
-import { IBeamUserSelf } from "../../defs/user";
+import { BeamUserSelf } from "../../defs/user";
 
 declare class PasswordProvider {
   /**
@@ -13,18 +13,18 @@ declare class PasswordProvider {
   /**
    * The options for the client.
    */
-  auth: IPasswordOptions;
+  auth: PasswordOptions;
   /**
    * Create a new instance of the provider.
    */
-  constructor(client: Client, options: IPasswordOptions);
+  constructor(client: Client, options: PasswordOptions);
   /**
    * Attempts to authenticate with the given details. Resolves with user information if correct.
    */
-  attempt(): Promise<BeamRequest<IBeamUserSelf>>;
+  attempt(): Promise<BeamRequest<BeamUserSelf>>;
 }
 
-interface IPasswordOptions {
+interface PasswordOptions {
   /**
    * Username of whoever is logging in...
    */

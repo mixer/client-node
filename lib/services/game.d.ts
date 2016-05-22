@@ -1,22 +1,22 @@
 import Service = require("./service");
 
 import { BeamRequest } from "../../defs/request";
-import { IBeamUser } from "../../defs/user";
-import { ITetrisGame, ITetrisVersion, ITetrisChannel } from "../../defs/tetris";
+import { BeamUser } from "../../defs/user";
+import { TetrisGame, TetrisVersion, TetrisChannel } from "../../defs/tetris";
 
 declare class GameService extends Service {
   /**
    * Joins the game for a specified channel ID.
    */
-  join(channelId: number): Promise<BeamRequest<IJoinResponse>>; 
+  join(channelId: number): Promise<BeamRequest<JoinResponse>>; 
   /**
    * Gets a game from a specified game ID.
    */
-  getGame(gameId: number): Promise<BeamRequest<ITetrisGame>>;
+  getGame(gameId: number): Promise<BeamRequest<TetrisGame>>;
   /**
    * Updates a game from a specified game ID.
    */
-  updateGame(gameId: number, data: {}): Promise<BeamRequest<ITetrisGame>>;
+  updateGame(gameId: number, data: {}): Promise<BeamRequest<TetrisGame>>;
   /**
    * Deletes a game from a specified game ID.
    */
@@ -24,23 +24,23 @@ declare class GameService extends Service {
   /**
    * Gets various information about a channel that is running an interactive game.
    */
-  getChannelGame(channelId: number): Promise<BeamRequest<ITetrisChannel>>;
+  getChannelGame(channelId: number): Promise<BeamRequest<TetrisChannel>>;
   /**
    * Gets all the games owned by a specific user ID.
    */
-  ownedGames(userId: number): Promise<BeamRequest<BeamRequest<ITetrisGameVersioned[]>>>;
+  ownedGames(userId: number): Promise<BeamRequest<BeamRequest<TetrisGameVersioned[]>>>;
   /**
    * Gets a specific game and all its versions by a specific game ID and user ID.
    */
-  ownedGameVersions(userId: number, gameId: number): Promise<BeamRequest<ITetrisGameVersioned>>;
+  ownedGameVersions(userId: number, gameId: number): Promise<BeamRequest<TetrisGameVersioned>>;
   /**
    * Gets all the games that are published.
    */
-  published(): Promise<ITetrisPublished[]>;
+  published(): Promise<TetrisPublished[]>;
   /**
    * Creates a new tetris game.
    */
-  create(data: { ownerId: number, name: string, description: string, installation: string }): Promise<BeamRequest<ITetrisGame>>;
+  create(data: { ownerId: number, name: string, description: string, installation: string }): Promise<BeamRequest<TetrisGame>>;
   /**
    * Creates a new version of a game for a specific game ID and user ID.
    */
@@ -51,17 +51,17 @@ declare class GameService extends Service {
   updateVersion(versionId: number, data: { gameId: number }): Promise<any>;
 }
 
-interface IJoinResponse {
+interface JoinResponse {
   address: string;
   key: string;
 }
 
-interface ITetrisGameVersioned extends ITetrisGame {
-  versions: ITetrisVersion[];
+interface TetrisGameVersioned extends TetrisGame {
+  versions: TetrisVersion[];
 }
 
-interface ITetrisPublished extends ITetrisGame {
-  owner: IBeamUser;
+interface TetrisPublished extends TetrisGame {
+  owner: BeamUser;
 }
 
 export = GameService;
