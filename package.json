@@ -28,7 +28,7 @@
     "chai": "^3.5.0",
     "chai-subset": "^1.2.0",
     "istanbul": "^0.4.3",
-    "mocha": "^2.2.1",
+    "mocha": "^2.5.0",
     "sinon": "^1.14.0"
   },
   "dependencies": {
