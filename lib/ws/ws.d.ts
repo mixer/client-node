@@ -48,7 +48,7 @@ declare class BeamSocket extends EventEmitter {
   /**
    * Authentication packet store that we'll resend if we have to reconnect.
    */
-  private _authpacket: string;
+  private _authpacket: [number, number, string];
   /**
    * Counter for method calls.
    */
@@ -214,17 +214,32 @@ interface BeamMessage {
   /**
    * The source of the emote.
    */
-  source?: "builtint" | "external";
+  source?: "builtin" | "external";
   /**
-   * The URL to the sprite sheet for the emote.
+   * The location of the spite.
+   * Note: This would be a URL for partner emotes.
    */
-  pack?: string;
+  pack?: "default" | string;
   /**
    * The location of the emote on the sprite sheet.
    */
   coords?: {
+    /**
+     * The x location of the emote on the sprite.
+     */
     x: number;
+    /**
+     * The y location of the emote on the sprite.
+     */
     y: number;
+    /**
+     * The height of the emote.
+     */
+    height: number;
+    /**
+     * The width of the emote.
+     */
+    width: number;
   };
   /**
    * The Id of the user name. (Defined when you are handling a "tag" part)
