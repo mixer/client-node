@@ -177,11 +177,11 @@ interface ChatMessage {
    */
   channel: number;
   /**
-   * The users Id.
+   * The user's Id.
    */
   user_id: number;
   /**
-   * The users name.
+   * The user's name.
    */
   user_name: string;
   /**
@@ -227,11 +227,11 @@ interface BeamMessage {
     y: number;
   };
   /**
-   * The Id of the user name. (Defined when you are handing a "tag" part)
+   * The Id of the user name. (Defined when you are handling a "tag" part)
    */
   id?: number;
   /**
-   * The username of the user. (Defined when you are handing a "tag" part)
+   * The username of the user. (Defined when you are handling a "tag" part)
    */
   username?: string;
   /**
@@ -242,7 +242,7 @@ interface BeamMessage {
 
 interface UserUpdate {
   /**
-   * The users Id.
+   * The user's Id.
    */
   user: number;
   /**
@@ -293,11 +293,11 @@ interface PollEnd {
 
 interface UserJoin {
   /**
-   * The users Id.
+   * The user's Id.
    */
   id: number;
   /**
-   * The users name.
+   * The user's name.
    */
   username: string;
   /**
@@ -308,11 +308,11 @@ interface UserJoin {
 
 interface UserLeave {
   /**
-   * The users Id.
+   * The user's Id.
    */
   id: number;
   /**
-   * The users name.
+   * The user's name.
    */
   username: string;
 }
@@ -326,7 +326,7 @@ interface DeleteMessage {
 
 interface PurgeMessage {
   /**
-   * The users Id.
+   * The user's Id.
    */
   user_id: number;
 }
@@ -334,11 +334,11 @@ interface PurgeMessage {
 interface UserTimeout {
   user: {
     /**
-     * The users Id.
+     * The user's Id.
      */
     user_id: number;
     /**
-     * The users name.
+     * The user's name.
      */
     user_name: string;
     /**
