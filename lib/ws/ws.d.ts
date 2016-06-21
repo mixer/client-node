@@ -116,6 +116,8 @@ declare class BeamSocket extends EventEmitter {
   call(method: "msg", args: [string], options?: CallOptions): Promise<any> | Promise<ChatMessage>;
   call(method: "whisper", args: [string, string], options?: CallOptions): Promise<any>;
   call(method: "history", args: [number], options?: CallOptions): Promise<ChatMessage[]>;
+  call(method: "timeout", args: [string, string], options?: CallOptions): Promise<string>;
+
   /**
    * Closes the websocket gracefully.
    */
