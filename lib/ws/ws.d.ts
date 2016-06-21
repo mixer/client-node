@@ -1,7 +1,5 @@
 import { EventEmitter } from "events";
 
-import { BadMessageError, NoMethodHandlerError } from "../errors";
-
 declare class BeamSocket extends EventEmitter {
   /**
    * Constructor for the class to create the socket handle / connection.
@@ -112,12 +110,14 @@ declare class BeamSocket extends EventEmitter {
   /**
    * Runs a method on the socket. Returns a promise that is rejected or resolved upon reply.
    */
-  call(method: string, args: (string|number)[], options?: { noReply?: boolean, force?: boolean }): Promise<any>;
-  call(method: "auth", args: [number], options?: { noReply?: boolean, force?: boolean }): Promise<SocketAuthed>;
-  call(method: "auth", args: [number, number, string], options?: { noReply?: boolean, force?: boolean }): Promise<SocketAuthed>;
-  call(method: "msg", args: [string], options?: { noReply?: boolean, force?: boolean }): Promise<any> | Promise<ChatMessage>;
-  call(method: "whisper", args: [string, string], options?: { noReply?: boolean, force?: boolean }): Promise<any>;
-  call(method: "history", args: [number], options?: { noReply?: boolean, force?: boolean }): Promise<ChatMessage[]>;
+  call(method: string, args: (string|number)[], options?: CallOptions): Promise<any>;
+  call(method: "auth", args: [number], options?: CallOptions): Promise<SocketAuthed>;
+  call(method: "auth", args: [number, number, string], options?: CallOptions): Promise<SocketAuthed>;
+  call(method: "msg", args: [string], options?: CallOptions): Promise<any> | Promise<ChatMessage>;
+  call(method: "whisper", args: [string, string], options?: CallOptions): Promise<any>;
+  call(method: "history", args: [number], options?: CallOptions): Promise<ChatMessage[]>;
+  call(method: "timeout", args: [string, string], options?: CallOptions): Promise<string>;
+
   /**
    * Closes the websocket gracefully.
    */
@@ -136,26 +136,69 @@ declare class BeamSocket extends EventEmitter {
   on(event: "PollStart", cb: (poll: PollStart) => any): this;
   on(event: "PollEnd", cb: (poll: PollEnd) => any): this;
   on(event: "UserJoin", cb: (join: UserJoin) => any): this;
-  on(event: "UserLeave", cb: (join: UserJoin) => any): this;
+  on(event: "UserLeave", cb: (join: UserLeave) => any): this;
   on(event: "ClearMessages", cb: () => any): this;
   on(event: "DeleteMessage", cb: (message: DeleteMessage) => any): this;
+  on(event: "PurgeMessage", cb: (purge: PurgeMessage) => any): this;
+  on(event: "UserTimeout", cb: (timeout: UserTimeout) => any): this;
 }
 
 interface TimeoutError extends Error {}
 
+interface CallOptions {
+  /**
+   * Set to false if you want a Promise to return for when the event is sent and received by the chat server.
+   */
+  noReply?: boolean;
+  /**
+   * Set to true if you want to force send a event to the server.
+   */
+  force?: boolean;
+}
+
 interface SocketAuthed {
+  /**
+   * If you are authenticated on the socket.
+   */
   authenticated: boolean;
+  /**
+   * The roles the user has.
+   */
   roles: string[];
 }
 
 interface ChatMessage {
-  channel: number;
+  /**
+   * The Id of the message.
+   */
   id: string;
+  /**
+   * The channel Id.
+   */
+  channel: number;
+  /**
+   * The user's Id.
+   */
   user_id: number;
+  /**
+   * The user's name.
+   */
   user_name: string;
+  /**
+   * The roles the user has.
+   */
   user_roles: string[];
+  /**
+   * The message payload.
+   */
   message: {
+    /**
+     * The message packets.
+     */
     message: BeamMessage[];
+    /**
+     * The meta for the message.
+     */
     meta: {
       me?: boolean;
       whisper?: boolean;
@@ -164,21 +207,55 @@ interface ChatMessage {
 }
 
 interface BeamMessage {
+  /**
+   * The type of the message part.
+   */
   type: "text" | "link" | "emoticon" | "tag" | "inaspacesuit";
-  data: string;
-  source?: string;
+  /**
+   * The source of the emote.
+   */
+  source?: "builtint" | "external";
+  /**
+   * The URL to the sprite sheet for the emote.
+   */
   pack?: string;
+  /**
+   * The location of the emote on the sprite sheet.
+   */
   coords?: {
     x: number;
     y: number;
   };
+  /**
+   * The Id of the user name. (Defined when you are handling a "tag" part)
+   */
+  id?: number;
+  /**
+   * The username of the user. (Defined when you are handling a "tag" part)
+   */
+  username?: string;
+  /**
+   * The raw text value of the message part.
+   */
   text?: string;
 }
 
 interface UserUpdate {
-  username: string;
+  /**
+   * The user's Id.
+   */
   user: number;
+  /**
+   * The username for the user. (This could be the new name if the user changes their name)
+   */
+  username: string;
+  /**
+   * The roles the user has.
+   */
   roles: string[];
+  /**
+   * The permissions which the user has.
+   */
   permissions: string[];
 }
 
@@ -203,7 +280,7 @@ interface PollStart {
 
 interface PollEnd {
   /**
-   * How many users ented the poll.
+   * How many users entered the poll.
    */
   voters: number;
   /**
@@ -216,11 +293,11 @@ interface PollEnd {
 
 interface UserJoin {
   /**
-   * The users Id.
+   * The user's Id.
    */
   id: number;
   /**
-   * The users name.
+   * The user's name.
    */
   username: string;
   /**
@@ -231,11 +308,11 @@ interface UserJoin {
 
 interface UserLeave {
   /**
-   * The users Id.
+   * The user's Id.
    */
   id: number;
   /**
-   * The users name.
+   * The user's name.
    */
   username: string;
 }
@@ -245,6 +322,34 @@ interface DeleteMessage {
    * The message Id.
    */
   id: string;
+}
+
+interface PurgeMessage {
+  /**
+   * The user's Id.
+   */
+  user_id: number;
+}
+
+interface UserTimeout {
+  user: {
+    /**
+     * The user's Id.
+     */
+    user_id: number;
+    /**
+     * The user's name.
+     */
+    user_name: string;
+    /**
+     * The roles the user has.
+     */
+    user_roles: string[];
+  },
+  /**
+   * The duration of the timeout.
+   */
+  duration: number;
 }
 
 export = BeamSocket;
