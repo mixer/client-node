@@ -31,6 +31,7 @@
     "istanbul": "^0.4.3",
     "mocha": "^2.2.1",
     "sinon": "^1.14.0",
+    "sinon-chai": "^2.8.0",
     "typings": "^1.0.4"
   },
   "dependencies": {

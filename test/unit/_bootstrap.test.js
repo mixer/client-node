@@ -2,6 +2,7 @@ var request = require('../../lib/request');
 var Client = require('../../lib/client');
 
 require('chai').use(require('chai-subset'));
+require('chai').use(require('sinon-chai'));
 
 beforeEach(function () {
     this.client = new Client();
