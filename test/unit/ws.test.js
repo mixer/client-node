@@ -317,4 +317,84 @@ describe('websocket', function () {
             clock.tick(1000 * 60 + 1);
         });
     });
+
+    describe('pings', function () {
+        beforeEach(function () {
+            raw.emit('open');
+            clock.tick(1000 * 15 - 1);
+        });
+
+        describe('node', function (done) {
+            beforeEach(function () {
+                raw.ping = sinon.spy();
+            });
+
+            it('should send a ping packet after an interval', function () {
+                expect(raw.ping).to.not.have.been.called;
+                clock.tick(1);
+                expect(raw.ping).to.have.been.called;
+            });
+
+            it('should error if no pong is received', function (done) {
+                socket.on('error', function (err) {
+                    expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
+                    done();
+                });
+
+                clock.tick(5001);
+            });
+
+            it('should succeed if pong is received', function () {
+                socket.on('error', function (err) {
+                    throw err;
+                });
+
+                clock.tick(1);
+                raw.emit('pong');
+                clock.tick(5000);
+            });
+
+            it('should defer pings after incoming messages are received', function () {
+                raw.emit('message', '{"type":"event","event":"foo"}');
+                expect(raw.ping).to.not.have.been.called;
+                clock.tick(1000);
+                expect(raw.ping).to.not.have.been.called;
+                clock.tick(14000);
+                expect(raw.ping).to.have.been.called;
+            });
+        });
+
+        describe('browser', function (done) {
+            beforeEach(function () {
+                delete raw.ping;
+                sinon.stub(socket, 'send').returns(new Bluebird(function () {}));
+            });
+
+            it('should send a ping packet after an interval', function () {
+                expect(socket.send).to.not.have.been.called;
+                clock.tick(1);
+                expect(socket.send).to.have.been.calledWith({ type: 'method',
+                    method: 'ping', arguments: [], id: 0 });
+            });
+
+            it('should error if no pong is received', function (done) {
+                socket.on('error', function (err) {
+                    expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
+                    done();
+                });
+
+                clock.tick(5001);
+            });
+
+            it('should succeed if pong is received', function () {
+                socket.send.returns(Bluebird.resolve());
+                socket.on('error', function (err) {
+                    throw err;
+                });
+
+                clock.tick(1);
+                clock.tick(5000);
+            });
+        });
+    });
 });

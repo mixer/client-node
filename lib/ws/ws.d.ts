@@ -4,7 +4,7 @@ declare class BeamSocket extends EventEmitter {
   /**
    * Constructor for the class to create the socket handle / connection.
    */
-  constructor(addresses: string[]);
+  constructor(addresses: string[], options?: { pingInterval: number, pingTimeout: number, callTimeout: number });
   /**
    * Which connection we use in our load balancing.
    */
@@ -40,7 +40,7 @@ declare class BeamSocket extends EventEmitter {
   /**
    * Number of milliseconds to wait in .call() before we give up waiting or the reply. Used to prevent leakages.
    */
-  callTimeout: number;
+  private _callTimeout: number;
   /**
    * Map of call IDs to promises that should be resolved on method responses.
    */
@@ -117,6 +117,10 @@ declare class BeamSocket extends EventEmitter {
   call(method: "whisper", args: [string, string], options?: CallOptions): Promise<any>;
   call(method: "history", args: [number], options?: CallOptions): Promise<ChatMessage[]>;
   call(method: "timeout", args: [string, string], options?: CallOptions): Promise<string>;
+  /**
+   * Pings the server to check if it's still alive.
+   */
+  ping(): Promise<void>;
 
   /**
    * Closes the websocket gracefully.

@@ -1,6 +1,6 @@
 {
   "name": "beam-client-node",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Client library for interacting with the beam API.",
   "main": "index.js",
   "typings": "index.d.ts",
@@ -31,6 +31,7 @@
     "istanbul": "^0.4.3",
     "mocha": "^2.2.1",
     "sinon": "^1.14.0",
+    "sinon-chai": "^2.8.0",
     "typings": "^1.0.4"
   },
   "dependencies": {
