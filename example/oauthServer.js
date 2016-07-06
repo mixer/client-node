@@ -14,7 +14,7 @@ function getClient () {
 
     client.use('oauth', {
         clientId: 'your-client-id',
-        secret: 'your-optional-secret-key'
+        secret: 'your-optional-secret-key',
     });
 
     return client;

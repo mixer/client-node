@@ -18,7 +18,7 @@ describe('services', function () {
         var res = { statusCode: 401, body: '"foo"' };
         expect(function () {
             service.handleResponse(res, {
-                '401': errors.NotAuthenticatedError
+                401: errors.NotAuthenticatedError,
             });
         }).to.throw(errors.NotAuthenticatedError);
     });
@@ -27,7 +27,7 @@ describe('services', function () {
         var res = { statusCode: 500, body: '"foo"' };
         expect(function () {
             service.handleResponse(res, {
-                '401': errors.NotAuthenticatedError
+                401: errors.NotAuthenticatedError,
             });
         }).to.throw(errors.UnknownCodeError);
     });

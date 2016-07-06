@@ -1,7 +1,7 @@
 var Bluebird = require('bluebird');
 var errors = require('../../lib/errors');
 var sinon = require('sinon');
-var expect =  require('chai').expect;
+var expect = require('chai').expect;
 
 describe('providers', function () {
     describe('password', function () {
@@ -12,24 +12,29 @@ describe('providers', function () {
             provider = new Provider(this.client, {
                 username: 'foo',
                 password: 'bar',
-                code: 42
+                code: 42,
             });
         });
 
-        it('successfully attempts', function (done) {
+        it('successfully attempts', function () {
             var body = JSON.stringify({ username: 'connor4312' });
-            var stub = sinon.stub(this.client, 'request').returns(Bluebird.resolve({ statusCode: 200, body: body }));
-            provider.attempt().then(function () {
-                expect(stub.calledWith('post', '/users/login', { username: 'foo', password: 'bar', code: 42 }));
-                done();
+            var stub = sinon.stub(this.client, 'request')
+            .returns(Bluebird.resolve({ statusCode: 200, body: body }));
+
+            return provider.attempt()
+            .then(function () {
+                expect(stub.calledWith('post', '/users/login', {
+                    username: 'foo',
+                    password: 'bar',
+                    code: 42,
+                }));
             });
         });
 
-        it('fails attempts', function (done) {
-            var stub = sinon.stub(this.client, 'request').returns(Bluebird.resolve({ statusCode: 401 }));
-            provider.attempt().catch(function (err) {
+        it('fails attempts', function () {
+            return provider.attempt()
+            .catch(function (err) {
                 expect(err).to.be.an.instanceOf(errors.AuthenticationFailedError);
-                done();
             });
         });
 
@@ -46,7 +51,7 @@ describe('providers', function () {
         beforeEach(function () {
             provider = new Provider(this.client, {
                 clientId: 'eye-dee',
-                secret: 'seekrit'
+                secret: 'seekrit',
             });
             sinon.stub(this.client, 'request');
             this.clock = sinon.useFakeTimers();
@@ -54,7 +59,7 @@ describe('providers', function () {
 
         afterEach(function () {
             this.clock.restore();
-        })
+        });
 
         it('has a correct initial state', function () {
             expect(provider.isAuthenticated()).to.be.false;
@@ -71,66 +76,66 @@ describe('providers', function () {
                           '&client_id=eye-dee');
         });
 
-        it('denies when error in query string', function (done) {
-            provider.attempt(redir, { error: 'invalid_grant' })
-                .bind(this)
-                .catch(errors.AuthenticationFailedError, function (e) {
-                    expect(this.client.request.called).to.be.false;
-                    done();
-                });
+        it('denies when error in query string', function () {
+            return provider.attempt(redir, { error: 'invalid_grant' })
+            .bind(this)
+            .catch(errors.AuthenticationFailedError, function () {
+                expect(this.client.request.called).to.be.false;
+            });
         });
 
-        it('denies when no code in query string', function (done) {
-            provider.attempt(redir, { error: 'invalid_grant' })
-                .bind(this)
-                .catch(errors.AuthenticationFailedError, function (e) {
-                    expect(this.client.request.called).to.be.false;
-                    done();
-                });
+        it('denies when no code in query string', function () {
+            return provider.attempt(redir, { error: 'invalid_grant' })
+            .bind(this)
+            .catch(errors.AuthenticationFailedError, function () {
+                expect(this.client.request.called).to.be.false;
+            });
         });
 
-        it('denies when error from API', function (done) {
+        it('denies when error from API', function () {
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 400,
-                body: { error: 'invalid_grant'}
+                body: { error: 'invalid_grant' },
             }));
 
-            provider.attempt(redir, { code: 'asdf' })
-                .bind(this)
-                .catch(errors.AuthenticationFailedError, function (e) {
-                    sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
-                        form: {
-                            grant_type: 'authorization_code',
-                            code: 'asdf',
-                            redirect_uri: redir,
-                            client_id: 'eye-dee',
-                            client_secret: 'seekrit'
-                        }
-                    });
-                    done();
+            return provider.attempt(redir, { code: 'asdf' })
+            .bind(this)
+            .catch(errors.AuthenticationFailedError, function () {
+                sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
+                    form: {
+                        grant_type: 'authorization_code',
+                        code: 'asdf',
+                        redirect_uri: redir,
+                        client_id: 'eye-dee',
+                        client_secret: 'seekrit',
+                    },
                 });
+            });
         });
 
-        it('allows when all good', function (done) {
+        it('allows when all good', function () {
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 200,
-                body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 }
+                body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
             }));
 
-            provider.attempt(redir, { code: 'asdf' }).then(function () {
+            return provider.attempt(redir, { code: 'asdf' }).then(function () {
                 expect(provider.isAuthenticated()).to.be.true;
                 expect(provider.accessToken()).to.equal('access');
                 expect(provider.refreshToken()).to.equal('refresh');
                 expect(+provider.expires()).to.equal(60 * 60 * 1000);
                 expect(provider.getRequest()).to.deep.equal({
-                    headers: { Authorization: 'Bearer access' }
+                    headers: { Authorization: 'Bearer access' },
                 });
-                done();
-            }).catch(done);
+            });
         });
 
         it('expires after a time', function () {
-            provider.tokens = { access: 'access', refresh: 'refresh', expires: new Date(Date.now() + 10) };
+            provider.tokens = {
+                access: 'access',
+                refresh: 'refresh',
+                expires: new Date(Date.now() + 10),
+            };
             expect(provider.isAuthenticated()).to.be.true;
             this.clock.tick(11);
             expect(provider.isAuthenticated()).to.be.false;
@@ -142,36 +147,36 @@ describe('providers', function () {
                 tokens: {
                     access: 'access',
                     refresh: 'refresh',
-                    expires: new Date(Date.now() + 10)
-                }
+                    expires: new Date(Date.now() + 10),
+                },
             });
             expect(provider.isAuthenticated()).to.be.true;
         });
 
-        it('refreshes correctly', function (done) {
+        it('refreshes correctly', function () {
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 200,
-                body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 }
+                body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
             }));
 
             provider.tokens = { access: 'old', refresh: 'oldRefresh', expires: new Date() };
 
-            provider.refresh().then(function () {
+            return provider.refresh()
+            .then(function () {
                 sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
                     form: {
                         grant_type: 'refresh_token',
                         refresh_token: 'oldRefresh',
                         client_id: 'eye-dee',
-                        client_secret: 'seekrit'
-                    }
+                        client_secret: 'seekrit',
+                    },
                 });
 
                 expect(provider.isAuthenticated()).to.be.true;
                 expect(provider.accessToken()).to.equal('access');
                 expect(provider.refreshToken()).to.equal('refresh');
                 expect(+provider.expires()).to.equal(60 * 60 * 1000);
-                done();
-            }).catch(done);
+            });
         });
     });
 });
