@@ -347,10 +347,10 @@ describe('websocket', function () {
     describe('pings', function () {
         beforeEach(function () {
             raw.emit('open');
-            clock.tick(1000 * 15 - 1);
+            clock.tick((1000 * 15) - 1);
         });
 
-        describe('node', function (done) {
+        describe('node', function () {
             beforeEach(function () {
                 raw.ping = sinon.spy();
             });
@@ -390,7 +390,7 @@ describe('websocket', function () {
             });
         });
 
-        describe('browser', function (done) {
+        describe('browser', function () {
             beforeEach(function () {
                 delete raw.ping;
                 sinon.stub(socket, 'send').returns(new Bluebird(function () {}));
@@ -399,8 +399,12 @@ describe('websocket', function () {
             it('should send a ping packet after an interval', function () {
                 expect(socket.send).to.not.have.been.called;
                 clock.tick(1);
-                expect(socket.send).to.have.been.calledWith({ type: 'method',
-                    method: 'ping', arguments: [], id: 0 });
+                expect(socket.send).to.have.been.calledWith({
+                    type: 'method',
+                    method: 'ping',
+                    arguments: [],
+                    id: 0,
+                });
             });
 
             it('should error if no pong is received', function (done) {
