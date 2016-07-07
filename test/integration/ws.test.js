@@ -5,7 +5,8 @@ describe('websocket', function () {
     var Client = require('../../');
     var Password = require('../../lib/providers/password');
     var ChatService = require('../../lib/services/chat');
-    var socket, body;
+    var socket;
+    var body;
 
     beforeEach(function (done) {
         var client = new Client();

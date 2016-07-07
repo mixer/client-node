@@ -1,0 +1,23 @@
+{
+    "root": true,
+    "extends": "airbnb-base/legacy",
+    "env": {
+        "node": true,
+    },
+    "rules": {
+        "indent": [2, 4],
+        "func-names": 0,
+        "no-param-reassign": 0,
+        "space-before-function-paren": [2, "always"],
+        "vars-on-top": 0,
+        "no-underscore-dangle": 0
+    },
+    "globals": {
+        "Uint8Array": true,
+        "Uint32Array": true,
+        "ArrayBuffer": true,
+        "DataView": true,
+        "jwplayer": true,
+        "angular": true,
+    }
+}
