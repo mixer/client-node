@@ -1,0 +1,12 @@
+{
+ "extends": "tslint:recommended",
+  "rules": {
+    "indent": [
+      true
+    ],
+    "no-namespace": {
+      "allow-declarations": true
+    },
+    "no-bitwise": false
+  }
+}

@@ -5,6 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "scripts": {
+    "build": "rm -rf js && tsc -p ./",
     "test": "node node_modules/mocha/bin/mocha test/unit --recursive",
     "cover": "istanbul cover _mocha -- test/unit --recursive"
   },
@@ -27,17 +28,20 @@
   "homepage": "https://github.com/WatchBeam/beam-client-node",
   "devDependencies": {
     "chai": "^3.5.0",
-    "chai-subset": "^1.2.0",
+    "chai-subset": "^1.2.2",
     "istanbul": "^0.4.3",
-    "mocha": "^2.2.1",
-    "sinon": "^1.14.0",
+    "mocha": "^2.5.3",
+    "sinon": "^1.17.4",
+    "sinon-chai": "^2.8.0",
+    "tslint": "^3.13.0",
+    "typescript": "^1.8.10",
     "typings": "^1.0.4"
   },
   "dependencies": {
-    "bluebird": "^3.1.1",
-    "error": "^7.0.2",
-    "lodash": "^4.0.0",
-    "request": "^2.53.0",
-    "ws": "^1.0.1"
+    "bluebird": "^3.4.1",
+    "lodash": "^4.13.1",
+    "querystring": "^0.2.0",
+    "request": "^2.72.0",
+    "ws": "^1.1.1"
   }
 }

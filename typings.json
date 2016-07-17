@@ -2,8 +2,18 @@
   "name": "beam-client-node",
   "globalDependencies": {
     "bluebird": "registry:dt/bluebird#2.0.0+20160319051630",
+    "chai": "registry:dt/chai#3.4.0+20160601211834",
+    "chai-subset": "registry:dt/chai-subset#1.0.0+20160317120654",
     "form-data": "registry:dt/form-data#0.0.0+20160316155526",
-    "node": "registry:dt/node#6.0.0+20160514165920",
-    "request": "registry:dt/request#0.0.0+20160316155526"
+    "lodash": "registry:dt/lodash#3.10.0+20160619033623",
+    "mocha": "registry:dt/mocha#2.2.5+20160619032855",
+    "node": "registry:dt/node#6.0.0+20160621231320",
+    "request": "registry:dt/request#0.0.0+20160524135346",
+    "sinon": "registry:dt/sinon#1.16.0+20160517064723",
+    "sinon-chai": "registry:dt/sinon-chai#2.7.0+20160317120654",
+    "ws": "registry:dt/ws#0.0.0+20160405094435"
+  },
+  "dependencies": {
+    "bluebird": "registry:npm/bluebird#3.3.4+20160531224558"
   }
 }
