@@ -32,12 +32,12 @@ export default class PasswordProvider extends Provider {
      * Attempts to authenticate with the given details. Resolves with user information if correct.
      */
     public attempt(): Bluebird<Request<UserSelf>> {
-        return this.client.request("post", "/users/login", {
+        return this.client.request<UserSelf>("post", "/users/login", {
                 form: this.auth,
             })
             .then(res => {
                 if (res.statusCode !== 200) {
-                    throw new Errors.AuthenticationFailedError(res);
+                    throw new Errors.AuthenticationFailedError(<any> res);
                 }
                 return res;
             });

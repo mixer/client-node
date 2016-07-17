@@ -6,7 +6,7 @@
     "sourceMap": true,
     "removeComments": true,
     "declaration": true,
-    "sourceRoot": "ts/",
+    "sourceRoot": "src/",
     "outDir": "js/"
   },
   "exclude": [

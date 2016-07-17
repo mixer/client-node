@@ -16,6 +16,8 @@ import { Utils } from "./utils";
 import { TeamService } from "./services/team";
 import { OauthOptions } from "./providers/oauth";
 import { PasswordOptions } from "./providers/password";
+import { Request } from "../../defs/beam";
+import ReadWriteStream = NodeJS.ReadWriteStream;
 
 export class Client {
     // Services
@@ -77,9 +79,9 @@ export class Client {
     /**
      * Attempts to run a given request to the Beam API.
      */
-    public request(method: Methods, path: string, data: any): Bluebird<any> {
+    public request<T>(method: Methods, path: string, data: any): Bluebird<Request<T>> {
         let url = Utils.buildAddress(this.urls.api, path);
-        let req = _.defaultsDeep(data || {}, _.extend({
+        let options = _.extend({
                 method,
                 url,
                 headers: {
@@ -88,14 +90,15 @@ export class Client {
                 json: true,
             },
             this.provider ? this.provider.getRequest() : {}
-        )) as UriOptions;
+        );
+        let req = _.defaultsDeep(data || {}, options) as UriOptions;
 
-        return new Bluebird((resolve, reject) => {
+        return new Bluebird<Request<T>>((resolve, reject) => {
             request.run(req, (err, res, body) => {
                 if (err) {
                     reject(err);
                 }
-                resolve(_.merge(res, { body }));
+                resolve(_.merge(res, { body, statusCode: res.statusCode }));
             });
         });
     }
