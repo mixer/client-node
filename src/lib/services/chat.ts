@@ -13,7 +13,7 @@ export class ChatService extends Service {
     /**
      * Get the connection information for a channel to join the channels chat.
      */
-    public join(channelId: number): Bluebird<Request<IChatDetails>> {
+    public join(channelId: number): Bluebird<Request<ChatDetails>> {
         return this.makeHandled("get", `chats/${channelId}`);
     }
 
@@ -33,26 +33,27 @@ export class ChatService extends Service {
 
     /**
      * Retrieve a list of online users in a chat specified by channelId.
+     * Note: Includes lurkers if the user has the "chat:view_lurkers" permission.
      */
-    public getUsers(channelId: number, filter?: APIQuery): Bluebird<Request<IChatUser[]>> {
+    public getUsers(channelId: number, filter?: APIQuery): Bluebird<Request<ChatUser[]>> {
         return this.makeHandled("get", `chats/${channelId}/users`, filter);
     }
 
     /**
      * Search for users within a chat specified by channelId.
      */
-    public searchUsers(channelId: number, filter?: APIQuery): Bluebird<Request<IChatUser[]>> {
+    public searchUsers(channelId: number, filter?: APIQuery): Bluebird<Request<ChatUser[]>> {
         return this.makeHandled("get", `chats/${channelId}/users/search`, filter);
     }
 }
 
-export interface IChatDetails {
+export interface ChatDetails {
     endpoints: string[];
     authkey: string;
     permissions: string[];
 }
 
-export interface IChatUser {
+export interface ChatUser {
     userName: string;
     userRoles: string[];
     userId: number;

@@ -28,7 +28,7 @@ export class Utils {
         url = `${url}/${path}`;
 
         // And just add the query string
-        if (querystr) { url += `?${querystring.encode(querystr)}`; }
+        if (querystr) { url += `?${querystring.stringify(querystr)}`; }
 
         return url;
     }

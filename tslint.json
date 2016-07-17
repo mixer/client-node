@@ -1,6 +1,7 @@
 {
  "extends": "tslint:recommended",
   "rules": {
+    "interface-name": false,
     "indent": [
       true
     ],

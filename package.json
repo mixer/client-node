@@ -2,8 +2,8 @@
   "name": "beam-client-node",
   "version": "0.4.0",
   "description": "Client library for interacting with the beam API.",
-  "main": "index.js",
-  "typings": "index.d.ts",
+  "main": "js/index.js",
+  "typings": "js/index.d.ts",
   "scripts": {
     "build": "rm -rf js && tsc -p ./",
     "test": "node node_modules/mocha/bin/mocha test/unit --recursive",
@@ -40,7 +40,6 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "lodash": "^4.13.1",
-    "querystring": "^0.2.0",
     "request": "^2.72.0",
     "ws": "^1.1.1"
   }

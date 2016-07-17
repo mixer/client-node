@@ -1,6 +1,6 @@
+import * as _ from "lodash";
 import Bluebird = require("bluebird");
 import WebSocket = require("ws");
-import * as _ from "lodash";
 import { EventEmitter } from "events";
 
 import Errors = require("../errors");
@@ -10,17 +10,12 @@ import factory = require("./factory");
 // The method of the authentication packet to store.
 const authMethod = "auth";
 
-class BeamSocket extends EventEmitter {
-    public static IDLE: number = 0;
-    public static CONNECTED: number = 1;
-    public static CLOSING: number = 2;
-    public static CLOSED: number = 3;
-    public static CONNECTING: number = 4;
+export class BeamSocket extends EventEmitter {
     public static Promise: any;
     public static TimeoutError = TimeoutError;
 
     public ws: WebSocket = null;
-    public status: number = 0;
+    public status: SocketStatus = 0;
 
     private addressOffset: number;
     private spool: any[] = [];
@@ -65,7 +60,7 @@ class BeamSocket extends EventEmitter {
      * Returns whether the socket is currently connected.
      */
     public isConnected(): boolean {
-        return this.status === BeamSocket.CONNECTED;
+        return this.status === SocketStatus.CONNECTED;
     }
 
     /**
@@ -120,7 +115,7 @@ class BeamSocket extends EventEmitter {
     public boot(): BeamSocket {
         let self = this;
         let ws = this.ws = factory.create(this.getAddress());
-        this.status = BeamSocket.CONNECTING;
+        this.status = SocketStatus.CONNECTING;
 
         ws.on("open", function() {
             self.resetPingTimeout();
@@ -166,7 +161,7 @@ class BeamSocket extends EventEmitter {
 
             // Finally, tell the world we're connected.
             self.retries = 0;
-            self.status = BeamSocket.CONNECTED;
+            self.status = SocketStatus.CONNECTED;
             self.emit("connected");
 
             // Clean up for gc
@@ -308,10 +303,10 @@ class BeamSocket extends EventEmitter {
     public close() {
         if (this.ws) {
             this.ws.close();
-            this.status = BeamSocket.CLOSING;
+            this.status = SocketStatus.CLOSING;
         } else {
             clearTimeout(this.reconnectTimeout);
-            this.status = BeamSocket.CLOSED;
+            this.status = SocketStatus.CLOSED;
         }
     }
 
@@ -329,13 +324,13 @@ class BeamSocket extends EventEmitter {
         this.pingTimeoutHandle = null;
         this.ws = null;
 
-        if (this.status === BeamSocket.CLOSING) {
-            this.status = BeamSocket.CLOSED;
+        if (this.status === SocketStatus.CLOSING) {
+            this.status = SocketStatus.CLOSED;
             this.emit("closed");
             return;
         }
 
-        this.status = BeamSocket.CONNECTING;
+        this.status = SocketStatus.CONNECTING;
         this.reconnectTimeout = setTimeout(this.boot.bind(this), this.getNextReconnectInterval());
     }
 
@@ -401,4 +396,13 @@ try {
     BeamSocket.Promise = require("bluebird");
 } catch (e) { /* Ignore error */ }
 
-export = BeamSocket;
+/**
+ * Enum for the socket status.
+ */
+export enum SocketStatus {
+    IDLE = 0,
+    CONNECTED = 1,
+    CLOSING = 2,
+    CLOSED = 3,
+    CONNECTING = 4,
+}

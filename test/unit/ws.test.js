@@ -6,7 +6,8 @@ const sinon = require('sinon');
 const events = require('events');
 
 describe('websocket', function () {
-    var BeamSocket = require('../../js/lib/ws/ws');
+    var BeamSocket = require('../../js/lib/ws/ws').BeamSocket;
+    var SocketStatus = require('../../js/lib/ws/ws').SocketStatus;
     var factory = require('../../js/lib/ws/factory');
     var errors = require('../../js/lib/errors');
     var socket;
@@ -39,9 +40,9 @@ describe('websocket', function () {
 
     it('gets status and connected correctly', function () {
         socket = new BeamSocket(['a', 'b']);
-        expect(socket.getStatus()).to.equal(BeamSocket.IDLE);
+        expect(socket.getStatus()).to.equal(SocketStatus.IDLE);
         expect(socket.isConnected()).to.be.false;
-        socket.status = BeamSocket.CONNECTED;
+        socket.status = SocketStatus.CONNECTED;
         expect(socket.isConnected()).to.be.true;
     });
 
@@ -50,10 +51,10 @@ describe('websocket', function () {
         socket.on('error', function (err) { lastErr = err; });
         var parse = sinon.stub(socket, 'parsePacket');
 
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(SocketStatus.CONNECTING);
 
         raw.emit('open');
-        expect(socket.status).to.equal(BeamSocket.CONNECTED);
+        expect(socket.status).to.equal(SocketStatus.CONNECTED);
 
         raw.emit('message', 'asdf');
         expect(parse.calledWith('asdf')).to.be.true;
@@ -63,13 +64,13 @@ describe('websocket', function () {
         expect(lastErr).to.equal(err);
         expect(raw.close.called).to.be.true;
         raw.emit('close');
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(SocketStatus.CONNECTING);
     });
 
     it('reconnects after an interval', function () {
         socket.on('error', function () {});
 
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(SocketStatus.CONNECTING);
         expect(factoryStub.callCount).to.equal(1);
         sinon.stub(socket, 'getNextReconnectInterval').returns(500);
 
@@ -94,9 +95,9 @@ describe('websocket', function () {
     it('closes the websocket connection', function () {
         socket.close();
         expect(raw.close.called).to.be.true;
-        expect(socket.status).to.equal(BeamSocket.CLOSING);
+        expect(socket.status).to.equal(SocketStatus.CLOSING);
         raw.emit('close');
-        expect(socket.status).to.equal(BeamSocket.CLOSED);
+        expect(socket.status).to.equal(SocketStatus.CLOSED);
     });
 
     it('cancels reconnection on close', function () {
@@ -286,7 +287,7 @@ describe('websocket', function () {
 
     describe('method calling', function () {
         beforeEach(function () {
-            socket.status = BeamSocket.CONNECTED;
+            socket.status = SocketStatus.CONNECTED;
             sinon.stub(socket, 'send');
         });
 

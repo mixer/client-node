@@ -31,4 +31,25 @@ export class TeamService extends Service {
     public getMembers(team: number, filter?: APIQuery): Bluebird<Request<TeamDetails>> {
         return this.makeHandled("get", `teams/${team}/users`, filter);
     }
+
+    /**
+     * Accepts an invite to a team.
+     */
+    public acceptInvite(team: number, userId: number): Bluebird<Request<TeamDetails>>  {
+        return this.makeHandled("put", `teams/${team}/users/${userId}`);
+    }
+
+    /**
+     * Invite (add) a member to a team.
+     */
+    public addMember(team: number, userId: number): Bluebird<Request<TeamDetails>> {
+        return this.makeHandled("post", `teams/${team}/users`, { userId });
+    }
+
+    /**
+     * Kick (remove) a user from the team. This also supports a user leaving a team.
+     */
+    public removeMember(team: number, userId: number): Bluebird<Request<TeamDetails>> {
+        return this.makeHandled("delete", `teams/${team}/users/${userId}`);
+    }
 }

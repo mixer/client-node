@@ -17,13 +17,13 @@ export default class PasswordProvider extends Provider {
     /**
      * The options for the client.
      */
-    private auth: IPasswordOptions;
+    private auth: PasswordOptions;
     /**
      *
      * @param client
      * @param options
      */
-    constructor(private client: Client, options: IPasswordOptions) {
+    constructor(private client: Client, options: PasswordOptions) {
         super();
         this.jar = request.jar();
         this.auth = options;
@@ -51,7 +51,7 @@ export default class PasswordProvider extends Provider {
     }
 }
 
-export interface IPasswordOptions {
+export interface PasswordOptions {
     /**
      * Username of whoever is logging in...
      */

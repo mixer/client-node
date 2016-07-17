@@ -5,6 +5,7 @@ import { Client } from "../client";
 
 import { ChannelPreferences, Channel } from "../../../defs/channel";
 import { APIQuery, Request } from "../../../defs/beam";
+import { Recording } from "../../../defs/recodings";
 
 export class ChannelService extends Service {
     constructor(client: Client) {
@@ -30,5 +31,12 @@ export class ChannelService extends Service {
      */
     public getPreferences(channelId: number): Bluebird<Request<ChannelPreferences>> {
         return this.makeHandled("get", `channels/${channelId}/preferences`);
+    }
+
+    /**
+     * Retrieves the listing of recordings for a channel or single recording depending on the filter given.
+     */
+    public getRecordings(channelId: number, filter?: APIQuery): Bluebird<Request<Recording>> {
+        return this.makeHandled("get", `channels/${channelId}/recordings`, filter);
     }
 }

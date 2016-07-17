@@ -8,10 +8,10 @@ import { Utils } from "../utils";
 import Errors = require("../errors");
 
 export default class OauthProvider extends Provider {
-    private details: IClientDetails;
-    private tokens: ITokens;
+    private details: ClientDetails;
+    private tokens: Tokens;
 
-    constructor(private client: Client, options: IOauthOptions) {
+    constructor(private client: Client, options: OauthOptions) {
         super();
         this.details = { client_id: options.clientId, client_secret: options.secret };
         this.setToken(options.tokens);
@@ -61,16 +61,16 @@ export default class OauthProvider extends Provider {
     /**
      * Returns the set of tokens. These can be saved and used to reload the provider later.
      */
-    public getTokens(): ITokens {
+    public getTokens(): Tokens {
         return this.tokens;
     }
 
     /**
      * Sets the tokens for the oauth provider.
      */
-    public setToken(tokens: IStoredTokens): this {
+    public setToken(tokens: StoredTokens): this {
         if (!tokens) {
-            this.tokens = {} as ITokens;
+            this.tokens = <Tokens> {};
         } else {
             this.tokens = {
                 access: tokens.access,
@@ -151,24 +151,24 @@ export default class OauthProvider extends Provider {
     }
 }
 
-export interface IOauthOptions {
+export interface OauthOptions {
     clientId: string;
     secret: string;
-    tokens?: IStoredTokens;
+    tokens?: StoredTokens;
 }
 
-export interface IStoredTokens {
+export interface StoredTokens {
     access: string;
     refresh: string;
     expires: number;
 }
 
-export interface IClientDetails {
+export interface ClientDetails {
     client_id: string;
     client_secret: string;
 }
 
-export interface ITokens {
+export interface Tokens {
     access: string;
     refresh: string;
     expires: Date;

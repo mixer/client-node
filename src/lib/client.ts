@@ -1,6 +1,7 @@
 import Bluebird = require("bluebird");
 import _  = require("lodash");
 import request = require("./request");
+import { UriOptions } from "request";
 
 import Provider from "./providers/provider";
 import PasswordProvider from "./providers/password";
@@ -12,8 +13,9 @@ import { ChatService } from "./services/chat";
 import { GameService } from "./services/game";
 
 import { Utils } from "./utils";
-import { UriOptions } from "request";
 import { TeamService } from "./services/team";
+import { OauthOptions } from "./providers/oauth";
+import { PasswordOptions } from "./providers/password";
 
 export class Client {
     // Services
@@ -56,12 +58,12 @@ export class Client {
     /**
      * Creates and returns an authentication provider instance.
      */
-    public use(provider: "password", options: PasswordOpts): PasswordProvider;
-    public use(provider: "oauth", options: OAuthOpts): OauthProvider;
+    public use(provider: "password", options: PasswordOptions): PasswordProvider;
+    public use(provider: "oauth", options: OauthOptions): OauthProvider;
     public use(provider: Providers, options: any): any;
     public use(provider: string, options: any): any {
-        let Provider = require(`./providers/${provider}`).default;
-        this.provider = new Provider(this, options);
+        let AuthProvider = require(`./providers/${provider}`).default;
+        this.provider = new AuthProvider(this, options);
         return this.provider;
     }
 
@@ -83,13 +85,13 @@ export class Client {
                 headers: {
                     "User-Agent": this.userAgent,
                 },
+                json: true,
             },
             this.provider ? this.provider.getRequest() : {}
         )) as UriOptions;
 
         return new Bluebird((resolve, reject) => {
             request.run(req, (err, res, body) => {
-                try { body = JSON.parse(body); } catch (e) { /* Ignore the error */ }
                 if (err) {
                     reject(err);
                 }
@@ -102,6 +104,3 @@ export class Client {
 export type URLType = "api" | "frontend";
 export type Providers = "password" | "oauth";
 export type Methods = "get" | "put" | "post" | "delete";
-export type PasswordOpts = { username: string, password: string, code?: number };
-export type OAuthOpts = { clientId: string, secret: string, tokens?: {
-    access: string, refresh: string, expires: number }};

@@ -15,7 +15,7 @@ export class GameService extends Service {
     /**
      * Get the connection information to join the Tetris socket for a channel.
      */
-    public join(channelId: number): Bluebird<Request<ITetrisJoin>> {
+    public join(channelId: number): Bluebird<Request<TetrisJoin>> {
         return this.makeHandled("get", `tetris/${channelId}/robot`);
     }
 
@@ -50,21 +50,21 @@ export class GameService extends Service {
     /**
      * Gets all the games owned by a specific user Id.
      */
-    public ownedGames(userId: number): Bluebird<Request<IGameVersioned[]>> {
+    public ownedGames(userId: number): Bluebird<Request<GameVersioned[]>> {
         return this.makeHandled("get", `tetris/games/owned?user=${userId}`);
     }
 
     /**
      * Gets a specific game and all its versions by a specific game Id and user Id.
      */
-    public ownedGameVersions(userId: number, gameId: number): Bluebird<Request<IGameVersioned>> {
+    public ownedGameVersions(userId: number, gameId: number): Bluebird<Request<GameVersioned>> {
         return this.makeHandled("get", `tetris/games/owned?user=${userId}&where=id.eq.${gameId}`);
     }
 
     /**
      * Gets all the games that are published.
      */
-    public getPublished(): Bluebird<Request<IGamesPublished>> {
+    public getPublished(): Bluebird<Request<GamesPublished>> {
         return this.makeHandled("get", "tetris/games");
     }
 
@@ -90,15 +90,15 @@ export class GameService extends Service {
     }
 }
 
-export interface ITetrisJoin {
+export interface TetrisJoin {
     address: string;
     key: string;
 }
 
-export interface IGameVersioned extends TetrisGame {
+export interface GameVersioned extends TetrisGame {
     versions: TetrisVersion[];
 }
 
-export interface IGamesPublished extends TetrisGame {
+export interface GamesPublished extends TetrisGame {
     owner: User;
 }
