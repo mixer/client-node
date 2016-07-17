@@ -17,7 +17,6 @@ import { TeamService } from "./services/team";
 import { OauthOptions } from "./providers/oauth";
 import { PasswordOptions } from "./providers/password";
 import { Request } from "../../defs/beam";
-import ReadWriteStream = NodeJS.ReadWriteStream;
 
 export class Client {
     // Services
