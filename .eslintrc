@@ -2,7 +2,7 @@
     "root": true,
     "extends": "airbnb-base/legacy",
     "env": {
-        "node": true,
+        "node": true
     },
     "rules": {
         "indent": [2, 4],
@@ -10,14 +10,14 @@
         "no-param-reassign": 0,
         "space-before-function-paren": [2, "always"],
         "vars-on-top": 0,
-        "no-underscore-dangle": 0
+        "no-underscore-dangle": 0,
+        "comma-dangle": [2, "always-multiline"],
+        "array-bracket-spacing": [2, "never"]
     },
     "globals": {
         "Uint8Array": true,
         "Uint32Array": true,
         "ArrayBuffer": true,
-        "DataView": true,
-        "jwplayer": true,
-        "angular": true,
+        "DataView": true
     }
 }
