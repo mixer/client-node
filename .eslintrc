@@ -19,7 +19,5 @@
         "Uint32Array": true,
         "ArrayBuffer": true,
         "DataView": true,
-        "jwplayer": true,
-        "angular": true,
     }
 }
