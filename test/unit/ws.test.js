@@ -20,7 +20,7 @@ describe('websocket', function () {
         factoryStub = sinon.stub(factory, 'create').returns(raw);
 
         clock = sinon.useFakeTimers();
-        socket = new BeamSocket([ 'a', 'b' ]).boot();
+        socket = new BeamSocket(['a', 'b']).boot();
     });
 
     afterEach(function () {
@@ -32,11 +32,11 @@ describe('websocket', function () {
         var i;
         for (i = []; i.length < 5;) i.push(socket.getAddress());
         if (i[0] === 'a') i = i.slice(1);
-        expect(i.slice(0, 4)).to.deep.equal([ 'b', 'a', 'b', 'a' ]);
+        expect(i.slice(0, 4)).to.deep.equal(['b', 'a', 'b', 'a']);
     });
 
     it('gets status and connected correctly', function () {
-        socket = new BeamSocket([ 'a', 'b' ]);
+        socket = new BeamSocket(['a', 'b']);
         expect(socket.getStatus()).to.equal(BeamSocket.IDLE);
         expect(socket.isConnected()).to.be.false;
         socket.status = BeamSocket.CONNECTED;
@@ -84,9 +84,9 @@ describe('websocket', function () {
     });
 
     it('runs exponential backoff', function () {
-        expect(socket._getNextReconnectInterval()).to.be.oneOf([ 500, 1000 ]);
-        expect(socket._getNextReconnectInterval()).to.be.oneOf([ 1000, 2000 ]);
-        expect(socket._getNextReconnectInterval()).to.be.oneOf([ 2000, 4000 ]);
+        expect(socket._getNextReconnectInterval()).to.be.oneOf([500, 1000]);
+        expect(socket._getNextReconnectInterval()).to.be.oneOf([1000, 2000]);
+        expect(socket._getNextReconnectInterval()).to.be.oneOf([2000, 4000]);
     });
 
     it('closes the websocket connection', function () {
@@ -126,7 +126,7 @@ describe('websocket', function () {
             sinon.stub(socket, 'isConnected').returns(false);
             socket.on('spooled', function (subData) {
                 expect(raw.send.called).to.be.false;
-                expect(socket._spool).to.deep.equal([ subData ]);
+                expect(socket._spool).to.deep.equal([subData]);
                 done();
             });
 
@@ -216,7 +216,7 @@ describe('websocket', function () {
 
     describe('unspooling', function () {
         beforeEach(function () {
-            socket._spool = [ 'foo', 'bar' ];
+            socket._spool = ['foo', 'bar'];
         });
 
         it('connects directly if no previous auth packet', function (done) {
@@ -237,11 +237,11 @@ describe('websocket', function () {
 
             socket.on('connected', function () {
                 expect(socket.isConnected()).to.be.true;
-                expect(stub.calledWith('auth', [ 1, 2, 3 ], { force: true })).to.be.true;
+                expect(stub.calledWith('auth', [1, 2, 3], { force: true })).to.be.true;
                 done();
             });
 
-            socket._authpacket = [ 1, 2, 3 ];
+            socket._authpacket = [1, 2, 3];
             socket.unspool();
         });
 
@@ -253,7 +253,7 @@ describe('websocket', function () {
                 stub.restore();
             });
 
-            socket._authpacket = [ 1, 2, 3 ];
+            socket._authpacket = [1, 2, 3];
             socket.unspool();
         });
     });
@@ -267,7 +267,7 @@ describe('websocket', function () {
                 done();
             });
 
-            expect(socket._authpacket).to.deep.equal([ 1, 2, 3 ]);
+            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
             expect(called).to.be.false;
             socket.emit('authresult', 'ok');
         });
@@ -277,8 +277,8 @@ describe('websocket', function () {
 
             sinon.stub(socket, 'call').returns('ok!');
             expect(socket.auth(1, 2, 3)).to.equal('ok!');
-            expect(socket._authpacket).to.deep.equal([ 1, 2, 3 ]);
-            expect(socket.call.calledWith('auth', [ 1, 2, 3 ])).to.be.true;
+            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
+            expect(socket.call.calledWith('auth', [1, 2, 3])).to.be.true;
         });
     });
 
@@ -308,7 +308,7 @@ describe('websocket', function () {
         });
 
         it('registers the reply with resolved response', function (done) {
-            socket.call('foo', [ 1, 2, 3 ]).then(function (data) {
+            socket.call('foo', [1, 2, 3]).then(function (data) {
                 expect(data).to.deep.equal({ authenticated: true, role: 'Owner' });
                 done();
             });
@@ -321,7 +321,7 @@ describe('websocket', function () {
         });
 
         it('registers the reply with rejected response', function (done) {
-            socket.call('foo', [ 1, 2, 3 ]).catch(function (err) {
+            socket.call('foo', [1, 2, 3]).catch(function (err) {
                 expect(err).to.equal('foobar');
                 done();
             });
@@ -334,7 +334,7 @@ describe('websocket', function () {
         });
 
         it('quietly removes the reply after a timeout', function (done) {
-            socket.call('foo', [ 1, 2, 3 ]).catch(function (err) {
+            socket.call('foo', [1, 2, 3]).catch(function (err) {
                 expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
                 expect(socket._replies[0]).not.to.be.defined;
                 done();

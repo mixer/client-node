@@ -12,7 +12,7 @@
         "vars-on-top": 0,
         "no-underscore-dangle": 0,
         "comma-dangle": [2, "always-multiline"],
-        "array-bracket-spacing": [2, "always"]
+        "array-bracket-spacing": [2, "never"]
     },
     "globals": {
         "Uint8Array": true,

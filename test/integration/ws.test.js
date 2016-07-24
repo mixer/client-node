@@ -26,7 +26,7 @@ describe('websocket', function () {
     });
 
     it('authenticates with chat', function (done) {
-        socket.call('auth', [ 2, 2, body.authkey ]).then(function (data) {
+        socket.call('auth', [2, 2, body.authkey]).then(function (data) {
             expect(data).to.deep.equal({ authenticated: true, role: 'Owner' });
             done();
         }).catch(done);
