@@ -35,7 +35,7 @@ function getRedirectUri () {
  */
 app.get('/', function (req, res) {
     var url = getClient().getProvider().getRedirect(
-            getRedirectUri(), ['chat:connect']);
+            getRedirectUri(), [ 'chat:connect' ]);
 
     res.redirect(url);
 });

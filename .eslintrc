@@ -10,7 +10,9 @@
         "no-param-reassign": 0,
         "space-before-function-paren": [2, "always"],
         "vars-on-top": 0,
-        "no-underscore-dangle": 0
+        "no-underscore-dangle": 0,
+        "comma-dangle": [2, "always-multiline"],
+        "array-bracket-spacing": [2, "always"]
     },
     "globals": {
         "Uint8Array": true,
