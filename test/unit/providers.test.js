@@ -20,7 +20,7 @@ describe('providers', function () {
         it('successfully attempts', function () {
             var body = JSON.stringify({ username: 'connor4312' });
             var headers = {};
-            headers[provider.csrfTokenLocation] = csrfToken;
+            headers[Provider.CSRF_TOKEN_LOCATION] = csrfToken;
             var stub = sinon.stub(this.client, 'request')
             .returns(Bluebird.resolve({
                 statusCode: 200,
@@ -51,7 +51,7 @@ describe('providers', function () {
         });
 
         it('includes the csrf token in requests. mm, tokens', function () {
-            expect(provider.getRequest().headers).to.include.keys(provider.csrfTokenLocation);
+            expect(provider.getRequest().headers).to.include.keys(Provider.CSRF_TOKEN_LOCATION);
         });
     });
 
