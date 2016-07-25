@@ -7,6 +7,7 @@ describe('providers', function () {
     describe('password', function () {
         var Provider = require('../../lib/providers/password');
         var provider;
+        var csrfToken = 'abc123';
 
         beforeEach(function () {
             provider = new Provider(this.client, {
@@ -18,8 +19,14 @@ describe('providers', function () {
 
         it('successfully attempts', function () {
             var body = JSON.stringify({ username: 'connor4312' });
+            var headers = {};
+            headers[provider.csrfTokenLocation] = csrfToken;
             var stub = sinon.stub(this.client, 'request')
-            .returns(Bluebird.resolve({ statusCode: 200, body: body }));
+            .returns(Bluebird.resolve({
+                statusCode: 200,
+                body: body,
+                headers: headers,
+            }));
 
             return provider.attempt()
             .then(function () {
@@ -28,6 +35,7 @@ describe('providers', function () {
                     password: 'bar',
                     code: 42,
                 }));
+                expect(provider.csrfToken).to.equal(csrfToken);
             });
         });
 
@@ -40,6 +48,10 @@ describe('providers', function () {
 
         it('uses the cookie jar in requests. mm, cookies', function () {
             expect(provider.getRequest().jar).to.be.a('object');
+        });
+
+        it('includes the csrf token in requests. mm, tokens', function () {
+            expect(provider.getRequest().headers).to.include.keys(provider.csrfTokenLocation);
         });
     });
 
