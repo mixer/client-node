@@ -66,7 +66,7 @@ describe('providers', function () {
             expect(provider.getRequest().headers).to.include.keys(Provider.CSRF_TOKEN_LOCATION);
         });
 
-        it('updates a csrf token on a 461 response code', function () {
+        it('updates a csrf token on a 461 response code and then retries the request', function () {
             this.client.provider = provider;
             request.run = function (req, cb) {
                 if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
