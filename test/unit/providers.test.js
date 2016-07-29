@@ -2,6 +2,7 @@
 
 const Bluebird = require("bluebird");
 const errors = require("../../js/lib/errors");
+const request = require("../../js/lib/request");
 const sinon = require("sinon");
 const expect = require("chai").expect;
 
@@ -9,6 +10,25 @@ describe("providers", function () {
     describe("password", function () {
         var Provider = require("../../js/lib/providers/password").default;
         var provider;
+        var csrfToken = 'abc123';
+        var body = JSON.stringify({ username: 'connor4312' });
+
+        var validResponse = {
+            statusCode: 200,
+            body: body,
+            headers: {}
+        };
+        validResponse.headers[Provider.CSRF_TOKEN_LOCATION] = csrfToken;
+
+        var invalidCSRFResponse = {
+            statusCode: Provider.INVALID_CSRF_CODE,
+            headers: {},
+            body: {
+                error: 'Invalid or missing CSRF header, see details here: <https://dev.beam.pro/rest.html#csrf>',
+                statusCode: Provider.INVALID_CSRF_CODE
+            }
+        };
+        invalidCSRFResponse.headers[Provider.CSRF_TOKEN_LOCATION] = 'new token';
 
         beforeEach(function () {
             provider = new Provider(this.client, {
@@ -19,10 +39,8 @@ describe("providers", function () {
         });
 
         it("successfully attempts", function () {
-            var body = JSON.stringify({ username: "connor4312" });
             var stub = sinon.stub(this.client, "request")
-                .returns(Bluebird.resolve({ statusCode: 200, body: body }));
-
+                .returns(Bluebird.resolve(validResponse));
             return provider.attempt()
                 .then(function () {
                     expect(stub.calledWith("post", "/users/login", {
@@ -30,6 +48,7 @@ describe("providers", function () {
                         password: "bar",
                         code: 42
                     }));
+                    expect(provider.csrfToken).to.equal(csrfToken);
                 });
         });
 
@@ -42,6 +61,26 @@ describe("providers", function () {
 
         it("uses the cookie jar in requests. mm, cookies", function () {
             expect(provider.getRequest().jar).to.be.a("object");
+        });
+
+        it('includes the csrf token in requests. mm, tokens', function () {
+            expect(provider.getRequest().headers).to.include.keys(Provider.CSRF_TOKEN_LOCATION);
+        });
+
+        it('updates a csrf token on a 461 response code and then retries the request', function () {
+            this.client.setProvider(provider);
+            request.run = function (req, cb) {
+                if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
+                    cb(invalidCSRFResponse);
+                } else {
+                    cb(null, validResponse);
+                }
+            };
+            return this.client.request("get", "/users/current")
+                .then(function (res) {
+                    expect(res.statusCode).to.equal(200);
+                    expect(provider.csrfToken).to.equal('new token');
+                });
         });
     });
 

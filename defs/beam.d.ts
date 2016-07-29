@@ -30,6 +30,10 @@ export interface Request<T> {
      * The status code from the request.
      */
     statusCode: number;
+    /**
+     * The headers in the response.
+     */
+    headers: { [header: string]: any };
 }
 
 export interface UserGroup {

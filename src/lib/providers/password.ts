@@ -8,8 +8,17 @@ import { Client } from "../client";
 
 import { Request } from "../../../defs/beam";
 import { UserSelf } from "../../../defs/user";
+import { RequestAPI } from "request";
 
 export default class PasswordProvider extends Provider {
+    /**
+     * Header location for the token sent a response from the API.
+     */
+    public static CSRF_TOKEN_LOCATION = "x-csrf-token";
+    /**
+     * Error code thrown from the API if an invalid / no CSRF was sent.
+     */
+    public static INVALID_CSRF_CODE = 461;
     /**
      * The cookie jar for the provider.
      */
@@ -18,6 +27,10 @@ export default class PasswordProvider extends Provider {
      * The options for the client.
      */
     private auth: PasswordOptions;
+    /**
+     * The CSRF token.
+     */
+    private csrfToken: string = null;
     /**
      *
      * @param client
@@ -32,6 +45,7 @@ export default class PasswordProvider extends Provider {
      * Attempts to authenticate with the given details. Resolves with user information if correct.
      */
     public attempt(): Bluebird<Request<UserSelf>> {
+        const self = this;
         return this.client.request<UserSelf>("post", "/users/login", {
                 form: this.auth,
             })
@@ -39,15 +53,41 @@ export default class PasswordProvider extends Provider {
                 if (res.statusCode !== 200) {
                     throw new Errors.AuthenticationFailedError(<any> res);
                 }
+                self.csrfToken = res.headers[PasswordProvider.CSRF_TOKEN_LOCATION];
                 return res;
             });
+    }
+
+    /**
+     * Set the CSRF token to be used in all requests with this provider.
+     */
+    public setCSRFToken(token: string) {
+        this.csrfToken = token;
     }
 
     /**
      * Returns info to add to the client's request.
      */
     public getRequest(): Object {
-        return { jar: this.jar };
+        let req = {
+            headers: {},
+            jar: this.jar,
+        };
+        req.headers[PasswordProvider.CSRF_TOKEN_LOCATION] = this.csrfToken;
+        return req;
+    }
+
+    /**
+     * Handle response errors from requests.
+     */
+    public handleResponseError(err: Request<any>, requestOpts: [string, string, any]): Bluebird<any> {
+        if (err.statusCode === PasswordProvider.INVALID_CSRF_CODE) {
+            if (err.headers[PasswordProvider.CSRF_TOKEN_LOCATION] !== this.csrfToken) {
+                this.csrfToken = err.headers[PasswordProvider.CSRF_TOKEN_LOCATION];
+                return this.client.request.apply(this.client, requestOpts);
+            }
+        }
+        return Bluebird.reject(err);
     }
 }
 

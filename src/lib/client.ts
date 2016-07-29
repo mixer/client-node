@@ -76,9 +76,18 @@ export class Client {
     }
 
     /**
+     * Set the provider to another provider which has already been created.
+     */
+    public setProvider(provider: Provider): this {
+        this.provider = provider;
+        return this;
+    }
+
+    /**
      * Attempts to run a given request to the Beam API.
      */
-    public request<T>(method: Methods, path: string, data: any): Bluebird<Request<T>> {
+    public request<T>(method: Methods, path: string, data?: any): Bluebird<Request<T>> {
+        let self = this;
         let url = Utils.buildAddress(this.urls.api, path);
         let options = _.extend({
                 method,
@@ -92,14 +101,21 @@ export class Client {
         );
         let req = _.defaultsDeep(data || {}, options) as UriOptions;
 
-        return new Bluebird<Request<T>>((resolve, reject) => {
-            request.run(req, (err, res, body) => {
-                if (err) {
-                    reject(err);
+        return new Bluebird<Request<T>>(
+            (resolve, reject) => {
+                request.run(req, (err, res, body) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(_.merge(res, { body, statusCode: res.statusCode }));
+                });
+            })
+            .catch(err => {
+                if (self.provider) {
+                    self.provider.handleResponseError(err, [method, path, data]);
                 }
-                resolve(_.merge(res, { body, statusCode: res.statusCode }));
+                throw err;
             });
-        });
     }
 }
 
