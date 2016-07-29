@@ -291,8 +291,10 @@ export class BeamSocket extends EventEmitter {
                 self.replies[id] = new Reply(resolve, reject);
             }),
         ])
-        .catch(TimeoutError, function (err) {
-            delete self.replies[id];
+        .catch(function (err) {
+            if (err instanceof TimeoutError) {
+                delete self.replies[id];
+            }
             throw err;
         });
     }
