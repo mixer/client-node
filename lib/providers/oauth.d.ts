@@ -2,8 +2,9 @@ import Client = require("../client");
 
 import { BeamRequest } from "../../defs/request";
 import { OAuthToken } from "../../defs/oauth";
+import Provider = require("./provider");
 
-declare class OAuthProvider {
+declare class OAuthProvider extends Provider {
   /**
    * The client tokens.
    */
