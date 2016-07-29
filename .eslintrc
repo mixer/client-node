@@ -5,7 +5,7 @@
         "node": true
     },
     "rules": {
-        "indent": [2, 4],
+        "indent": [2, 4, { "MemberExpression": 0 }],
         "func-names": 0,
         "no-param-reassign": 0,
         "space-before-function-paren": [2, "always"],
