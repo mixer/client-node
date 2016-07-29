@@ -4,7 +4,6 @@ import Client = require("../client");
 
 import { BeamRequest } from "../../defs/request";
 import { BeamUserSelf } from "../../defs/user";
-
 import Provider = require("./provider");
 
 declare class PasswordProvider extends Provider {
@@ -16,7 +15,6 @@ declare class PasswordProvider extends Provider {
   jar: request.CookieJar;
   /**
    * Storage of the CSRF Token as given in the response from the server
-   * @type {String}
    */
   csrfToken: String;
   /**
