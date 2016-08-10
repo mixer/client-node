@@ -12,6 +12,11 @@ describe('websocket', function () {
     var factoryStub;
     var clock;
 
+    // synchronous-ly resolving promise-like object for use in tests
+    var resolveSync = {
+        then: function (fn) { return fn(); },
+    };
+
     beforeEach(function () {
         raw = new events.EventEmitter();
         raw.close = sinon.spy();
@@ -126,7 +131,7 @@ describe('websocket', function () {
             sinon.stub(socket, 'isConnected').returns(false);
             socket.on('spooled', function (subData) {
                 expect(raw.send.called).to.be.false;
-                expect(socket._spool).to.deep.equal([subData]);
+                expect(socket._spool).to.containSubset([{ data: subData }]);
                 done();
             });
 
@@ -216,7 +221,10 @@ describe('websocket', function () {
 
     describe('unspooling', function () {
         beforeEach(function () {
-            socket._spool = ['foo', 'bar'];
+            socket._spool = [
+                { data: 'foo', resolve: function () {} },
+                { data: 'bar', resolve: function () {} },
+            ];
         });
 
         it('connects directly if no previous auth packet', function (done) {
@@ -285,7 +293,7 @@ describe('websocket', function () {
     describe('method calling', function () {
         beforeEach(function () {
             socket.status = BeamSocket.CONNECTED;
-            sinon.stub(socket, 'send');
+            sinon.stub(socket, 'send').returns(resolveSync);
         });
 
         it('sends basic with no reply or args', function () {
@@ -312,6 +320,7 @@ describe('websocket', function () {
                 expect(data).to.deep.equal({ authenticated: true, role: 'Owner' });
                 done();
             });
+
             socket.parsePacket(JSON.stringify({
                 type: 'reply',
                 error: null,
@@ -341,6 +350,26 @@ describe('websocket', function () {
             });
             expect(socket._replies[0]).to.be.defined;
             clock.tick((1000 * 60) + 1);
+        });
+
+        it('measure timeout duration since the socket dispatch rather than .call', function () {
+            socket.send.restore();
+            sinon.stub(socket, 'send').returns({
+                then: function (fn) {
+                    clock.tick(1000 * 60);
+                    socket.parsePacket(JSON.stringify({
+                        type: 'reply',
+                        error: null,
+                        id: 0,
+                        data: 'ok',
+                    }));
+                    return fn();
+                },
+            });
+
+            return socket.call('foo', [1, 2, 3]).then(function (reply) {
+                expect(reply).to.equal('ok');
+            });
         });
     });
 
@@ -393,7 +422,7 @@ describe('websocket', function () {
         describe('browser', function () {
             beforeEach(function () {
                 delete raw.ping;
-                sinon.stub(socket, 'send').returns(new Bluebird(function () {}));
+                sinon.stub(socket, 'send').returns(resolveSync);
             });
 
             it('should send a ping packet after an interval', function () {
