@@ -1,31 +1,26 @@
-import * as request from "request";
-
 import Client = require("../client");
 
-import { BeamRequest } from "../../defs/request";
-import { BeamUserSelf } from "../../defs/user";
-
 declare class Provider {
-  /**
-   * Create a new instance of the provider.
-   */
-  constructor(client: Client);
+    /**
+     * Create a new instance of the provider.
+     */
+    constructor(client: Client);
 
-  /**
-   * Returns info to add to the client's request.
-   */
-  getRequest(): any;
+    /**
+     * Returns info to add to the client's request.
+     */
+    getRequest(): any;
 
-  /**
-   * Given a failing response from the client, processes the error object and returns a Promise
-   * which allows for a provider to retry a request or carry out some other process
-   */
-  handleResponseError(): Promise<void>;
+    /**
+     * Given a failing response from the client, processes the error object and returns a Promise
+     * which allows for a provider to retry a request or carry out some other process
+     */
+    handleResponseError(): Promise<void>;
 
-  /**
-   * Attempts to authenticate with the given details. Resolves with user information if correct.
-   */
-  attempt(...args: any[]): Promise<any>;
+    /**
+     * Attempts to authenticate with the given details. Resolves with user information if correct.
+     */
+    attempt(...args: any[]): Promise<any>;
 }
 
 export = Provider;

@@ -32,5 +32,6 @@ node_modules
 # Typings
 typings
 
+.idea
 *.sublime-project
 *.sublime-workspace
