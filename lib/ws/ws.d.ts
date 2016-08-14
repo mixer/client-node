@@ -59,15 +59,15 @@ declare class BeamSocket extends EventEmitter {
     /**
      * The timeout error for the socket.
      */
-    TimeoutError: TimeoutError;
+    static TimeoutError: TimeoutError;
     /**
      * Set the socket status values.
      */
-    IDLE: number;
-    CONNECTED: number;
-    CLOSING: number;
-    CLOSED: number;
-    CONNECTING: number;
+    static IDLE: number;
+    static CONNECTED: number;
+    static CLOSING: number;
+    static CLOSED: number;
+    static CONNECTING: number;
 
     /**
      * Gets the status of the socket connection.
