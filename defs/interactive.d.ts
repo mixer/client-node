@@ -1,4 +1,94 @@
-export interface InteractiveGame {
+export interface InteractiveChannel {
+    /**
+     * The Interactive WebSocket address to connect too.
+     */
+    address: string;
+    /**
+     * The authKey to use for the session.
+     */
+    key: string;
+    /**
+     * The userId of the current user.
+     */
+    user: number;
+    /**
+     * The influence the user has on the controls.
+     */
+    influence: number;
+    /**
+     * Version information about the game and controls schema.
+     */
+    version: ChannelVersion;
+}
+
+export interface Version {
+    /**
+     * The Id of the version.
+     */
+    id: number;
+    /**
+     * The game version.
+     */
+    version: string;
+    /**
+     * The state of the version.
+     */
+    state: "published" | "draft" | "pending";
+    /**
+     * TODO: Find more info.
+     */
+    versionOrder: number;
+    /**
+     * Installation guide for the version.
+     */
+    installation: string;
+    /**
+     * The download link for the version.
+     */
+    download: string;
+    /**
+     * Time of when the version was created.
+     */
+    createdAt: string;
+    /**
+     * Time of when the version was updated.
+     */
+    updatedAt: string;
+    /**
+     * The interactive game being using.
+     */
+    game: Game;
+}
+
+export interface ChannelVersion extends Version {
+    /**
+     * The controllers schema for the game version.
+     */
+    controls: {
+        /**
+         * How frequently the interactive app and the controls on Beam communicate.
+         */
+        reportInterval: number;
+        /**
+         * The buttons being used.
+         */
+        tactiles: Tactile[];
+        /**
+         * The joysticks being used.
+         */
+        joysticks: Joystick[];
+        /**
+         * The screens being used.
+         */
+        screens: Screens[];
+    };
+    /**
+     * The Interactive game Id.
+     */
+    gameId: number;
+}
+
+export interface Game {
     /**
      * The Id of the game.
      */
@@ -41,93 +131,7 @@ export interface InteractiveGame {
     deletedAt: string;
 }
 
-export interface InteractiveVersion {
-    /**
-     * The Id of the version.
-     */
-    id: number;
-    /**
-     * The game version.
-     */
-    version: string;
-    /**
-     * The state of the version.
-     */
-    state: "published" | "draft" | "pending";
-    /**
-     * TODO: Find more info.
-     */
-    versionOrder: number;
-    /**
-     * Installation guide for the version.
-     */
-    installation: string;
-    /**
-     * The download link for the version.
-     */
-    download: string;
-    /**
-     * Time of when the version was created.
-     */
-    createdAt: string;
-    /**
-     * Time of when the version was updated.
-     */
-    updatedAt: string;
-}
-
-export interface InteractiveChannel {
-    /**
-     * The Interactive WebSocket address to connect too.
-     */
-    address: string;
-    /**
-     * The authKey to use for the session.
-     */
-    key: string;
-    /**
-     * The userId of the current user.
-     */
-    user: number;
-    /**
-     * The influence the user has on the controls.
-     */
-    influence: number;
-    /**
-     * Version information about the game and controls schema.
-     */
-    version: InteractiveChannelVersion;
-}
-
-export interface InteractiveChannelVersion extends InteractiveVersion {
-    /**
-     * The controllers schema for the game version. (TODO)
-     */
-    controls: {
-        /**
-         * How frequently the interactive app and the controls on Beam communicate.
-         */
-        reportInterval: number;
-        /**
-         * The buttons being used.
-         */
-        tactiles: InteractiveTactile[];
-        /**
-         * The joysticks being used.
-         */
-        joysticks: InteractiveJoystick[];
-        /**
-         * The screens being used.
-         */
-        screens: InteractiveScreens[];
-    };
-    /**
-     * The Interactive game Id.
-     */
-    gameId: number;
-}
-
-export interface InteractiveControl {
+export interface Control {
     /**
      * The Id of the control.
      */
@@ -139,7 +143,7 @@ export interface InteractiveControl {
     /**
      * The blueprints for the control.
      */
-    blueprint: InteractiveBlueprint[];
+    blueprint: Blueprint[];
     /**
      * Text displayed on the control.
      */
@@ -150,7 +154,7 @@ export interface InteractiveControl {
     help: string;
 }
 
-export interface InteractiveTactile extends InteractiveControl {
+export interface Tactile extends Control {
     /**
      * Analysis defines the kind of analysis done on the tactile.
      */
@@ -185,7 +189,7 @@ export interface InteractiveTactile extends InteractiveControl {
     key: number;
 }
 
-export interface InteractiveJoystick extends InteractiveControl {
+export interface Joystick extends Control {
     /**
      * Analysis defines the kind of analysis done on the joystick.
      */
@@ -200,7 +204,7 @@ export interface InteractiveJoystick extends InteractiveControl {
     };
 }
 
-export interface InteractiveScreens extends InteractiveControl {
+export interface Screens extends Control {
     /**
      * Analysis defines the kind of analysis done on the ScreenCord.
      */
@@ -222,7 +226,7 @@ export interface InteractiveScreens extends InteractiveControl {
     };
 }
 
-export interface InteractiveBlueprint {
+export interface Blueprint {
     /**
      * The width of the control.
      */

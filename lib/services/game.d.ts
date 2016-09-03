@@ -2,7 +2,7 @@ import Service = require("./service");
 
 import { BeamRequest } from "../../defs/request";
 import { BeamUser } from "../../defs/user";
-import { InteractiveGame, InteractiveVersion, InteractiveChannel } from "../../defs/interactive";
+import { Game, Version, InteractiveChannel } from "../../defs/interactive";
 
 declare class GameService extends Service {
     /**
@@ -13,12 +13,12 @@ declare class GameService extends Service {
     /**
      * Gets a game from a specified game ID.
      */
-    getGame(gameId: number): Promise<BeamRequest<InteractiveGame>>;
+    getGame(gameId: number): Promise<BeamRequest<Game>>;
 
     /**
      * Updates a game from a specified game ID.
      */
-    updateGame(gameId: number, data: {}): Promise<BeamRequest<InteractiveGame>>;
+    updateGame(gameId: number, data: {}): Promise<BeamRequest<Game>>;
 
     /**
      * Deletes a game from a specified game ID.
@@ -33,22 +33,22 @@ declare class GameService extends Service {
     /**
      * Gets all the games owned by a specific user ID.
      */
-    ownedGames(userId: number): Promise<BeamRequest<BeamRequest<InteractiveGameVersioned[]>>>;
+    ownedGames(userId: number): Promise<BeamRequest<BeamRequest<GameVersioned[]>>>;
 
     /**
      * Gets a specific game and all its versions by a specific game ID and user ID.
      */
-    ownedGameVersions(userId: number, gameId: number): Promise<BeamRequest<InteractiveGameVersioned>>;
+    ownedGameVersions(userId: number, gameId: number): Promise<BeamRequest<GameVersioned>>;
 
     /**
      * Gets all the games that are published.
      */
-    published(): Promise<InteractivePublished[]>;
+    published(): Promise<Published[]>;
 
     /**
      * Creates a new Interactive game.
      */
-    create(data: { ownerId: number, name: string, description: string, installation: string }): Promise<BeamRequest<InteractiveGame>>;
+    create(data: { ownerId: number, name: string, description: string, installation: string }): Promise<BeamRequest<Game>>;
 
     /**
      * Creates a new version of a game for a specific game ID and user ID.
@@ -66,11 +66,11 @@ interface JoinResponse {
     key: string;
 }
 
-interface InteractiveGameVersioned extends InteractiveGame {
-    versions: InteractiveVersion[];
+interface GameVersioned extends Game {
+    versions: Version[];
 }
 
-interface InteractivePublished extends InteractiveGame {
+interface Published extends Game {
     owner: BeamUser;
 }
 
