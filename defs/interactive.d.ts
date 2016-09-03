@@ -1,4 +1,4 @@
-export interface TetrisGame {
+export interface InteractiveGame {
     /**
      * The Id of the game.
      */
@@ -41,7 +41,7 @@ export interface TetrisGame {
     deletedAt: string;
 }
 
-export interface TetrisVersion {
+export interface InteractiveVersion {
     /**
      * The Id of the version.
      */
@@ -76,9 +76,9 @@ export interface TetrisVersion {
     updatedAt: string;
 }
 
-export interface TetrisChannel {
+export interface InteractiveChannel {
     /**
-     * The Tetris WebSocket address to connect too.
+     * The Interactive WebSocket address to connect too.
      */
     address: string;
     /**
@@ -96,10 +96,10 @@ export interface TetrisChannel {
     /**
      * Version information about the game and controls schema.
      */
-    version: TetrisChannelVersion;
+    version: InteractiveChannelVersion;
 }
 
-export interface TetrisChannelVersion extends TetrisVersion {
+export interface InteractiveChannelVersion extends InteractiveVersion {
     /**
      * The controllers schema for the game version. (TODO)
      */
@@ -111,23 +111,23 @@ export interface TetrisChannelVersion extends TetrisVersion {
         /**
          * The buttons being used.
          */
-        tactiles: TetrisTactile[];
+        tactiles: InteractiveTactile[];
         /**
          * The joysticks being used.
          */
-        joysticks: TetrisJoystick[];
+        joysticks: InteractiveJoystick[];
         /**
          * The screens being used.
          */
-        screens: TetrisScreens[];
+        screens: InteractiveScreens[];
     };
     /**
-     * The Tetris game Id.
+     * The Interactive game Id.
      */
     gameId: number;
 }
 
-export interface TetrisControl {
+export interface InteractiveControl {
     /**
      * The Id of the control.
      */
@@ -139,7 +139,7 @@ export interface TetrisControl {
     /**
      * The blueprints for the control.
      */
-    blueprint: TetrisBlueprint[];
+    blueprint: InteractiveBlueprint[];
     /**
      * Text displayed on the control.
      */
@@ -150,7 +150,7 @@ export interface TetrisControl {
     help: string;
 }
 
-export interface TetrisTactile extends TetrisControl {
+export interface InteractiveTactile extends InteractiveControl {
     /**
      * Analysis defines the kind of analysis done on the tactile.
      */
@@ -185,7 +185,7 @@ export interface TetrisTactile extends TetrisControl {
     key: number;
 }
 
-export interface TetrisJoystick extends TetrisControl {
+export interface InteractiveJoystick extends InteractiveControl {
     /**
      * Analysis defines the kind of analysis done on the joystick.
      */
@@ -200,7 +200,7 @@ export interface TetrisJoystick extends TetrisControl {
     };
 }
 
-export interface TetrisScreens extends TetrisControl {
+export interface InteractiveScreens extends InteractiveControl {
     /**
      * Analysis defines the kind of analysis done on the ScreenCord.
      */
@@ -222,7 +222,7 @@ export interface TetrisScreens extends TetrisControl {
     };
 }
 
-export interface TetrisBlueprint {
+export interface InteractiveBlueprint {
     /**
      * The width of the control.
      */

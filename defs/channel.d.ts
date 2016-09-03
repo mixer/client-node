@@ -70,9 +70,9 @@ export interface BeamChannel {
      */
     interactive: boolean;
     /**
-     * The Id of the tetris game.
+     * The Id of the interactive game.
      */
-    tetrisGameId: number;
+    interactiveGameId: number;
     /**
      * If this is not 0 the channel is streaming using FTL.
      */
