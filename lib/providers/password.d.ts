@@ -1,4 +1,5 @@
-import * as request from "request";
+import Promise = require("bluebird");
+import request = require("request");
 
 import Client = require("../client");
 

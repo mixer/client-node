@@ -1,3 +1,5 @@
+import Promise = require("bluebird");
+
 import ChannelService = require("./services/channel");
 import ChatService = require("./services/chat");
 import GameService = require("./services/game");
