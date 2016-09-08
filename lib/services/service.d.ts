@@ -1,3 +1,4 @@
+import Promise = require("bluebird");
 import Client = require("../client");
 
 declare class Service {

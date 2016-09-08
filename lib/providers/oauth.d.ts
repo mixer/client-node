@@ -1,3 +1,4 @@
+import Promise = require("bluebird");
 import Client = require("../client");
 
 import { BeamRequest } from "../../defs/request";
