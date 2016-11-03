@@ -31,6 +31,7 @@ describe('beam client', function () {
                 url: 'https://beam.pro/api/v1/users/current',
             });
             expect(this.request.headers['User-Agent'])
+            // eslint-disable-next-line no-useless-escape
             .to.match(/^BeamClient\/[0-9\.]+ \(JavaScript; Node\.js v[0-9\.]+\)$/);
             expect(res).to.deep.equal(this.response);
         });
