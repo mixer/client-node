@@ -56,6 +56,7 @@ describe('websocket', function () {
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
 
         raw.emit('open');
+        socket.emit('WelcomeEvent');
         expect(socket.status).to.equal(BeamSocket.CONNECTED);
 
         raw.emit('message', 'asdf');
@@ -67,6 +68,16 @@ describe('websocket', function () {
         expect(raw.close.called).to.be.true;
         raw.emit('close');
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
+    });
+
+    it('kills the connection if no WelcomeEvent is received', function () {
+        socket.on('error', function () {});
+
+        raw.emit('open');
+        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        clock.tick(5000);
+
+        expect(raw.close).to.have.been.calledOnce;
     });
 
     it('reconnects after an interval', function () {
@@ -282,6 +293,7 @@ describe('websocket', function () {
 
         it('sends immediately otherwise', function () {
             raw.emit('open');
+            socket.emit('WelcomeEvent');
 
             sinon.stub(socket, 'call').returns('ok!');
             expect(socket.auth(1, 2, 3)).to.equal('ok!');
@@ -376,6 +388,7 @@ describe('websocket', function () {
     describe('pings', function () {
         beforeEach(function () {
             raw.emit('open');
+            socket.emit('WelcomeEvent');
             clock.tick((1000 * 15) - 1);
         });
 
