@@ -32,7 +32,7 @@ describe('beam client', function () {
             });
             expect(this.request.headers['User-Agent'])
             // eslint-disable-next-line no-useless-escape
-            .to.match(/^BeamClient\/[0-9\.]+ \(JavaScript; Node\.js v[0-9\.]+\)$/);
+            .to.match(/^BeamClient\/[0-9\.]+(\-beta\.\d)? \(JavaScript; Node\.js v[0-9\.]+\)$/);
             expect(res).to.deep.equal(this.response);
         });
     });
