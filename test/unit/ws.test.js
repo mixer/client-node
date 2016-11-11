@@ -80,6 +80,14 @@ describe('websocket', function () {
         expect(raw.close).to.have.been.calledOnce;
     });
 
+    it('times out manually if the socket connection doesn\'t complete in time', function () {
+        socket.on('error', function () {});
+
+        clock.tick(5000);
+
+        expect(raw.close).to.have.been.calledOnce;
+    });
+
     it('reconnects after an interval', function () {
         socket.on('error', function () {});
 

@@ -1,6 +1,6 @@
 {
   "name": "beam-client-node",
-  "version": "0.9.0",
+  "version": "0.9.1-beta.3",
   "description": "Client library for interacting with the beam API.",
   "main": "index.js",
   "typings": "index.d.ts",
