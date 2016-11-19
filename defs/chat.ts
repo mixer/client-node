@@ -5,7 +5,7 @@ export interface ChatPreferences {
     [preference: string]: any;
 }
 
-interface UserAuthenticated {
+export interface UserAuthenticated {
     /**
      * If you are authenticated on the socket.
      */
@@ -16,11 +16,81 @@ interface UserAuthenticated {
     roles: string[];
 }
 
+
+/**
+ * 'meta' object that decorates the user's current message.
+ */
+export interface MessageMeta {
+    // Whether the message was sent as a whisper
+    whisper?: boolean;
+    // Whether the message was a `/me` prefixed message
+    me?: boolean;
+}
+
+/**
+ * Component is contained in a Message packet, used
+ * to display a section of plain text.
+ */
+export interface MessageTextComponent {
+    type: 'text'; // tslint:disable-line
+    text: string;
+}
+
+/**
+ * Used to render an emoticon in the message.
+ */
+export interface MessageEmoticonComponent {
+    type: 'emoticon'; // tslint:disable-line
+    text: string;
+    pack: string;
+    source: 'builtin' | 'subscriber';
+    coords: {
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+    };
+}
+
+/**
+ * An IMessageLinkComponent is used to render a hyperlink in the message.
+ */
+export interface MessageLinkComponent {
+    type: 'link'; // tslint:disable-line
+    text: string;
+    url: string;
+}
+
+/**
+ * An IMessageTagComponent is used to tag another user in chat.
+ */
+export interface MessageTagComponent {
+    type: 'tag'; // tslint:disable-line
+    username: string;
+    text: string;
+    id: number;
+}
+
+export type MessagePart = MessageTextComponent
+    | MessageEmoticonComponent
+    | MessageLinkComponent
+    | MessageTagComponent;
+
+export interface MessagePacketComponents {
+    meta: MessageMeta;
+    message: MessagePart[];
+}
+
+
 export interface ChatMessage {
     /**
      * The Id of the message.
      */
     id: string;
+    /**
+     * The targer of the message.
+     */
+    target?: string;
     /**
      * The channel Id.
      */
@@ -29,6 +99,10 @@ export interface ChatMessage {
      * The user's Id.
      */
     user_id: number;
+    /**
+     * The user's level.
+     */
+    user_level: number;
     /**
      * The user's name.
      */
@@ -40,71 +114,10 @@ export interface ChatMessage {
     /**
      * The message payload.
      */
-    message: {
-        /**
-         * The message parts.
-         */
-        message: MessagePart[];
-        /**
-         * The meta for the message.
-         */
-        meta: {
-            me?: boolean;
-            whisper?: boolean;
-        }
-    };
+    message: MessagePacketComponents;
 }
 
-interface MessagePart {
-    /**
-     * The type of the message part.
-     */
-        type: "text" | "link" | "emoticon" | "tag" | "inaspacesuit";
-    /**
-     * The source of the emote.
-     */
-    source?: "builtin" | "external";
-    /**
-     * The location of the spite.
-     * Note: This would be a URL for partner emotes.
-     */
-    pack?: "default" | string;
-    /**
-     * The location of the emote on the sprite sheet.
-     */
-    coords?: {
-        /**
-         * The x location of the emote on the sprite.
-         */
-        x: number;
-        /**
-         * The y location of the emote on the sprite.
-         */
-        y: number;
-        /**
-         * The height of the emote.
-         */
-        height: number;
-        /**
-         * The width of the emote.
-         */
-        width: number;
-    };
-    /**
-     * The Id of the user name. (Defined when you are handling a "tag" part)
-     */
-    id?: number;
-    /**
-     * The username of the user. (Defined when you are handling a "tag" part)
-     */
-    username?: string;
-    /**
-     * The raw text value of the message part.
-     */
-    text?: string;
-}
-
-interface UserUpdate {
+export interface UserUpdate {
     /**
      * The user's Id.
      */
@@ -123,7 +136,7 @@ interface UserUpdate {
     permissions: string[];
 }
 
-interface PollStart {
+export interface PollStart {
     /**
      * The question being asked.
      */
@@ -142,7 +155,7 @@ interface PollStart {
     endsAt: number;
 }
 
-interface PollEnd {
+export interface PollEnd {
     /**
      * How many users entered the poll.
      */
@@ -155,7 +168,7 @@ interface PollEnd {
     }>;
 }
 
-interface UserConnection {
+export interface UserConnection {
     /**
      * The user's Id.
      */
@@ -170,21 +183,21 @@ interface UserConnection {
     roles: string[];
 }
 
-interface DeleteMessage {
+export interface DeleteMessage {
     /**
      * The message Id.
      */
     id: string;
 }
 
-interface PurgeMessage {
+export interface PurgeMessage {
     /**
      * The user's Id.
      */
     user_id: number;
 }
 
-interface UserTimeout {
+export interface UserTimeout {
     user: {
         /**
          * The user's Id.
