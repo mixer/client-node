@@ -1,8 +1,13 @@
 /test
-.travis.yml
+/.travis.yml
 .eslintrc
-.babelrc
 .editorconfig
 
 *.sublime-project
 *.sublime-workspace
+
+/typings.json
+/tsconfig.json
+/.vscode
+/example
+/CHANGELOG.MD
