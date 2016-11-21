@@ -127,11 +127,12 @@ declare class BeamSocket extends EventEmitter {
     call(method: string, args: (string|number)[], options?: CallOptions): Promise<any>;
     call(method: "auth", args: [number], options?: CallOptions): Promise<Chat.UserAuthenticated>;
     call(method: "auth", args: [number, number, string], options?: CallOptions): Promise<Chat.UserAuthenticated>;
-    call(method: "msg", args: [string], options?: CallOptions): Promise<any> | Promise<Chat.ChatMessage>;
+    call(method: "msg", args: [string], options?: CallOptions): Promise<Chat.ChatMessage>;
     call(method: "whisper", args: [string, string], options?: CallOptions): Promise<any>;
     call(method: "history", args: [number], options?: CallOptions): Promise<Chat.ChatMessage[]>;
     call(method: "timeout", args: [string, string], options?: CallOptions): Promise<string>;
     call(method: "ping", args: [any]): Promise<any>;
+    call(method: "vote:start", args: [string, string[], number]): Promise<void>;
 
     /**
      * Pings the server to check if it's still alive.
