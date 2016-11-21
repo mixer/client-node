@@ -1,13 +1,4 @@
-/test
-/.travis.yml
-.eslintrc
-.editorconfig
-
-*.sublime-project
-*.sublime-workspace
-
-/typings.json
-/tsconfig.json
-/.vscode
-/example
-/CHANGELOG.MD
+/*
+!/lib
+!/defs
+!/index.d.ts
