@@ -6,7 +6,7 @@ declare class BeamSocket extends EventEmitter {
     /**
      * Constructor for the class to create the socket handle / connection.
      */
-    constructor(addresses: string[], options?: { pingInterval: number, pingTimeout: number, callTimeout: number });
+    constructor(addresses: string[], options?: { pingInterval?: number, pingTimeout?: number, callTimeout?: number });
 
     /**
      * Which connection we use in our load balancing.
