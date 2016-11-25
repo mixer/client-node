@@ -1,3 +1,5 @@
+1.0.0
+ - Port to typescript.
 
 0.4.0
  - **API/Breaking**: prefix 'private' members with an underscore
