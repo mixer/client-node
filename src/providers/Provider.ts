@@ -1,5 +1,5 @@
 import { Client } from '../Client';
-import { IRequestOptions } from '../request';
+import { IRequestOptions } from '../RequestRunner';
 import http from 'http';
 
 export abstract class Provider {

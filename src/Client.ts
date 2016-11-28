@@ -5,16 +5,17 @@ import { defaultsDeep } from 'lodash';
 
 import {
     DefaultRequestRunner,
+    IOptionalUrlRequestOptions,
     IRequestOptions,
     IRequestRunner,
-} from './request';
+} from './RequestRunner';
 
 import * as querystring from 'querystring';
 
 export class Client {
     private provider: Provider;
     private userAgent: string;
-    private urls = {
+    public urls = {
         api: 'https://beam.pro/api/v1',
         public: 'https://beam.pro',
     };
@@ -47,7 +48,7 @@ export class Client {
     /**
      * Builds a path to the Beam API by concating it with the address.
      */
-    private buildAddress (base: string, path: string, querystr?: (string | Object)): string {
+    public buildAddress (base: string, path: string, querystr?: (string | Object)): string {
         let url = base;
 
         // Strip any trailing slash from the base
@@ -88,8 +89,8 @@ export class Client {
     /**
      * Attempts to run a given request.
      */
-    public request (method: string, path: string, data?: IRequestOptions): Promise<http.IncomingMessage> {
-        const req = defaultsDeep<IRequestOptions, IRequestOptions>(
+    public request (method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<http.IncomingMessage> {
+        const req = defaultsDeep<IOptionalUrlRequestOptions, IRequestOptions>(
             data,
             {
                 method: method,

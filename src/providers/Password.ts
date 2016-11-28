@@ -1,6 +1,6 @@
 import { Client } from '../Client';
 import { AuthenticationFailedError } from '../errors';
-import { DefaultRequestRunner, IRequestOptions, IRequestRunner } from '../request';
+import { DefaultRequestRunner, IRequestOptions, IRequestRunner } from '../RequestRunner';
 import { Provider } from './Provider';
 import http from 'http';
 
@@ -32,9 +32,8 @@ export class PasswordProvider extends Provider {
     /**
      * Attempts to authenticate with the given details. Resolves
      * with user information if correct.
-     * @return {Promise}
      */
-    public attempt () {
+    public attempt (): Promise<void> {
         return this.requestRunner.run({
             method: 'post',
             url: '/users/login',

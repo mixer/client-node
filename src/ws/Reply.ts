@@ -1,23 +1,24 @@
-/**
- * Simple wrapper that waits for a dispatches a method reply.
- * @param {Function} resolve
- * @param {Function} reject
- */
-function Reply (resolve, reject) {
-    this.resolve = resolve;
-    this.reject = reject;
+export interface IPacket {
+    error: string;
+    data: any;
 }
 
 /**
- * Handles "reply" packet data from the websocket.
- * @param  {Object} packet
+ * Simple wrapper that waits for a dispatches a method reply.
  */
-Reply.prototype.handle = function (packet) {
-    if (packet.error) {
-        this.reject(packet.error);
-    } else {
-        this.resolve(packet.data);
+export class Reply {
+    constructor (private resolve: (value: any) => void, private reject: (value: any) => void) {}
+
+    /**
+     * Handles "reply" packet data from the websocket.
+     */
+    public handle (packet: IPacket) {
+        if (packet.error) {
+            this.reject(packet.error);
+        } else {
+            this.resolve(packet.data);
+        }
     }
-};
+}
 
 module.exports = Reply;
