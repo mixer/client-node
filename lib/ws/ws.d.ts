@@ -147,7 +147,7 @@ declare class BeamSocket extends EventEmitter {
     /**
      * Define the "on" methods this socket will emit.
      */
-    on(event: string, cb: () => any): this;
+    on(event: "reconnecting", cb: (data: { interval: number }) => any): this;
     on(event: "connected", cb: () => any): this;
     on(event: "closed", cb: () => any): this;
     on(event: "error", cb: (err: Error) => any): this;
@@ -163,6 +163,7 @@ declare class BeamSocket extends EventEmitter {
     on(event: "UserLeave", cb: (join: Chat.UserConnection) => any): this;
     on(event: "UserTimeout", cb: (timeout: Chat.UserTimeout) => any): this;
     on(event: "UserUpdate", cb: (update: Chat.UserUpdate) => any): this;
+    on(event: string, cb: (update: any) => any): this;
 }
 
 interface TimeoutError extends Error {
