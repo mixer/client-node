@@ -89,7 +89,9 @@ describe('websocket', function () {
     });
 
     it('reconnects after an interval', function () {
+        var reconnectStub = sinon.stub();
         socket.on('error', function () {});
+        socket.on('reconnecting', reconnectStub);
 
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
         expect(factoryStub.callCount).to.equal(1);
@@ -98,6 +100,7 @@ describe('websocket', function () {
         raw.emit('error');
         raw.emit('close');
         expect(raw.close.callCount).to.equal(1);
+        expect(reconnectStub).to.have.been.calledWith({ interval: 500 });
 
         // initially tries to reconnect after 500ms
         clock.tick(499);
