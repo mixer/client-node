@@ -156,8 +156,8 @@ declare class BeamSocket extends EventEmitter {
     on(event: "ChatMessage", cb: (message: Chat.ChatMessage) => any): this;
     on(event: "ClearMessages", cb: () => any): this;
     on(event: "DeleteMessage", cb: (message: Chat.DeleteMessage) => any): this;
-    on(event: "PollStart", cb: (poll: Chat.PollStart) => any): this;
-    on(event: "PollEnd", cb: (poll: Chat.PollEnd) => any): this;
+    on(event: "PollStart", cb: (poll: Chat.PollEvent) => any): this;
+    on(event: "PollEnd", cb: (poll: Chat.PollEvent) => any): this;
     on(event: "PurgeMessage", cb: (purge: Chat.PurgeMessage) => any): this;
     on(event: "UserJoin", cb: (join: Chat.UserConnection) => any): this;
     on(event: "UserLeave", cb: (join: Chat.UserConnection) => any): this;

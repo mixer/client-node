@@ -136,7 +136,8 @@ export interface UserUpdate {
     permissions: string[];
 }
 
-export interface PollStart {
+export interface PollEvent {
+
     /**
      * The question being asked.
      */
@@ -153,19 +154,36 @@ export interface PollStart {
      * The ISO time for when the poll ends.
      */
     endsAt: number;
-}
 
-export interface PollEnd {
     /**
      * How many users entered the poll.
      */
     voters: number;
+
     /**
      * The responses for the poll.
      */
     responses: Array<{
         [answer: string]: number;
     }>;
+
+    /**
+     * User who created the poll.
+     */
+    author: {
+        /**
+         * The user's Id.
+         */
+        user_id: number;
+        /**
+         * The user's name.
+         */
+        user_name: string;
+        /**
+         * The roles the user has.
+         */
+        user_roles: string[];
+    }
 }
 
 export interface UserConnection {
