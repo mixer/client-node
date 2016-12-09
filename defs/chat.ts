@@ -168,6 +168,12 @@ export interface PollEvent {
     }>;
 
     /**
+     * The responses for the poll, as a list, where the index matches the
+     * answer it corresponds to in the `answers` array.
+     */
+    responsesByIndex: number[];
+
+    /**
      * User who created the poll.
      */
     author: {
