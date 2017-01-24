@@ -50,6 +50,9 @@ export interface MessageEmoticonComponent {
         width: number,
         height: number,
     };
+    alt: {
+        [language: string]: string,
+    };
 }
 
 /**
