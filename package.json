@@ -19,7 +19,7 @@
     "client",
     "api",
     "library",
-    "oath"
+    "oauth"
   ],
   "author": "Connor Peet <connor@peet.io>",
   "license": "MIT",
