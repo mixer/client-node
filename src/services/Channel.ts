@@ -1,4 +1,4 @@
-var Service = require('./service');
+import { Service } from './Service';
 var util = require('util');
 
 /**
@@ -61,39 +61,34 @@ var util = require('util');
  * @access public
  * @augments {Service}
  */
-function ChannelService () {
-    Service.apply(this, arguments);
+export class ChannelService extends Service {
+
+    /**
+     * Retrieves a list of all channels.
+     * @param  {Object} data
+     * @param  {Object} data.page The page of results to get.
+     * @param  {Object} data.limit Number of results per page to retrieve.
+     * @return {Promise.<Channel[]>}
+     */
+    public all (data) {
+        return this.makeHandled('get', 'channels', data);
+    }
+
+    /**
+     * Retrieves channel data for channel specified by channel
+     * @param {number|string} channel Channel name or id
+     * @return {Promise.<Channel>}
+     */
+    public getChannel (channel) {
+        return this.makeHandled('get', 'channels/' + channel);
+    }
+
+    /**
+     * Retrieves preferences for a channel specified by channelId
+     * @param {number} channelId
+     * @return {Promise.<Channel.Preferences>}
+     */
+    public getPreferences (channelId) {
+        return this.makeHandled('get', 'channels/' + channelId + '/preferences');
+    }
 }
-
-util.inherits(ChannelService, Service);
-
-/**
- * Retrieves a list of all channels.
- * @param  {Object} data
- * @param  {Object} data.page The page of results to get.
- * @param  {Object} data.limit Number of results per page to retrieve.
- * @return {Promise.<Channel[]>}
- */
-ChannelService.prototype.all = function (data) {
-    return this.makeHandled('get', 'channels', data);
-};
-
-/**
- * Retrieves channel data for channel specified by channel
- * @param {number|string} channel Channel name or id
- * @return {Promise.<Channel>}
- */
-ChannelService.prototype.getChannel = function (channel) {
-    return this.makeHandled('get', 'channels/' + channel);
-};
-
-/**
- * Retrieves preferences for a channel specified by channelId
- * @param {number} channelId
- * @return {Promise.<Channel.Preferences>}
- */
-ChannelService.prototype.getPreferences = function (channelId) {
-    return this.makeHandled('get', 'channels/' + channelId + '/preferences');
-};
-
-module.exports = ChannelService;
