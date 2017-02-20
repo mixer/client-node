@@ -71,7 +71,9 @@ function timeout (delay) {
  *     a TimeoutError. This can be overridden in the arguments to .call().
  */
 export class BeamSocket extends EventEmitter {
-    constructor (addresses, options) {
+    static Promise: typeof Promise;
+
+    constructor (addresses: string[], options) {
         super();
 
         options = _.assign({
@@ -130,7 +132,7 @@ export class BeamSocket extends EventEmitter {
      */
     public getStatus () {
         return this.status;
-    };
+    }
 
     /**
      * Returns whether the socket is currently connected.
@@ -138,7 +140,7 @@ export class BeamSocket extends EventEmitter {
      */
     public isConnected () {
         return this.status === BeamSocket.CONNECTED;
-    };
+    }
 
     /**
      * Retrieves a chat endpoint to connect to. We use round-robin balancing.
@@ -151,7 +153,7 @@ export class BeamSocket extends EventEmitter {
         }
 
         return this._addresses[this._addressOffset];
-    };
+    }
 
     /**
      * Returns how long to wait before attempting to reconnect. This does TCP-style
@@ -159,9 +161,9 @@ export class BeamSocket extends EventEmitter {
      * @return {Number}
      */
     public _getNextReconnectInterval () {
-        var power = (this._retries++ % this._retryWrap) + Math.round(Math.random());
+        const power = (this._retries++ % this._retryWrap) + Math.round(Math.random());
         return (1 << power) * 500;
-    };
+    }
 
     /**
      * _handleClose is called when the websocket closes or emits an error. If
@@ -185,7 +187,7 @@ export class BeamSocket extends EventEmitter {
             this.boot.bind(this),
             this._getNextReconnectInterval()
         );
-    };
+    }
 
     /**
      * Sets the socket to send a ping message after an interval. This is
@@ -197,10 +199,10 @@ export class BeamSocket extends EventEmitter {
         clearTimeout(this._pingTimeoutHandle);
 
         var self = this;
-        this._pingTimeoutHandle = setTimeout(function () {
-            self.ping().catch(function () {});
+        this._pingTimeoutHandle = setTimeout(() => {
+            self.ping().catch(() => {});
         }, this._pingInterval);
-    };
+    }
 
     /**
      * Resets the connection timeout handle. This will run the handler
@@ -223,9 +225,7 @@ export class BeamSocket extends EventEmitter {
         clearTimeout(this._pingTimeoutHandle);
 
         if (!this.isConnected()) {
-            return new BeamSocket.Promise(function (resolve, reject) {
-                reject(new TimeoutError());
-            });
+            return BeamSocket.Promise.reject(new TimeoutError());
         }
 
         var promise;
@@ -235,7 +235,7 @@ export class BeamSocket extends EventEmitter {
             // sending a message. More lightweight, less noisy.
             promise = race([
                 timeout(this._pingTimeout),
-                new BeamSocket.Promise(function (resolve) {
+                new BeamSocket.Promise(resolve => {
                     ws.once('pong', resolve);
                 }),
             ]);
@@ -247,7 +247,7 @@ export class BeamSocket extends EventEmitter {
 
         return promise
         .then(this._resetPingTimeout.bind(this))
-        .catch(function (err) {
+        .catch(err => {
             if (!(err instanceof TimeoutError)) {
                 throw err;
             }
@@ -284,30 +284,30 @@ export class BeamSocket extends EventEmitter {
         // Websocket connection has been established.
         ws.on('open', function () {
             // If we don't get a WelcomeEvent, kill the connection
-            self._resetConnectionTimeout(function () {
+            self._resetConnectionTimeout(() => {
                 ws.close();
             });
         });
 
         // Chat server has acknowledged our connection
-        this.once('WelcomeEvent', function () {
+        this.once('WelcomeEvent', () => {
             self._resetPingTimeout();
             self.unspool.apply(self, arguments);
         });
 
         // We got an incoming data packet.
-        ws.on('message', function () {
+        ws.on('message', () => {
             self._resetPingTimeout();
             self.parsePacket.apply(self, arguments);
         });
 
         // Websocket connection closed
-        ws.on('close', function () {
+        ws.on('close', () => {
             self._handleClose.apply(self, arguments);
         });
 
         // Websocket hit an error and is about to close.
-        ws.on('error', function (err) {
+        ws.on('error', err => {
             self.emit('error', err);
             ws.close();
         });
@@ -353,7 +353,7 @@ export class BeamSocket extends EventEmitter {
                 self.emit('authresult', result);
             })
             .then(bang)
-            .catch(function () {
+            .catch(() => {
                 self.emit('error', new errors.AuthenticationFailedError());
                 self.close();
             });
@@ -431,7 +431,7 @@ export class BeamSocket extends EventEmitter {
             this.emit('sent', data);
             return BeamSocket.Promise.resolve();
         } else if (data.method !== authMethod) {
-            return new BeamSocket.Promise(function (resolve) {
+            return new BeamSocket.Promise(resolve => {
                 self._spool.push({ data: data, resolve: resolve });
                 self.emit('spooled', data);
             });
@@ -460,7 +460,7 @@ export class BeamSocket extends EventEmitter {
         }
 
         var self = this;
-        return new BeamSocket.Promise(function (resolve) {
+        return new BeamSocket.Promise(resolve => {
             self.once('authresult', resolve);
         });
     };
@@ -501,7 +501,7 @@ export class BeamSocket extends EventEmitter {
             arguments: args,
             id: id,
         }, options)
-        .then(function () {
+        .then(() => {
             // Then create and return a promise that's resolved when we get
             // a reply, if we expect one to be given.
             if (options.noReply) {
@@ -513,7 +513,7 @@ export class BeamSocket extends EventEmitter {
                 replyPromise,
             ]);
         })
-        .catch(function (err) {
+        .catch(err => {
             if (err instanceof TimeoutError) {
                 delete self._replies[id];
             }
@@ -534,7 +534,7 @@ export class BeamSocket extends EventEmitter {
             this.status = BeamSocket.CLOSED;
         }
     };
-
+}
 /**
  * Promise class to use for various operations on the socket. The only
  * requirement is that this be an A+ promise implementation. By default
