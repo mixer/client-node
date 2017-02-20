@@ -16,42 +16,14 @@ function TimeoutError () { Error.call(this); }
 TimeoutError.prototype = Object.create(Error.prototype);
 
 /**
- * race takes an array of promises and is resolved with the first promise
- * that resolves, or rejects. After the first resolve or rejection, all
- * future resolutions and rejections will be discarded.
- * @param {Promise[]} promises
- * @return {Promise}
- */
-function race (promises) {
-    return new BeamSocket.Promise(function (_resolve, _reject) {
-        var done = false;
-        function guard (fn) {
-            return function () {
-                if (!done) {
-                    done = true;
-                    fn.apply(null, arguments);
-                }
-            };
-        }
-
-        var resolve = guard(_resolve);
-        var reject = guard(_reject);
-
-        for (var i = 0; i < promises.length; i++) {
-            promises[i].then(resolve).catch(reject);
-        }
-    });
-}
-
-/**
  * Return a promise which is rejected with a TimeoutError after the
  * provided delay.
  * @param  {Number} delay
  * @return {Promise}
  */
-function timeout (delay) {
-    return new BeamSocket.Promise(function (resolve, reject) {
-        setTimeout(function () {
+function timeout (delay: number) {
+    return new BeamSocket.Promise((resolve, reject) => {
+        setTimeout(() => {
             reject(new TimeoutError());
         }, delay);
     });
@@ -233,7 +205,7 @@ export class BeamSocket extends EventEmitter {
         if (typeof ws.ping === 'function') {
             // Node's ws module has a ping function we can use rather than
             // sending a message. More lightweight, less noisy.
-            promise = race([
+            promise = BeamSocket.Promise.race([
                 timeout(this._pingTimeout),
                 new BeamSocket.Promise(resolve => {
                     ws.once('pong', resolve);
@@ -272,38 +244,37 @@ export class BeamSocket extends EventEmitter {
      * @fires BeamSocket#error
      */
     public boot () {
-        var self = this;
         var ws = this.ws = factory.create(this.getAddress());
         this.status = BeamSocket.CONNECTING;
 
         // If the connection doesn't open fast enough
-        this._resetConnectionTimeout(function () {
+        this._resetConnectionTimeout(() => {
             ws.close();
         });
 
         // Websocket connection has been established.
-        ws.on('open', function () {
+        ws.on('open', () => {
             // If we don't get a WelcomeEvent, kill the connection
-            self._resetConnectionTimeout(() => {
+            this._resetConnectionTimeout(() => {
                 ws.close();
             });
         });
 
         // Chat server has acknowledged our connection
         this.once('WelcomeEvent', () => {
-            self._resetPingTimeout();
-            self.unspool.apply(self, arguments);
+            this._resetPingTimeout();
+            this.unspool.apply(this, arguments);
         });
 
         // We got an incoming data packet.
         ws.on('message', () => {
-            self._resetPingTimeout();
-            self.parsePacket.apply(self, arguments);
+            this._resetPingTimeout();
+            this.parsePacket.apply(this, arguments);
         });
 
         // Websocket connection closed
         ws.on('close', () => {
-            self._handleClose.apply(self, arguments);
+            this._handleClose.apply(this, arguments);
         });
 
         // Websocket hit an error and is about to close.
@@ -324,38 +295,33 @@ export class BeamSocket extends EventEmitter {
      * @access protected
      */
     public unspool () {
-        var self = this;
-
         // Helper function that's called when we're fully reestablished and
         // ready to take direct calls again.
-        function bang () {
+        const bang = () => {
             // Send any spooled events that we have.
-            for (var i = 0; i < self._spool.length; i++) {
-                self.send(self._spool[i].data, { force: true });
-                self._spool[i].resolve();
+            for (var i = 0; i < this._spool.length; i++) {
+                this.send(self._spool[i].data, { force: true });
+                this._spool[i].resolve();
             }
-            self._spool = [];
+            this._spool = [];
 
             // Finally, tell the world we're connected.
-            self._retries = 0;
-            self.status = BeamSocket.CONNECTED;
-            self.emit('connected');
-
-            // Clean up for gc
-            self = null;
+            this._retries = 0;
+            this.status = BeamSocket.CONNECTED;
+            this.emit('connected');
         }
 
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
         if (this._authpacket) {
             this.call(authMethod, this._authpacket, { force: true })
-            .then(function (result) {
-                self.emit('authresult', result);
+            .then(result => {
+                this.emit('authresult', result);
             })
             .then(bang)
             .catch(() => {
-                self.emit('error', new errors.AuthenticationFailedError());
-                self.close();
+                this.emit('error', new errors.AuthenticationFailedError());
+                this.close();
             });
         } else {
             // Otherwise, we can reestablish immediately
@@ -487,12 +453,11 @@ export class BeamSocket extends EventEmitter {
 
         // Send out the data
         var id = this._callNo++;
-        var self = this;
 
         // This is created before we call and wait on .send purely for ease
         // of use in tests, so that we can mock an incoming packet synchronously.
-        var replyPromise = new BeamSocket.Promise(function (resolve, reject) {
-            self._replies[id] = new Reply(resolve, reject);
+        var replyPromise = new BeamSocket.Promise((resolve, reject) => {
+            this._replies[id] = new Reply(resolve, reject);
         });
 
         return this.send({
@@ -505,7 +470,7 @@ export class BeamSocket extends EventEmitter {
             // Then create and return a promise that's resolved when we get
             // a reply, if we expect one to be given.
             if (options.noReply) {
-                return BeamSocket.Promise.resolve();
+                return;
             }
 
             return race([
@@ -560,7 +525,7 @@ try { BeamSocket.Promise = require('bluebird'); } catch (e) { /* ignore */ }
     'CLOSED',
     /** We're currently trying to connect */
     'CONNECTING',
-].forEach(function (status, i) {
+].forEach((status, i) => {
     BeamSocket[status] = i;
 });
 

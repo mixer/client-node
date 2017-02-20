@@ -4,15 +4,15 @@ var Client = require('../../lib/client');
 require('chai').use(require('chai-subset'));
 require('chai').use(require('sinon-chai'));
 
-beforeEach(function () {
+beforeEach(() => {
     this.client = new Client();
     this.response = {};
-    request.run = (function (data, callback) {
+    request.run = (data, callback) => {
         this.request = data;
         callback(null, this.response);
-    }).bind(this);
+    };
 });
 
-afterEach(function () {
+afterEach(() => {
     request.restore();
 });

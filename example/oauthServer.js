@@ -33,7 +33,7 @@ function getRedirectUri () {
  * Users going to the index page are redirected to the main
  * Beam site to give authorization for you to connect to chat.
  */
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     var url = getClient().getProvider().getRedirect(
             getRedirectUri(), ['chat:connect']);
 
@@ -44,16 +44,17 @@ app.get('/', function (req, res) {
  * They come back to the `/returned` endpoint. Auth them, then
  * you can do whatever you'd like.
  */
-app.get('/returned', function (req, res) {
+app.get('/returned', (req, res) => {
     var client = getClient();
     var oauth = client.getProvider();
 
-    oauth.attempt(getRedirectUri(), req.query).then(function () {
+    oauth.attempt(getRedirectUri(), req.query)
+    .then(() => new ChatService(client).join(1))
         // you're authenticated!
-        return new ChatService(client).join(1).then(function (result) {
-            res.send(JSON.stringify(result));
-        });
-    }).catch(function (err) {
+    .then(result => {
+        res.send(JSON.stringify(result));
+    })
+    .catch(err => {
         console.log('error authenticating:', err);
     });
 });

@@ -1,31 +1,31 @@
 var expect = require('chai').expect;
 var errors = require('../../lib/errors');
 
-describe('services', function () {
+describe('services', () =>{
     var Service = require('../../lib/services/service');
     var service;
 
-    beforeEach(function () {
+    beforeEach(() => {
         service = new Service();
     });
 
-    it('handles a successful response', function () {
+    it('handles a successful response', () => {
         var res = { statusCode: 200, body: 'foo' };
         expect(service.handleResponse(res, {})).to.deep.equal({ statusCode: 200, body: 'foo' });
     });
 
-    it('handles a response given a handler', function () {
+    it('handles a response given a handler', () => {
         var res = { statusCode: 401, body: '"foo"' };
-        expect(function () {
+        expect(() => {
             service.handleResponse(res, {
                 401: errors.NotAuthenticatedError,
             });
         }).to.throw(errors.NotAuthenticatedError);
     });
 
-    it('handles a response that has no handler', function () {
+    it('handles a response that has no handler', () => {
         var res = { statusCode: 500, body: '"foo"' };
-        expect(function () {
+        expect(() => {
             service.handleResponse(res, {
                 401: errors.NotAuthenticatedError,
             });

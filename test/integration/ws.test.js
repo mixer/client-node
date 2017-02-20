@@ -1,6 +1,6 @@
 var expect = require('chai').expect;
 
-describe('websocket', function () {
+describe('websocket', () => {
     var BeamSocket = require('../../lib/ws');
     var Client = require('../../');
     var Password = require('../../lib/providers/password');
@@ -8,27 +8,26 @@ describe('websocket', function () {
     var socket;
     var body;
 
-    beforeEach(function (done) {
+    beforeEach(() => {
         var client = new Client();
         client.setUrl('http://localhost:1337/api/v1');
-        client.auth(new Password('Sibyl53', 'password')).then(function () {
-            return client.use(ChatService).join(2);
-        }).then(function (res) {
+        return client.auth(new Password('Sibyl53', 'password'))
+        .then(() => client.use(ChatService).join(2))
+        .then(res => {
             socket = new BeamSocket(res.body.endpoints);
             body = res.body;
             socket.boot();
-            done();
-        }).catch(done);
+        })
     });
 
-    afterEach(function () {
+    afterEach(() => {
         socket.close();
     });
 
-    it('authenticates with chat', function (done) {
-        socket.call('auth', [2, 2, body.authkey]).then(function (data) {
+    it('authenticates with chat', () => {
+        return socket.call('auth', [2, 2, body.authkey])
+        .then(data => {
             expect(data).to.deep.equal({ authenticated: true, role: 'Owner' });
-            done();
-        }).catch(done);
+        });
     });
 });

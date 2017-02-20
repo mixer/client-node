@@ -4,8 +4,8 @@ var request = require('../../lib/request');
 var sinon = require('sinon');
 var expect = require('chai').expect;
 
-describe('providers', function () {
-    describe('password', function () {
+describe('providers', () =>{
+    describe('password', () =>{
         var Provider = require('../../lib/providers/password');
         var provider;
         var csrfToken = 'abc123';
@@ -28,7 +28,7 @@ describe('providers', function () {
         invalidCSRFResponse.headers[Provider.CSRF_TOKEN_LOCATION] = 'new token';
 
 
-        beforeEach(function () {
+        beforeEach(() =>{
             provider = new Provider(this.client, {
                 username: 'foo',
                 password: 'bar',
@@ -36,12 +36,12 @@ describe('providers', function () {
             });
         });
 
-        it('successfully attempts', function () {
+        it('successfully attempts', () =>{
             var stub = sinon.stub(this.client, 'request')
             .returns(Bluebird.resolve(okResponse));
 
             return provider.attempt()
-            .then(function () {
+            .then(() =>{
                 expect(stub.calledWith('post', '/users/login', {
                     username: 'foo',
                     password: 'bar',
@@ -51,43 +51,43 @@ describe('providers', function () {
             });
         });
 
-        it('fails attempts', function () {
+        it('fails attempts', () =>{
             return provider.attempt()
-            .catch(function (err) {
+            .catch(err => {
                 expect(err).to.be.an.instanceOf(errors.AuthenticationFailedError);
             });
         });
 
-        it('uses the cookie jar in requests. mm, cookies', function () {
+        it('uses the cookie jar in requests. mm, cookies', () =>{
             expect(provider.getRequest().jar).to.be.a('object');
         });
 
-        it('includes the csrf token in requests. mm, tokens', function () {
+        it('includes the csrf token in requests. mm, tokens', () =>{
             expect(provider.getRequest().headers).to.include.keys(Provider.CSRF_TOKEN_LOCATION);
         });
 
-        it('updates a csrf token on a 461 response code and then retries the request', function () {
+        it('updates a csrf token on a 461 response code and then retries the request', () =>{
             this.client.provider = provider;
-            request.run = function (req, cb) {
+            request.run = () =>req, cb) {
                 if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
                     cb(invalidCSRFResponse);
                 } else {
                     cb(null, okResponse);
                 }
             };
-            return this.client.request('get', '/users/current').then(function (res) {
+            return this.client.request('get', '/users/current').then(res => {
                 expect(res.statusCode).to.equal(200);
                 expect(provider.csrfToken).to.equal('new token');
             });
         });
     });
 
-    describe('oauth', function () {
+    describe('oauth', () =>{
         var Provider = require('../../lib/providers/oauth');
         var provider;
         var redir = 'http://localhost';
 
-        beforeEach(function () {
+        beforeEach(() =>{
             provider = new Provider(this.client, {
                 clientId: 'eye-dee',
                 secret: 'seekrit',
@@ -96,11 +96,11 @@ describe('providers', function () {
             this.clock = sinon.useFakeTimers();
         });
 
-        afterEach(function () {
+        afterEach(() =>{
             this.clock.restore();
         });
 
-        it('has a correct initial state', function () {
+        it('has a correct initial state', () =>{
             expect(provider.isAuthenticated()).to.be.false;
             expect(provider.accessToken()).to.be.undefined;
             expect(provider.refreshToken()).to.be.undefined;
@@ -108,30 +108,30 @@ describe('providers', function () {
             expect(provider.getRequest()).to.deep.equal({});
         });
 
-        it('generates an authorization url', function () {
+        it('generates an authorization url', () =>{
             expect(provider.getRedirect(redir, ['foo', 'bar']))
             .to.equal('https://beam.pro/oauth/authorize?redirect_uri=' +
                           'http%3A%2F%2Flocalhost&response_type=code&scope=foo%20bar' +
                           '&client_id=eye-dee');
         });
 
-        it('denies when error in query string', function () {
+        it('denies when error in query string', () =>{
             return provider.attempt(redir, { error: 'invalid_grant' })
             .bind(this)
-            .catch(errors.AuthenticationFailedError, function () {
+            .catch(errors.AuthenticationFailedError, () =>{
                 expect(this.client.request.called).to.be.false;
             });
         });
 
-        it('denies when no code in query string', function () {
+        it('denies when no code in query string', () =>{
             return provider.attempt(redir, { error: 'invalid_grant' })
             .bind(this)
-            .catch(errors.AuthenticationFailedError, function () {
+            .catch(errors.AuthenticationFailedError, () =>{
                 expect(this.client.request.called).to.be.false;
             });
         });
 
-        it('denies when error from API', function () {
+        it('denies when error from API', () =>{
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 400,
                 body: { error: 'invalid_grant' },
@@ -139,7 +139,7 @@ describe('providers', function () {
 
             return provider.attempt(redir, { code: 'asdf' })
             .bind(this)
-            .catch(errors.AuthenticationFailedError, function () {
+            .catch(errors.AuthenticationFailedError, () =>{
                 sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
                     form: {
                         grant_type: 'authorization_code',
@@ -152,13 +152,13 @@ describe('providers', function () {
             });
         });
 
-        it('allows when all good', function () {
+        it('allows when all good', () =>{
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 200,
                 body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
             }));
 
-            return provider.attempt(redir, { code: 'asdf' }).then(function () {
+            return provider.attempt(redir, { code: 'asdf' }).then(() =>{
                 expect(provider.isAuthenticated()).to.be.true;
                 expect(provider.accessToken()).to.equal('access');
                 expect(provider.refreshToken()).to.equal('refresh');
@@ -169,7 +169,7 @@ describe('providers', function () {
             });
         });
 
-        it('expires after a time', function () {
+        it('expires after a time', () =>{
             provider.tokens = {
                 access: 'access',
                 refresh: 'refresh',
@@ -180,7 +180,7 @@ describe('providers', function () {
             expect(provider.isAuthenticated()).to.be.false;
         });
 
-        it('restores from tokens', function () {
+        it('restores from tokens', () =>{
             provider = new Provider(this.client, {
                 clientId: 'eye-dee',
                 tokens: {
@@ -192,7 +192,7 @@ describe('providers', function () {
             expect(provider.isAuthenticated()).to.be.true;
         });
 
-        it('refreshes correctly', function () {
+        it('refreshes correctly', () =>{
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 200,
                 body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
@@ -201,7 +201,7 @@ describe('providers', function () {
             provider.tokens = { access: 'old', refresh: 'oldRefresh', expires: new Date() };
 
             return provider.refresh()
-            .then(function () {
+            .then(() =>{
                 sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
                     form: {
                         grant_type: 'refresh_token',

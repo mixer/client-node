@@ -42,9 +42,8 @@ export class Service {
      * @access protected
      * @return {Promise}
      */
-    public makeHandled (method, path, data, handlers) {
-        return this.client.request(method, path, data).bind(this).then(function (res) {
-            return this.handleResponse(res, handlers);
-        });
+    public makeHandled (method: string, path: string, data, handlers) {
+        return this.client.request(method, path, data)
+        .then(res => this.handleResponse(res, handlers));
     }
 }

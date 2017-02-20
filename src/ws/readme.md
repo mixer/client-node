@@ -17,14 +17,15 @@ var socket = new BeamSocket(data.endpoints).boot();
 // You don't need to wait for the socket to connect before calling methods,
 // we spool them and run them when connected automatically!
 socket.auth(channel.id, user.id, data.authkey)
-    .then(function () {
+    .then(() => {
         console.log('You are now authenticated!');
         return socket.call('msg', ['Hello world!']);
-    }).catch(function (err) {
+    })
+    .catch(err => {
         console.log('Oh no! An error occurred!')
     });
 
-socket.on('ChatMessage', function (data) {
+socket.on('ChatMessage', data => {
     console.log('We got a ChatMessage packet!');
     console.log(data);
 });
