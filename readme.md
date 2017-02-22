@@ -18,6 +18,6 @@ We have tutorials on our [Developer Site](https://dev.beam.pro) to help you get 
 
 
 ## Getting Help
-Chat with us and other developers on out [gitter](https://gitter.im/MCProHosting/beam-dev)
+Chat with us and other developers on our [gitter](https://gitter.im/MCProHosting/beam-dev)
 
 
