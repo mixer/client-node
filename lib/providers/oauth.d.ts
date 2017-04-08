@@ -49,6 +49,11 @@ declare class OAuthProvider extends Provider {
      * Returns the set of tokens. These can be saved and used to reload the provider later using OAuthProvider.fromTokens.
      */
     getTokens(): OAuthTokens;
+    
+    /**
+     * Sets the tokens for the oauth provider.
+     */
+    setTokens(tokens: OAuthTokens): this;
 
     /**
      * Attempts to authenticate based on a query string, gotten from redirecting back from the authorization url (see .getRedirect).
