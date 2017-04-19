@@ -100,7 +100,7 @@ describe('websocket', function () {
         raw.emit('error');
         raw.emit('close');
         expect(raw.close.callCount).to.equal(1);
-        expect(reconnectStub).to.have.been.calledWith({ interval: 500 });
+        expect(reconnectStub).to.have.been.calledWith({ interval: 500, socket: raw });
 
         // initially tries to reconnect after 500ms
         clock.tick(499);
