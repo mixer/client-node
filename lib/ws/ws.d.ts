@@ -147,7 +147,7 @@ declare class BeamSocket extends EventEmitter {
     /**
      * Define the "on" methods this socket will emit.
      */
-    on(event: "reconnecting", cb: (data: { interval: number }) => any): this;
+    on(event: "reconnecting", cb: (data: { interval: number, socket: WebSocket }) => any): this;
     on(event: "connected", cb: () => any): this;
     on(event: "closed", cb: () => any): this;
     on(event: "error", cb: (err: Error) => any): this;
