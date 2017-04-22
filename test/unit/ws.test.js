@@ -14,7 +14,7 @@ describe('websocket', () =>{
 
     // synchronous-ly resolving promise-like object for use in tests
     var resolveSync = {
-        then: () =>fn) { return fn(); },
+        then: () => () => { return fn(); },
     };
 
     beforeEach(() =>{
@@ -88,8 +88,10 @@ describe('websocket', () =>{
         expect(raw.close).to.have.been.calledOnce;
     });
 
-    it('reconnects after an interval', () =>{
+    it('reconnects after an interval', function () {
+        var reconnectStub = sinon.stub();
         socket.on('error', () =>{});
+        socket.on('reconnecting', reconnectStub);
 
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
         expect(factoryStub.callCount).to.equal(1);
@@ -98,6 +100,7 @@ describe('websocket', () =>{
         raw.emit('error');
         raw.emit('close');
         expect(raw.close.callCount).to.equal(1);
+        expect(reconnectStub).to.have.been.calledWith({ interval: 500, socket: raw });
 
         // initially tries to reconnect after 500ms
         clock.tick(499);

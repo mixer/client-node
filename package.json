@@ -1,6 +1,6 @@
 {
   "name": "beam-client-node",
-  "version": "0.10.1",
+  "version": "0.13.0",
   "description": "Client library for interacting with the beam API.",
   "main": "dist/index.js",
   "typings": "dist/index",
@@ -19,7 +19,7 @@
     "client",
     "api",
     "library",
-    "oath"
+    "oauth"
   ],
   "author": "Beam/Microsoft <contact@beam.pro>",
   "license": "MIT",
