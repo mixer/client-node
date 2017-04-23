@@ -54,7 +54,7 @@ describe('beam client', function() {
     });
 
     it('creates and uses a provider', function() {
-        const { PasswordProvider } = require('../../src/providers/Password.ts');
+        const { PasswordProvider } = require('../..');
         const provider = new PasswordProvider(this.client, { username: 'connor', password: 'password' })
         this.client.use(provider);
         expect(this.client.getProvider()).to.equal(provider);

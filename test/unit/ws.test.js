@@ -5,8 +5,13 @@ const sinon = require('sinon');
 const { EventEmitter } = require('events');
 
 describe('websocket', () =>{
-    const { BeamSocket } = require('../../src/ws/BeamSocket');
-    const errors = require('../../src/errors');
+    const {
+        AuthenticationFailedError,
+        BeamSocket,
+        BadMessageError,
+        TimeoutError,
+        NoMethodHandlerError,
+    } = require('../..');
     let socket;
     let raw;
     let factoryStub;
@@ -206,7 +211,7 @@ describe('websocket', () =>{
 
         it('fails to parse binary', done => {
             socket.on('error', err => {
-                expect(err).to.be.an.instanceof(errors.BadMessageError);
+                expect(err).to.be.an.instanceof(BadMessageError);
                 done();
             });
             socket.parsePacket(evPacket, { binary: true });
@@ -214,7 +219,7 @@ describe('websocket', () =>{
 
         it('fails to parse invalid json', done => {
             socket.on('error', err => {
-                expect(err).to.be.an.instanceof(errors.BadMessageError);
+                expect(err).to.be.an.instanceof(BadMessageError);
                 done();
             });
             socket.parsePacket('lel', { binary: false });
@@ -222,7 +227,7 @@ describe('websocket', () =>{
 
         it('fails to parse bad type', done => {
             socket.on('error', err => {
-                expect(err).to.be.an.instanceof(errors.BadMessageError);
+                expect(err).to.be.an.instanceof(BadMessageError);
                 done();
             });
             socket.parsePacket('{"type":"silly"}', { binary: false });
@@ -239,7 +244,7 @@ describe('websocket', () =>{
 
         it('throws error on replies with no handler', done => {
             socket.on('error', err => {
-                expect(err).to.be.an.instanceof(errors.NoMethodHandlerError);
+                expect(err).to.be.an.instanceof(NoMethodHandlerError);
                 done();
             });
             socket.parsePacket(authPacket, { binary: false });
@@ -290,7 +295,7 @@ describe('websocket', () =>{
         it('tries to auth rejects unsuccessful', done => {
             const stub = sinon.stub(socket, 'call').rejects();
             socket.on('error', err => {
-                expect(err).to.be.an.instanceof(errors.AuthenticationFailedError);
+                expect(err).to.be.an.instanceof(AuthenticationFailedError);
                 done();
                 stub.restore();
             });
@@ -384,7 +389,7 @@ describe('websocket', () =>{
 
         it('quietly removes the reply after a timeout', done => {
             socket.call('foo', [1, 2, 3]).catch(err => {
-                expect(err).to.be.an.instanceof(errors.TimeoutError);
+                expect(err).to.be.an.instanceof(TimeoutError);
                 expect(socket._replies[0]).not.to.be.defined;
                 done();
             });
@@ -434,7 +439,7 @@ describe('websocket', () =>{
 
             it('should error if no pong is received', done => {
                 socket.on('error', err => {
-                    expect(err).to.be.an.instanceof(errors.TimeoutError);
+                    expect(err).to.be.an.instanceof(TimeoutError);
                     done();
                 });
 
@@ -480,7 +485,7 @@ describe('websocket', () =>{
 
             it('should error if no pong is received', done => {
                 socket.on('error', err => {
-                    expect(err).to.be.an.instanceof(errors.TimeoutError);
+                    expect(err).to.be.an.instanceof(TimeoutError);
                     done();
                 });
 

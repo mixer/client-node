@@ -1,10 +1,9 @@
-const errors = require('../../src/errors');
 const sinon = require('sinon');
 const { expect } = require('chai');
 
 describe('providers', function () {
+    const { PasswordProvider, AuthenticationFailedError } = require('../..');
     describe('password', function () {
-        const { PasswordProvider } = require('../../src/providers/password');
         let provider;
         const csrfToken = 'abc123';
         const body = JSON.stringify({ username: 'connor4312' });
@@ -52,7 +51,7 @@ describe('providers', function () {
         it('fails attempts', () =>{
             return provider.attempt()
             .catch(err => {
-                expect(err).to.be.an.instanceOf(errors.AuthenticationFailedError);
+                expect(err).to.be.an.instanceOf(AuthenticationFailedError);
             });
         });
 
@@ -81,7 +80,7 @@ describe('providers', function () {
     });
 
     describe('oauth', function () {
-        const { OAuthProvider } = require('../../src/providers/oauth');
+        const { OAuthProvider } = require('../..');
         let provider;
         const redir = 'http://localhost';
 
@@ -116,7 +115,7 @@ describe('providers', function () {
         it('denies when error in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
             .catch(err => {
-                expect(err).to.be.instanceof(errors.AuthenticationFailedError);
+                expect(err).to.be.instanceof(AuthenticationFailedError);
                 expect(this.client.request.called).to.be.false;
             });
         });
@@ -124,7 +123,7 @@ describe('providers', function () {
         it('denies when no code in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
             .catch(err => {
-                expect(err).to.be.instanceof(errors.AuthenticationFailedError);
+                expect(err).to.be.instanceof(AuthenticationFailedError);
                 expect(this.client.request.called).to.be.false;
             });
         });
@@ -137,7 +136,7 @@ describe('providers', function () {
 
             return provider.attempt(redir, { code: 'asdf' })
             .catch(err => {
-                expect(err).to.be.instanceof(errors.AuthenticationFailedError);
+                expect(err).to.be.instanceof(AuthenticationFailedError);
                 sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
                     form: {
                         grant_type: 'authorization_code',

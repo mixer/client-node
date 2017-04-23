@@ -1,7 +1,7 @@
 import { IResponse } from '../RequestRunner';
 import { Service } from './Service';
 
-export interface IJoinResponse {
+export interface IChatJoinResponse {
     endpoints: string[];
     authkey: string;
     permissions: string[];
@@ -23,8 +23,8 @@ export class ChatService extends Service {
     /**
      * Joins the chat for a specified channel ID.
      */
-    public join(channelId: number): Promise<IResponse<IJoinResponse>> {
-        return this.makeHandled<IJoinResponse>('get', `chats/${channelId}`);
+    public join(channelId: number): Promise<IResponse<IChatJoinResponse>> {
+        return this.makeHandled<IChatJoinResponse>('get', `chats/${channelId}`);
     }
 
     /**

@@ -1,4 +1,4 @@
-const { Client } = require('../../src/Client');
+const { Client } = require('../..');
 
 require('chai').use(require('chai-subset'));
 require('chai').use(require('sinon-chai'));

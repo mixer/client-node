@@ -3,10 +3,7 @@
 const { expect } = require('chai');
 
 describe('websocket', () => {
-    const { BeamSocket } = require('../../src/ws/BeamSocket');
-    const { Client } = require('../../src/Client');
-    const { PasswordProvider } = require('../../src/providers/password');
-    const { ChatService } = require('../../src/services/chat');
+    const { BeamSocket, PasswordProvider, Client, ChatService } = require('../..');
     const WebSocket = require('ws');
     let socket;
     let body;
