@@ -2,6 +2,7 @@ import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError } from
 import { Reply } from './Reply';
 import { EventEmitter } from 'events';
 import * as NodeWebSocket from 'ws';
+import { IUserAuthenticated, IChatMessage, IUserUpdate, IPollEvent, IPurgeMessage, IUserConnection, IUserTimeout, IDeleteMessage } from '../defs/chat';
 
 // The method of the authentication packet to store.
 const authMethod = 'auth';
@@ -72,6 +73,23 @@ export interface IGenericWebSocket {
     send(data: string): void;
 }
 
+
+export interface ICallOptions {
+    /**
+     * Set to false if you want a Promise to return for when the event is sent and received by the chat server.
+     */
+    noReply?: boolean;
+    /**
+     * Set to true if you want to force send a event to the server.
+     */
+    force?: boolean;
+
+    /**
+     * Call timeout.
+     */
+    timeout?: number;
+}
+
 /**
  * Manages a connect to Beam's chat servers.
  */
@@ -115,6 +133,26 @@ class BeamSocket extends EventEmitter {
     public static CONNECTING = 4;
 
     public static Promise: typeof Promise;
+
+    public on(event: 'reconnecting', cb: (data: { interval: number, socket: WebSocket }) => any): this;
+    public on(event: 'connected', cb: () => any): this;
+    public on(event: 'closed', cb: () => any): this;
+    public on(event: 'error', cb: (err: Error) => any): this;
+    public on(event: 'authresult', cb: (res: IUserAuthenticated) => any): this;
+    public on(event: 'packet', cb: (packet: any) => any): this;
+    public on(event: 'ChatMessage', cb: (message: IChatMessage) => any): this;
+    public on(event: 'ClearMessages', cb: () => void): this;
+    public on(event: 'DeleteMessage', cb: (message: IDeleteMessage) => any): this;
+    public on(event: 'PollStart', cb: (poll: IPollEvent) => any): this;
+    public on(event: 'PollEnd', cb: (poll: IPollEvent) => any): this;
+    public on(event: 'PurgeMessage', cb: (purge: IPurgeMessage) => any): this;
+    public on(event: 'UserJoin', cb: (join: IUserConnection) => any): this;
+    public on(event: 'UserLeave', cb: (join: IUserConnection) => any): this;
+    public on(event: 'UserTimeout', cb: (timeout: IUserTimeout) => any): this;
+    public on(event: 'UserUpdate', cb: (update: IUserUpdate) => any): this;
+    public on(event: string, cb: any): this {
+        return super.on(event, cb);
+    }
 
     constructor (
         private wsCtor: IGenericWebSocket,
@@ -461,7 +499,7 @@ class BeamSocket extends EventEmitter {
      * and join a specified channel. If you wish to join anonymously, user
      * and authkey can be omitted.
      */
-    public auth (id: number, user: number, authkey: string): Promise<string> {
+    public auth (id: number, user: number, authkey: string): Promise<IUserAuthenticated> {
         this._authpacket = [id, user, authkey];
 
         // Two cases here: if we're already connected, with send the auth
@@ -477,13 +515,17 @@ class BeamSocket extends EventEmitter {
     /**
      * Runs a method on the socket. Returns a promise that is rejected or
      * resolved upon reply.
-     * @access public
-     * @param  {String} method
-     * @param  {Array=[]} args_ Additional arguments to pass to the method.
-     * @param  {Options={}} options_
-     * @return {Promise}
      */
-    public call <T>(method: string, args: any[] = [], options: { noReply?: boolean, timeout?: number, force?: boolean } = {}): Promise<T> {
+    public call(method: 'auth', args: [number], options?: ICallOptions): Promise<IUserAuthenticated>;
+    public call(method: 'auth', args: [number, number, string], options?: ICallOptions): Promise<IUserAuthenticated>;
+    public call(method: 'msg', args: [string], options?: ICallOptions): Promise<IChatMessage>;
+    public call(method: 'whisper', args: [string, string], options?: ICallOptions): Promise<any>;
+    public call(method: 'history', args: [number], options?: ICallOptions): Promise<IChatMessage[]>;
+    public call(method: 'timeout', args: [string, string], options?: ICallOptions): Promise<string>;
+    public call(method: 'ping', args: [any]): Promise<any>;
+    public call(method: 'vote:start', args: [string, string[], number]): Promise<void>;
+    public call(method: string, args: (string|number)[], options?: ICallOptions): Promise<any>;
+    public call <T>(method: string, args: any[] = [], options: ICallOptions = {}): Promise<T> {
         // Send out the data
         const id = this._callNo++;
 

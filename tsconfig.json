@@ -28,8 +28,12 @@
             "node"
         ]
     },
+    "include": [
+        "src"
+    ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ],
     "angularCompilerOptions": {
         "genDir": "compiled",

@@ -1,6 +1,7 @@
 export interface IChatPreferences {
     /**
-     * Any preferences which contain ":" in the key name which TypeScript does not support as a valid type _yet_
+     * Any preferences which contain ":" in the key name which
+     * TypeScript does not support as a valid type _yet_
      */
     [preference: string]: any;
 }
@@ -15,7 +16,6 @@ export interface IUserAuthenticated {
      */
     roles: string[];
 }
-
 
 /**
  * 'meta' object that decorates the user's current message.
@@ -223,7 +223,7 @@ export interface IPurgeMessage {
     user_id: number;
 }
 
-export interface UserTimeout {
+export interface IUserTimeout {
     user: {
         /**
          * The user's Id.
@@ -237,7 +237,7 @@ export interface UserTimeout {
          * The roles the user has.
          */
         user_roles: string[];
-    },
+    };
     /**
      * The duration of the timeout.
      */
