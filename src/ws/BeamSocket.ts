@@ -101,7 +101,7 @@ export interface ICallOptions {
 /**
  * Manages a connect to Beam's chat servers.
  */
-class BeamSocket extends EventEmitter {
+export class BeamSocket extends EventEmitter {
     private _addressOffset: number;
     // Spool to store events queued when the connection is lost.
     private _spool: { data: any, resolve: any }[] = [];
@@ -141,7 +141,7 @@ class BeamSocket extends EventEmitter {
     public static CONNECTING = 4;
 
     // tslint:disable-next-line variable-name
-    public static Promise: typeof Promise;
+    public static Promise: typeof Promise = Promise;
 
     public on(event: 'reconnecting', cb: (data: { interval: number, socket: WebSocket }) => any): this;
     public on(event: 'connected', cb: () => any): this;
@@ -352,7 +352,7 @@ class BeamSocket extends EventEmitter {
         const whilstSameSocket = (fn: (...inArgs: any[]) => void) => {
             return (...args: any[]) => {
                 if (this.ws === ws) {
-                    fn.apply(self, args);
+                    fn.apply(this, args);
                 }
             };
         };
@@ -369,20 +369,20 @@ class BeamSocket extends EventEmitter {
         }));
 
         // Chat server has acknowledged our connection
-        this.once('WelcomeEvent', function() {
-            this._resetPingTimeout();
-            this.unspool.apply(this, arguments);
+        this.once('WelcomeEvent', (...args: any[]) => {
+            this.resetPingTimeout();
+            this.unspool.apply(this, args);
         });
 
         // We got an incoming data packet.
-        ws.on('message', whilstSameSocket(function() {
-            this._resetPingTimeout();
-            this.parsePacket.apply(this, arguments);
+        ws.on('message', whilstSameSocket((...args: any[]) => {
+            this.resetPingTimeout();
+            this.parsePacket.apply(this, args);
         }));
 
         // Websocket connection closed
-        ws.on('close', whilstSameSocket(function() {
-            this._handleClose.apply(this, arguments);
+        ws.on('close', whilstSameSocket((...args: any[]) => {
+            this.handleClose.apply(this, args);
         }));
 
         // Websocket hit an error and is about to close.
@@ -404,7 +404,7 @@ class BeamSocket extends EventEmitter {
     protected unspool() {
         // Helper function that's called when we're fully reestablished and
         // ready to take direct calls again.
-        function bang() {
+        const bang = () => {
             // Send any spooled events that we have.
             for (let i = 0; i < this._spool.length; i++) {
                 this.send(this._spool[i].data, { force: true });

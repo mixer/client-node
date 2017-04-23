@@ -17,19 +17,37 @@ export abstract class BeamClientError extends Error {
         stack.splice(1, 1);
         this.stack = stack.join('\n');
     }
+
+    protected static setProto(error: BeamClientError) {
+        if (Object.setPrototypeOf) {
+            Object.setPrototypeOf(error, this.prototype);
+            return;
+        }
+        (<any>error).__proto__ = this.prototype; // Super emergency fallback
+    }
 }
 
 /**
  * Emitted by our WebSocket when we get a bad packet; one that is binary,
  * we can't decode, or has a type we don't know about.
  */
-export class BadMessageError extends BeamClientError {}
+export class BadMessageError extends BeamClientError {
+    constructor (msg: string) {
+        super(msg);
+        BadMessageError.setProto(this);
+    }
+}
 
 /**
  * Emitted by our WebSocket when we get get a "reply" to a method
  * that we don't have a handler for.
  */
-export class NoMethodHandlerError extends BeamClientError {}
+export class NoMethodHandlerError extends BeamClientError {
+    constructor(msg: string) {
+        super(msg);
+        NoMethodHandlerError.setProto(this);
+    }
+}
 
 /**
  * Basic "response" error message from which others inherit.
@@ -45,14 +63,20 @@ export abstract class ResponseError extends BeamClientError {
  * credentials.
  */
 export class AuthenticationFailedError extends ResponseError {
-    public message: string = 'Authentication has failed';
+    constructor(res: IncomingMessage | string) {
+        super(res);
+        AuthenticationFailedError.setProto(this);
+    }
 }
 
 /**
  * Happens when we get a code from the API that we don't expect.
  */
 export class UnknownCodeError extends ResponseError {
-    public message = 'An unknown error occurred';
+    constructor() {
+        super('An unknown error occurred');
+        UnknownCodeError.setProto(this);
+    }
 }
 
 /**
@@ -60,5 +84,8 @@ export class UnknownCodeError extends ResponseError {
  * or access that we don't have.
  */
 export class NotAuthenticatedError extends ResponseError {
-    public message = 'You do not have permission to view this.';
+    constructor() {
+        super('You do not have permission to view this.');
+        NotAuthenticatedError.setProto(this);
+    }
 }

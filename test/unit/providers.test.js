@@ -3,9 +3,9 @@ var errors = require('../../src/errors');
 var sinon = require('sinon');
 var expect = require('chai').expect;
 
-describe('providers', () =>{
-    describe('password', () =>{
-        var Provider = require('../../src/providers/password');
+describe('providers', function () {
+    describe('password', function () {
+        const { PasswordProvider } = require('../../src/providers/password');
         var provider;
         var csrfToken = 'abc123';
         var body = JSON.stringify({ username: 'connor4312' });
@@ -14,28 +14,28 @@ describe('providers', () =>{
             body: body,
             headers: {},
         };
-        okResponse.headers[Provider.CSRF_TOKEN_LOCATION] = csrfToken;
+        okResponse.headers[PasswordProvider.CSRF_TOKEN_LOCATION] = csrfToken;
 
         var invalidCSRFResponse = {
-            statusCode: Provider.INVALID_CSRF_CODE,
+            statusCode: PasswordProvider.INVALID_CSRF_CODE,
             headers: {},
             body: {
                 error: 'Invalid or missing CSRF header, see details here: <https://dev.beam.pro/rest.html#csrf>',
-                statusCode: Provider.INVALID_CSRF_CODE,
+                statusCode: PasswordProvider.INVALID_CSRF_CODE,
             },
         };
-        invalidCSRFResponse.headers[Provider.CSRF_TOKEN_LOCATION] = 'new token';
+        invalidCSRFResponse.headers[PasswordProvider.CSRF_TOKEN_LOCATION] = 'new token';
 
 
-        beforeEach(() =>{
-            provider = new Provider(this.client, {
+        beforeEach(function () {
+            provider = new PasswordProvider(this.client, {
                 username: 'foo',
                 password: 'bar',
                 code: 42,
             });
         });
 
-        it('successfully attempts', () =>{
+        it('successfully attempts', function () {
             var stub = sinon.stub(this.client, 'request')
             .returns(Bluebird.resolve(okResponse));
 
@@ -62,10 +62,10 @@ describe('providers', () =>{
         });
 
         it('includes the csrf token in requests. mm, tokens', () =>{
-            expect(provider.getRequest().headers).to.include.keys(Provider.CSRF_TOKEN_LOCATION);
+            expect(provider.getRequest().headers).to.include.keys(PasswordProvider.CSRF_TOKEN_LOCATION);
         });
 
-        it('updates a csrf token on a 461 response code and then retries the request', () =>{
+        it('updates a csrf token on a 461 response code and then retries the request', function () {
             this.client.provider = provider;
             this.request.run = (req, cb) => {
                 if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
@@ -82,12 +82,12 @@ describe('providers', () =>{
     });
 
     describe('oauth', function () {
-        var Provider = require('../../src/providers/oauth');
-        var provider;
-        var redir = 'http://localhost';
+        const { OAuthProvider } = require('../../src/providers/oauth');
+        let provider;
+        const redir = 'http://localhost';
 
         beforeEach(function () {
-            provider = new Provider(this.client, {
+            provider = new OAuthProvider(this.client, {
                 clientId: 'eye-dee',
                 secret: 'seekrit',
             });
@@ -129,7 +129,7 @@ describe('providers', () =>{
             });
         });
 
-        it('denies when error from API', () =>{
+        it('denies when error from API', function() {
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 400,
                 body: { error: 'invalid_grant' },
@@ -137,7 +137,7 @@ describe('providers', () =>{
 
             return provider.attempt(redir, { code: 'asdf' })
             .bind(this)
-            .catch(errors.AuthenticationFailedError, () =>{
+            .catch(errors.AuthenticationFailedError, function () {
                 sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
                     form: {
                         grant_type: 'authorization_code',
@@ -150,7 +150,7 @@ describe('providers', () =>{
             });
         });
 
-        it('allows when all good', () =>{
+        it('allows when all good', function() {
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 200,
                 body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
@@ -167,7 +167,7 @@ describe('providers', () =>{
             });
         });
 
-        it('expires after a time', () =>{
+        it('expires after a time', function() {
             provider.tokens = {
                 access: 'access',
                 refresh: 'refresh',
@@ -178,8 +178,8 @@ describe('providers', () =>{
             expect(provider.isAuthenticated()).to.be.false;
         });
 
-        it('restores from tokens', () =>{
-            provider = new Provider(this.client, {
+        it('restores from tokens', function() {
+            provider = new OAuthProvider(this.client, {
                 clientId: 'eye-dee',
                 tokens: {
                     access: 'access',
@@ -190,7 +190,7 @@ describe('providers', () =>{
             expect(provider.isAuthenticated()).to.be.true;
         });
 
-        it('refreshes correctly', () =>{
+        it('refreshes correctly', function() {
             this.client.request.returns(Bluebird.resolve({
                 statusCode: 200,
                 body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },

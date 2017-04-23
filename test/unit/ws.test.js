@@ -3,7 +3,7 @@
 const Bluebird = require('bluebird');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const events = require('events');
+const { EventEmitter } = require('events');
 
 describe('websocket', () =>{
     const { BeamSocket } = require('../../src/ws/BeamSocket');
@@ -12,23 +12,36 @@ describe('websocket', () =>{
     let raw;
     let factoryStub;
     let clock;
+    let Mock;
 
     // synchronous-ly resolving promise-like object for use in tests
     var resolveSync = {
         then: fn => { return fn(); },
     };
 
+
     beforeEach(() =>{
-        raw = new events.EventEmitter();
-        raw.close = sinon.spy();
-        raw.send = sinon.spy();
+        factoryStub = sinon.spy()
+        class MockSocket extends EventEmitter {
+            constructor () {
+                super();
+                raw = this;
+                factoryStub();
+            }
+
+            ping () {
+
+            }
+        }
+        MockSocket.prototype.close = sinon.spy();
+        MockSocket.prototype.send = sinon.spy();
+        Mock = MockSocket;
 
         clock = sinon.useFakeTimers();
-        socket = new BeamSocket(raw, ['a', 'b']).boot();
+        socket = new BeamSocket(MockSocket, ['a', 'b']).boot();
     });
 
     afterEach(() =>{
-        factoryStub.restore();
         clock.restore();
     });
 
@@ -40,7 +53,7 @@ describe('websocket', () =>{
     });
 
     it('gets status and connected correctly', () =>{
-        socket = new BeamSocket(['a', 'b']);
+        socket = new BeamSocket(Mock, ['a', 'b']);
         expect(socket.getStatus()).to.equal(BeamSocket.IDLE);
         expect(socket.isConnected()).to.be.false;
         socket.status = BeamSocket.CONNECTED;
@@ -94,7 +107,7 @@ describe('websocket', () =>{
 
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
         expect(factoryStub.callCount).to.equal(1);
-        sinon.stub(socket, '_getNextReconnectInterval').returns(500);
+        sinon.stub(socket, 'getNextReconnectInterval').returns(500);
 
         raw.emit('error');
         raw.emit('close');
@@ -106,13 +119,13 @@ describe('websocket', () =>{
         expect(factoryStub.callCount).to.equal(1);
         clock.tick(1);
         expect(factoryStub.callCount).to.equal(2);
-        expect(socket._getNextReconnectInterval.called).to.be.true;
+        expect(socket.getNextReconnectInterval.called).to.be.true;
     });
 
     it('runs exponential backoff', () =>{
-        expect(socket._getNextReconnectInterval()).to.be.oneOf([500, 1000]);
-        expect(socket._getNextReconnectInterval()).to.be.oneOf([1000, 2000]);
-        expect(socket._getNextReconnectInterval()).to.be.oneOf([2000, 4000]);
+        expect(socket.getNextReconnectInterval()).to.be.oneOf([500, 1000]);
+        expect(socket.getNextReconnectInterval()).to.be.oneOf([1000, 2000]);
+        expect(socket.getNextReconnectInterval()).to.be.oneOf([2000, 4000]);
     });
 
     it('closes the websocket connection', () =>{

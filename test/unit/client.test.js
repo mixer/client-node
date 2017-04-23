@@ -61,7 +61,7 @@ describe('beam client', function() {
     });
 
     it('exposes services eagerly', function() {
-        expect(this.client.chat).to.be.an.instanceof(require('../../src/services/chat').Chat);
+        expect(this.client.chat).to.be.an.instanceof(require('../../src/services/chat').ChatService);
         expect(this.client.chat.join).to.be.a('function');
     });
 });

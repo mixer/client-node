@@ -1,21 +1,21 @@
-var expect = require('chai').expect;
-var errors = require('../../src/errors');
+const expect = require('chai').expect;
+const errors = require('../../src/errors');
 
 describe('services', () =>{
-    var Service = require('../../src/services/Service');
-    var service;
+    const { Service } = require('../../src/services/Service');
+    let service;
 
     beforeEach(() => {
         service = new Service();
     });
 
     it('handles a successful response', () => {
-        var res = { statusCode: 200, body: 'foo' };
+        const res = { statusCode: 200, body: 'foo' };
         expect(service.handleResponse(res, {})).to.deep.equal({ statusCode: 200, body: 'foo' });
     });
 
     it('handles a response given a handler', () => {
-        var res = { statusCode: 401, body: '"foo"' };
+        const res = { statusCode: 401, body: '"foo"' };
         expect(() => {
             service.handleResponse(res, {
                 401: errors.NotAuthenticatedError,
@@ -24,7 +24,7 @@ describe('services', () =>{
     });
 
     it('handles a response that has no handler', () => {
-        var res = { statusCode: 500, body: '"foo"' };
+        const res = { statusCode: 500, body: '"foo"' };
         expect(() => {
             service.handleResponse(res, {
                 401: errors.NotAuthenticatedError,
