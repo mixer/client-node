@@ -1,6 +1,6 @@
-import { BeamUser, UserGroup } from "./user";
+import { IBeamUser, IUserGroup } from './user';
 
-export interface BeamChannel {
+export interface IBeamChannel {
     /**
      * The channel Id.
      */
@@ -202,7 +202,7 @@ export interface BeamChannel {
     };
 }
 
-export interface BeamChannelUser<T> extends BeamChannel {
+export interface IBeamChannelUser<T> extends IBeamChannel {
     /**
      * The user object.
      */
@@ -210,10 +210,10 @@ export interface BeamChannelUser<T> extends BeamChannel {
     /**
      * The channel preferences.
      */
-    preferences: ChannelPreferences;
+    preferences: IChannelPreferences;
 }
 
-export interface ChannelPreferences {
+export interface IChannelPreferences {
     /**
      * Any other preferences which contain ":" in the key name which TypeScript does not support as a valid type _yet_
      */
@@ -224,9 +224,9 @@ export interface ChannelPreferences {
     sharetext: string;
 }
 
-export interface ChannelUser extends BeamUser {
+export interface IChannelUser extends IBeamUser {
     /**
      * The array of groups which the user has on the channel. I.E. Mod
      */
-    groups: UserGroup[];
+    groups: IUserGroup[];
 }

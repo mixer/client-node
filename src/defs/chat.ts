@@ -1,11 +1,11 @@
-export interface ChatPreferences {
+export interface IChatPreferences {
     /**
      * Any preferences which contain ":" in the key name which TypeScript does not support as a valid type _yet_
      */
     [preference: string]: any;
 }
 
-export interface UserAuthenticated {
+export interface IUserAuthenticated {
     /**
      * If you are authenticated on the socket.
      */
@@ -20,7 +20,7 @@ export interface UserAuthenticated {
 /**
  * 'meta' object that decorates the user's current message.
  */
-export interface MessageMeta {
+export interface IMessageMeta {
     // Whether the message was sent as a whisper
     whisper?: boolean;
     // Whether the message was a `/me` prefixed message
@@ -31,7 +31,7 @@ export interface MessageMeta {
  * Component is contained in a Message packet, used
  * to display a section of plain text.
  */
-export interface MessageTextComponent {
+export interface IMessageTextComponent {
     type: 'text'; // tslint:disable-line
     text: string;
 }
@@ -39,7 +39,7 @@ export interface MessageTextComponent {
 /**
  * Used to render an emoticon in the message.
  */
-export interface MessageEmoticonComponent {
+export interface IMessageEmoticonComponent {
     type: 'emoticon'; // tslint:disable-line
     text: string;
     pack: string;
@@ -58,7 +58,7 @@ export interface MessageEmoticonComponent {
 /**
  * An IMessageLinkComponent is used to render a hyperlink in the message.
  */
-export interface MessageLinkComponent {
+export interface IMessageLinkComponent {
     type: 'link'; // tslint:disable-line
     text: string;
     url: string;
@@ -67,25 +67,24 @@ export interface MessageLinkComponent {
 /**
  * An IMessageTagComponent is used to tag another user in chat.
  */
-export interface MessageTagComponent {
+export interface IMessageTagComponent {
     type: 'tag'; // tslint:disable-line
     username: string;
     text: string;
     id: number;
 }
 
-export type MessagePart = MessageTextComponent
-    | MessageEmoticonComponent
-    | MessageLinkComponent
-    | MessageTagComponent;
+export type MessagePart = IMessageTextComponent
+    | IMessageEmoticonComponent
+    | IMessageLinkComponent
+    | IMessageTagComponent;
 
-export interface MessagePacketComponents {
-    meta: MessageMeta;
+export interface IMessagePacketComponents {
+    meta: IMessageMeta;
     message: MessagePart[];
 }
 
-
-export interface ChatMessage {
+export interface IChatMessage {
     /**
      * The Id of the message.
      */
@@ -117,10 +116,10 @@ export interface ChatMessage {
     /**
      * The message payload.
      */
-    message: MessagePacketComponents;
+    message: IMessagePacketComponents;
 }
 
-export interface UserUpdate {
+export interface IUserUpdate {
     /**
      * The user's Id.
      */
@@ -139,7 +138,7 @@ export interface UserUpdate {
     permissions: string[];
 }
 
-export interface PollEvent {
+export interface IPollEvent {
 
     /**
      * The question being asked.
@@ -166,9 +165,9 @@ export interface PollEvent {
     /**
      * The responses for the poll.
      */
-    responses: Array<{
+    responses: {
         [answer: string]: number;
-    }>;
+    }[];
 
     /**
      * The responses for the poll, as a list, where the index matches the
@@ -192,10 +191,10 @@ export interface PollEvent {
          * The roles the user has.
          */
         user_roles: string[];
-    }
+    };
 }
 
-export interface UserConnection {
+export interface IUserConnection {
     /**
      * The user's Id.
      */
@@ -210,14 +209,14 @@ export interface UserConnection {
     roles: string[];
 }
 
-export interface DeleteMessage {
+export interface IDeleteMessage {
     /**
      * The message Id.
      */
     id: string;
 }
 
-export interface PurgeMessage {
+export interface IPurgeMessage {
     /**
      * The user's Id.
      */

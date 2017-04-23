@@ -1,7 +1,7 @@
 import { Provider } from './providers/Provider';
 const pkg = require('../package.json'); // tslint:disable-line no-var-requires no-require-imports
-import http from 'http';
 import { defaultsDeep } from 'lodash';
+import { RequestResponse } from 'request';
 
 import {
     DefaultRequestRunner,
@@ -11,6 +11,10 @@ import {
 } from './RequestRunner';
 
 import * as querystring from 'querystring';
+
+export interface IRequestResponse<T> extends RequestResponse {
+    body: T;
+}
 
 export class Client {
     private provider: Provider;
@@ -89,7 +93,7 @@ export class Client {
     /**
      * Attempts to run a given request.
      */
-    public request (method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<http.IncomingMessage> {
+    public request<T>(method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<IRequestResponse<T>> {
         const req = defaultsDeep<IOptionalUrlRequestOptions, IRequestOptions>(
             data,
             {

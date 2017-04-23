@@ -5,7 +5,7 @@ import http from 'http';
 export abstract class Provider {
     constructor (protected client: Client) {}
 
-    public abstract attempt (): Promise<void>;
+    public abstract attempt (...args: any[]): Promise<void>;
     /**
      * Returns info to add to the client's request.
      */

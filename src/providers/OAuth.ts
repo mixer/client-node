@@ -1,8 +1,7 @@
-import { AuthenticationFailedError } from '../errors';
 import { Client } from '../Client';
-import { Provider } from './Provider';
+import { AuthenticationFailedError } from '../errors';
 import { IResponse } from '../RequestRunner';
-import { extend } from 'lodash';
+import { Provider } from './Provider';
 
 export interface ITokenBase {
     access?: string;
@@ -128,7 +127,7 @@ export class OAuthProvider extends Provider {
      */
     private unpackResponse(res: IResponse<IOAuthTokenResponse>): void {
         if (res.statusCode !== 200) {
-            throw new errors.AuthenticationFailedError(res);
+            throw new AuthenticationFailedError(res);
         }
 
         this.tokens = {
@@ -157,8 +156,8 @@ export class OAuthProvider extends Provider {
                 'you\'re using the oauth client correctly.'); // silly devlopers
         }
 
-        return this.client.request('post', '/oauth/token', {
-            form: extend(
+        return this.client.request<IOAuthTokenResponse>('post', '/oauth/token', {
+            form: Object.assign(
                 {
                     grant_type: 'authorization_code',
                     code: qs.code,
@@ -167,7 +166,7 @@ export class OAuthProvider extends Provider {
                 this.details
             ),
         })
-        .then(this.unpackResponse);
+        .then(res => this.unpackResponse(res));
     }
 
     /**
@@ -180,8 +179,8 @@ export class OAuthProvider extends Provider {
                 'refresh without a refresh token present.'));
         }
 
-        return this.client.request('post', '/oauth/token', {
-            form: _.extend(
+        return this.client.request<IOAuthTokenResponse>('post', '/oauth/token', {
+            form: Object.assign(
                 {
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refresh,
@@ -189,13 +188,13 @@ export class OAuthProvider extends Provider {
                 this.details
             ),
         })
-        .then(this.unpackResponse);
+        .then(res => this.unpackResponse(res));
     }
 
     /**
      * Returns info to add to the client's request.
      */
-    protected getRequest() {
+    public getRequest() {
         if (!this.isAuthenticated()) {
             return {};
         }
@@ -205,5 +204,3 @@ export class OAuthProvider extends Provider {
         };
     }
 }
-
-module.exports = OAuthProvider;

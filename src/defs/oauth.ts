@@ -1,4 +1,4 @@
-export interface OAuthToken {
+export interface IOAuthToken {
     /**
      * The access token which the client should use.
      */
@@ -6,7 +6,7 @@ export interface OAuthToken {
     /**
      * The token type.
      */
-    token_type: "Bearer";
+    token_type: 'Bearer';
     /**
      * The time until the token expires.
      */

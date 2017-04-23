@@ -35,3 +35,4 @@ typings
 .idea
 *.sublime-project
 *.sublime-workspace
+/dist

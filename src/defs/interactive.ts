@@ -1,4 +1,4 @@
-export interface InteractiveChannel {
+export interface IInteractiveChannel {
     /**
      * The Interactive WebSocket address to connect too.
      */
@@ -18,14 +18,19 @@ export interface InteractiveChannel {
     /**
      * Version information about the game and controls schema.
      */
-    version: ChannelVersion;
+    version: IChannelVersion;
 }
 
-export interface Version {
+export interface IVersion {
     /**
      * The Id of the version.
      */
     id: number;
+
+    /**
+     * The Id of the game.
+     */
+    gameId: number;
     /**
      * The game version.
      */
@@ -33,7 +38,7 @@ export interface Version {
     /**
      * The state of the version.
      */
-    state: "published" | "draft" | "pending";
+    state: 'published' | 'draft' | 'pending';
     /**
      * TODO: Find more info.
      */
@@ -57,10 +62,20 @@ export interface Version {
     /**
      * The interactive game being using.
      */
-    game: Game;
+    game: IGame;
+
+    /**
+     * The changelog.
+     */
+    changelog: string;
+
+    /**
+     * The controls.
+     */
+    controls: Object;
 }
 
-export interface ChannelVersion extends Version {
+export interface IChannelVersion extends IVersion {
     /**
      * The controllers schema for the game version.
      */
@@ -72,15 +87,15 @@ export interface ChannelVersion extends Version {
         /**
          * The buttons being used.
          */
-        tactiles: Tactile[];
+        tactiles: ITactile[];
         /**
          * The joysticks being used.
          */
-        joysticks: Joystick[];
+        joysticks: IJoystick[];
         /**
          * The screens being used.
          */
-        screens: Screens[];
+        screens: IScreens[];
     };
     /**
      * The Interactive game Id.
@@ -88,7 +103,7 @@ export interface ChannelVersion extends Version {
     gameId: number;
 }
 
-export interface Game {
+export interface IGame {
     /**
      * The Id of the game.
      */
@@ -131,7 +146,7 @@ export interface Game {
     deletedAt: string;
 }
 
-export interface Control {
+export interface IControl {
     /**
      * The Id of the control.
      */
@@ -139,7 +154,7 @@ export interface Control {
     /**
      * The type of the control.
      */
-    type: "joysticks" | "tactiles" | "screens";
+    type: 'joysticks' | 'tactiles' | 'screens';
     /**
      * The blueprints for the control.
      */
@@ -154,7 +169,7 @@ export interface Control {
     help: string;
 }
 
-export interface Tactile extends Control {
+export interface ITactile extends IControl {
     /**
      * Analysis defines the kind of analysis done on the tactile.
      */
@@ -189,13 +204,14 @@ export interface Tactile extends Control {
     key: number;
 }
 
-export interface Joystick extends Control {
+export interface IJoystick extends IControl {
     /**
      * Analysis defines the kind of analysis done on the joystick.
      */
     analysis: {
         /**
-         * Coords is currently the only archetype of analysis that can be done, which will report optionally on the average and deviation of the X and Y coordinates on the joystick.
+         * Coords is currently the only archetype of analysis that can be done,
+         * which will report optionally on the average and deviation of the X and Y coordinates on the joystick.
          */
         coords: {
             mean: boolean;
@@ -204,7 +220,7 @@ export interface Joystick extends Control {
     };
 }
 
-export interface Screens extends Control {
+export interface IScreens extends IControl {
     /**
      * Analysis defines the kind of analysis done on the ScreenCord.
      */
@@ -238,7 +254,7 @@ export interface Blueprint {
     /**
      * The grid type.
      */
-    grid: "large" | "medium" | "small";
+    grid: 'large' | 'medium' | 'small';
     /**
      * The state in which the control is displayed on.
      */

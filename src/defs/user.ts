@@ -1,6 +1,6 @@
-import { BeamChannel } from "./channel";
+import { IBeamChannel } from './channel';
 
-export interface BeamUser {
+export interface IBeamUser {
     /**
      * The user Id.
      */
@@ -76,7 +76,7 @@ export interface BeamUser {
     deletedAt: string;
 }
 
-export interface BeamUserSelf extends BeamUser {
+export interface IBeamUserSelf extends IBeamUser {
     /**
      *
      */
@@ -84,7 +84,7 @@ export interface BeamUserSelf extends BeamUser {
     /**
      * The users channel.
      */
-    channel: BeamChannel;
+    channel: IBeamChannel;
     /**
      * The users email address.
      */
@@ -92,7 +92,7 @@ export interface BeamUserSelf extends BeamUser {
     /**
      * The groups which the user is apart off.
      */
-    groups: UserGroup[];
+    groups: IUserGroup[];
     /**
      * Has the user got 2FA enabled.
      */
@@ -116,7 +116,7 @@ export interface BeamUserSelf extends BeamUser {
     }
 }
 
-export interface UserGroup {
+export interface IUserGroup {
     /**
      * The group Id.
      */

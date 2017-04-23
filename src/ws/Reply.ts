@@ -20,5 +20,3 @@ export class Reply {
         }
     }
 }
-
-module.exports = Reply;

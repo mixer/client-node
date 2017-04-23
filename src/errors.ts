@@ -1,4 +1,4 @@
-import http from 'http';
+import { IncomingMessage } from 'http';
 
 /**
  * Base error for all fe2 stuff.
@@ -33,7 +33,7 @@ export class NoMethodHandlerError extends BeamClientError {}
  * Basic "response" error message from which others inherit.
  */
 export abstract class ResponseError extends BeamClientError {
-    constructor (public res: http.IncomingMessage) {
+    constructor (public res: IncomingMessage | string) {
         super('Response error');
     }
 }
@@ -57,6 +57,6 @@ export class UnknownCodeError extends ResponseError {
  * Happens when we attempt to access a point that needs authentication
  * or access that we don't have.
  */
-export class NotAuthenticatedError  extends ResponseError {
+export class NotAuthenticatedError extends ResponseError {
     public message = 'You do not have permission to view this.';
 }
