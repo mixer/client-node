@@ -1,4 +1,3 @@
-import http from 'http';
 import * as request from 'request';
 
 export interface IOptionalUrlRequestOptions extends request.CoreOptions {
@@ -8,10 +7,10 @@ export interface IOptionalUrlRequestOptions extends request.CoreOptions {
 export type IRequestOptions = request.CoreOptions & (request.UriOptions | request.UrlOptions);
 
 export interface IRequestRunner {
-    run(options: IRequestOptions) : Promise<http.IncomingMessage>;
+    run(options: IRequestOptions) : Promise<request.RequestResponse>;
 }
 
-export interface IResponse<T> extends http.IncomingMessage {
+export interface IResponse<T> extends request.RequestResponse {
     body: T;
 }
 
