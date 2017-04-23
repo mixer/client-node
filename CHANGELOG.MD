@@ -1,5 +1,8 @@
 1.0.0
  - Port to typescript.
+   - The entire package structure changed but most of the APIs are still the same.
+   - It's strongly adviced the consome this client via Typescript now.
+
 
 0.4.0
  - **API/Breaking**: prefix 'private' members with an underscore
