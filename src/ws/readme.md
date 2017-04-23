@@ -8,7 +8,7 @@ Your usage may look something like this:
 
 ```js
 // Require the socket
-var BeamSocket = require('beam/lib/ws');
+var BeamSocket = require('beam/src/ws');
 // Some function that gets the JSON response from `GET /chats/:id`.
 var data = getDataFromChannelJoinEndpoint();
 

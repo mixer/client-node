@@ -1,7 +1,7 @@
 var expect = require('chai').expect;
 
 describe('beam client', () =>{
-    var request = require('../../lib/request');
+    var request = require('../../src/request');
 
     it('builds urls correctly', () =>{
         expect(this.client.buildAddress('https://beam.pro/', '/foo/bar'))
@@ -47,7 +47,7 @@ describe('beam client', () =>{
     });
 
     it('makes a request with errors', () =>{
-        request.run = () =>d, cb) {
+        request.run = (d, cb) => {
             cb(new Error('oh no!'));
         };
         return this.client.request('get', '/users/current', { a: 'b' })
@@ -64,7 +64,7 @@ describe('beam client', () =>{
     });
 
     it('exposes services eagerly', () =>{
-        expect(this.client.chat).to.be.an.instanceof(require('../../lib/services/chat'));
+        expect(this.client.chat).to.be.an.instanceof(require('../../src/services/chat'));
         expect(this.client.chat.join).to.be.a('function');
     });
 });

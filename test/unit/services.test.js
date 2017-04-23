@@ -1,8 +1,8 @@
 var expect = require('chai').expect;
-var errors = require('../../lib/errors');
+var errors = require('../../src/errors');
 
 describe('services', () =>{
-    var Service = require('../../lib/services/service');
+    var Service = require('../../src/services/service');
     var service;
 
     beforeEach(() => {

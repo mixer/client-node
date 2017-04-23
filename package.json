@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "typings": "dist/index",
   "scripts": {
-    "test": "mocha --compilers ts:ts-node/register \"src/**/*.spec.ts\" && npm run lint",
+    "test": "mocha --compilers ts:ts-node/register test/**/*.test.js",
     "build": "rimraf dist && tsc",
     "prepublish": "npm run build",
     "lint": "tslint --type-check --project tsconfig.json \"src/**/*.ts\""
@@ -45,10 +45,10 @@
     "ts-node": "^3.0.2",
     "tslint": "^4.5.1",
     "tslint-microsoft-contrib": "^4.0.1",
-    "typescript": "^2.0.10"
+    "typescript": "^2.0.10",
+    "bluebird": "^3.4.6"
   },
   "dependencies": {
-    "bluebird": "^3.4.6",
     "lodash.defaultsdeep": "^4.6.0",
     "request": "^2.79.0",
     "ws": "^1.0.1"

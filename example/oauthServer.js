@@ -1,5 +1,5 @@
 var Beam = require('../');
-var ChatService = require('../lib/services/chat');
+var ChatService = require('../src/services/chat');
 
 var express = require('express');
 var app = express();
@@ -9,7 +9,7 @@ var app = express();
  * Returns a client set up to use OAuth.
  * @return {Client}
  */
-function getClient () {
+function getClient() {
     var client = new Beam();
 
     client.use('oauth', {
@@ -25,7 +25,7 @@ function getClient () {
  * OAuth. Right now this is set to the `/returned` route.
  * @return {String}
  */
-function getRedirectUri () {
+function getRedirectUri() {
     return 'http://mysite.com:3000/returned';
 }
 

@@ -1,12 +1,12 @@
 var Bluebird = require('bluebird');
-var errors = require('../../lib/errors');
-var request = require('../../lib/request');
+var errors = require('../../src/errors');
+var request = require('../../src/request');
 var sinon = require('sinon');
 var expect = require('chai').expect;
 
 describe('providers', () =>{
     describe('password', () =>{
-        var Provider = require('../../lib/providers/password');
+        var Provider = require('../../src/providers/password');
         var provider;
         var csrfToken = 'abc123';
         var body = JSON.stringify({ username: 'connor4312' });
@@ -68,7 +68,7 @@ describe('providers', () =>{
 
         it('updates a csrf token on a 461 response code and then retries the request', () =>{
             this.client.provider = provider;
-            request.run = () =>req, cb) {
+            request.run = (req, cb) => {
                 if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
                     cb(invalidCSRFResponse);
                 } else {
@@ -83,7 +83,7 @@ describe('providers', () =>{
     });
 
     describe('oauth', () =>{
-        var Provider = require('../../lib/providers/oauth');
+        var Provider = require('../../src/providers/oauth');
         var provider;
         var redir = 'http://localhost';
 

@@ -1,15 +1,17 @@
-var expect = require('chai').expect;
+'use strict'
+
+const { expect } = require('chai');
 
 describe('websocket', () => {
-    var BeamSocket = require('../../lib/ws');
-    var Client = require('../../');
-    var Password = require('../../lib/providers/password');
-    var ChatService = require('../../lib/services/chat');
-    var socket;
-    var body;
+    const { BeamSocket } = require('../../src/ws/BeamSocket');
+    const { Client } = require('../../src/Client');
+    const Password = require('../../src/providers/password');
+    const ChatService = require('../../src/services/chat');
+    let socket;
+    let body;
 
     beforeEach(() => {
-        var client = new Client();
+        const client = new Client();
         client.setUrl('http://localhost:1337/api/v1');
         return client.auth(new Password('Sibyl53', 'password'))
         .then(() => client.use(ChatService).join(2))

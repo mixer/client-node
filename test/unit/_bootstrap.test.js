@@ -1,5 +1,5 @@
-var request = require('../../lib/request');
-var Client = require('../../lib/client');
+var request = require('../../src/request');
+var Client = require('../../src/client');
 
 require('chai').use(require('chai-subset'));
 require('chai').use(require('sinon-chai'));
