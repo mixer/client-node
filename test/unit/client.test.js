@@ -54,14 +54,9 @@ describe('beam client', function() {
     });
 
     it('creates and uses a provider', function() {
-        var creds = { username: 'connor', password: 'password' };
-        var p = this.client.use('password', creds);
-        expect(p.auth).to.deep.equal(creds);
-        expect(this.client.getProvider()).to.equal(p);
-    });
-
-    it('exposes services eagerly', function() {
-        expect(this.client.chat).to.be.an.instanceof(require('../../src/services/chat').ChatService);
-        expect(this.client.chat.join).to.be.a('function');
+        const { PasswordProvider } = require('../../src/providers/Password.ts');
+        const provider = new PasswordProvider(this.client, { username: 'connor', password: 'password' })
+        this.client.use(provider);
+        expect(this.client.getProvider()).to.equal(provider);
     });
 });

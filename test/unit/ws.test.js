@@ -1,6 +1,5 @@
 'use strict';
 
-const Bluebird = require('bluebird');
 const { expect } = require('chai');
 const sinon = require('sinon');
 const { EventEmitter } = require('events');
@@ -12,17 +11,19 @@ describe('websocket', () =>{
     let raw;
     let factoryStub;
     let clock;
-    let Mock;
+    let MockSocket;
 
     // synchronous-ly resolving promise-like object for use in tests
-    var resolveSync = {
-        then: fn => { return fn(); },
+    // TODO: This is BAD!
+    const resolveSync = {
+        then: fn => { return fn() || resolveSync; },
+        catch: () => {},
     };
 
 
     beforeEach(() =>{
         factoryStub = sinon.spy()
-        class MockSocket extends EventEmitter {
+        MockSocket = class MockSocket extends EventEmitter {
             constructor () {
                 super();
                 raw = this;
@@ -35,7 +36,6 @@ describe('websocket', () =>{
         }
         MockSocket.prototype.close = sinon.spy();
         MockSocket.prototype.send = sinon.spy();
-        Mock = MockSocket;
 
         clock = sinon.useFakeTimers();
         socket = new BeamSocket(MockSocket, ['a', 'b']).boot();
@@ -46,14 +46,14 @@ describe('websocket', () =>{
     });
 
     it('balances requests', () =>{
-        var i;
+        let i;
         for (i = []; i.length < 5;) i.push(socket.getAddress());
         if (i[0] === 'a') i = i.slice(1);
         expect(i.slice(0, 4)).to.deep.equal(['b', 'a', 'b', 'a']);
     });
 
     it('gets status and connected correctly', () =>{
-        socket = new BeamSocket(Mock, ['a', 'b']);
+        socket = new BeamSocket(MockSocket, ['a', 'b']);
         expect(socket.getStatus()).to.equal(BeamSocket.IDLE);
         expect(socket.isConnected()).to.be.false;
         socket.status = BeamSocket.CONNECTED;
@@ -61,9 +61,9 @@ describe('websocket', () =>{
     });
 
     it('connects successfully', () =>{
-        var lastErr;
+        let lastErr;
         socket.on('error', (err) => { lastErr = err; });
-        var parse = sinon.stub(socket, 'parsePacket');
+        const parse = sinon.stub(socket, 'parsePacket');
 
         expect(socket.status).to.equal(BeamSocket.CONNECTING);
 
@@ -74,7 +74,7 @@ describe('websocket', () =>{
         raw.emit('message', 'asdf');
         expect(parse.calledWith('asdf')).to.be.true;
 
-        var err = new Error('oh no!');
+        const err = new Error('oh no!');
         raw.emit('error', err);
         expect(lastErr).to.equal(err);
         expect(raw.close.called).to.be.true;
@@ -101,7 +101,7 @@ describe('websocket', () =>{
     });
 
     it('reconnects after an interval', function() {
-        var reconnectStub = sinon.stub();
+        const reconnectStub = sinon.stub();
         socket.on('error', () =>{});
         socket.on('reconnecting', reconnectStub);
 
@@ -148,7 +148,7 @@ describe('websocket', () =>{
     });
 
     describe('sending', () =>{
-        var data = { foo: 'bar' };
+        const data = { foo: 'bar' };
 
         it('sends events when connected', done => {
             sinon.stub(socket, 'isConnected').returns(true);
@@ -185,7 +185,7 @@ describe('websocket', () =>{
     });
 
     describe('packet parsing', () =>{
-        var evPacket = JSON.stringify({
+        const evPacket = JSON.stringify({
             type: 'event',
             event: 'UserJoin',
             data: {
@@ -194,7 +194,7 @@ describe('websocket', () =>{
                 id: 146,
             },
         });
-        var authPacket = JSON.stringify({
+        const authPacket = JSON.stringify({
             type: 'reply',
             error: null,
             id: 1,
@@ -246,7 +246,7 @@ describe('websocket', () =>{
         });
 
         it('passes replies to handlers and deletes handler', () =>{
-            var spy = socket._replies[1] = { handle: sinon.spy() };
+            const spy = socket._replies[1] = { handle: sinon.spy() };
             socket.parsePacket(authPacket, { binary: false });
             expect(socket._replies[1]).to.be.undefined;
             expect(spy.handle.calledWith(JSON.parse(authPacket))).to.be.true;
@@ -275,7 +275,7 @@ describe('websocket', () =>{
         });
 
         it('tries to auth successfully', done => {
-            var stub = sinon.stub(socket, 'call').returns(Bluebird.resolve());
+            const stub = sinon.stub(socket, 'call').resolves();
 
             socket.on('connected', () =>{
                 expect(socket.isConnected()).to.be.true;
@@ -288,7 +288,7 @@ describe('websocket', () =>{
         });
 
         it('tries to auth rejects unsuccessful', done => {
-            var stub = sinon.stub(socket, 'call').returns(Bluebird.reject());
+            const stub = sinon.stub(socket, 'call').rejects();
             socket.on('error', err => {
                 expect(err).to.be.an.instanceof(errors.AuthenticationFailedError);
                 done();
@@ -302,7 +302,7 @@ describe('websocket', () =>{
 
     describe('auth packet', () =>{
         it('waits for connection before sending', done => {
-            var called = false;
+            let called = false;
             socket.auth(1, 2, 3).then(res => {
                 called = true;
                 expect(res).to.equal('ok');
@@ -332,21 +332,26 @@ describe('websocket', () =>{
         });
 
         it('sends basic with no reply or args', () =>{
-            socket.call('foo', { noReply: true });
-            expect(socket.send.calledWith(
-                { type: 'method', method: 'foo', arguments: [], id: 0 }, { noReply: true }
-            )).to.be.true;
+            socket.call('foo', [], { noReply: true });
+            expect(socket.send).to.have.been.calledWith(
+                {
+                    type: 'method',
+                    method: 'foo',
+                    arguments: [],
+                    id: 0
+                }, { noReply: true }
+            );
         });
 
         it('increments the call ID', () =>{
-            for (var i = 0; i < 10; i++) {
-                socket.call('foo', { noReply: true });
-                expect(socket.send.calledWith({
+            for (let i = 0; i < 10; i++) {
+                socket.call('foo', [], { noReply: true });
+                expect(socket.send).to.have.been.calledWith({
                     type: 'method',
                     method: 'foo',
                     arguments: [],
                     id: i,
-                })).to.be.true;
+                });
             }
         });
 
@@ -379,7 +384,7 @@ describe('websocket', () =>{
 
         it('quietly removes the reply after a timeout', done => {
             socket.call('foo', [1, 2, 3]).catch(err => {
-                expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
+                expect(err).to.be.an.instanceof(errors.TimeoutError);
                 expect(socket._replies[0]).not.to.be.defined;
                 done();
             });
@@ -400,6 +405,7 @@ describe('websocket', () =>{
                     }));
                     return fn();
                 },
+                catch: () => {}
             });
 
             return socket.call('foo', [1, 2, 3]).then(reply => {
@@ -428,7 +434,7 @@ describe('websocket', () =>{
 
             it('should error if no pong is received', done => {
                 socket.on('error', err => {
-                    expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
+                    expect(err).to.be.an.instanceof(errors.TimeoutError);
                     done();
                 });
 
@@ -457,7 +463,7 @@ describe('websocket', () =>{
 
         describe('browser', () =>{
             beforeEach(() =>{
-                delete raw.ping;
+                raw.ping = undefined;
                 sinon.stub(socket, 'send').returns(resolveSync);
             });
 
@@ -474,7 +480,7 @@ describe('websocket', () =>{
 
             it('should error if no pong is received', done => {
                 socket.on('error', err => {
-                    expect(err).to.be.an.instanceof(BeamSocket.TimeoutError);
+                    expect(err).to.be.an.instanceof(errors.TimeoutError);
                     done();
                 });
 
@@ -482,7 +488,7 @@ describe('websocket', () =>{
             });
 
             it('should succeed if pong is received', () =>{
-                socket.send.returns(Bluebird.resolve());
+                socket.send.resolves();
                 socket.on('error', err => {
                     throw err;
                 });

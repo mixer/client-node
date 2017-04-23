@@ -63,7 +63,7 @@ Joins the chat of a certain channel by its ID. If you want to join anonymously (
 
 Calls a chat "method" (string) with the array set of arguments. Options:
 
- * `noReply` (default false) will not listen for a reply. If you don't pass noReply, `.call()` will returnt a [Bluebird](https://github.com/petkaantonov/bluebird) promise that's resolved to the packet data on success, or rejected with an error string on failure.
+ * `noReply` (default false) will not listen for a reply. If you don't pass noReply, `.call()` will return a promise that's resolved to the packet data on success, or rejected with an error string on failure.
  * `force` Mainly for internal use. Bypasses spooling and tries sending a method to the websocket regardless of state.
 
 ### socket.send(data)

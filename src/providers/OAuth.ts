@@ -145,14 +145,15 @@ export class OAuthProvider extends Provider {
      */
     public attempt(redirect: string, qs: IQueryAttemptQueryString): Promise<void> {
         if (qs.error) {
-            throw new AuthenticationFailedError(
-                qs.error_description || 'Error from oauth: ' + qs.error);
+            return Promise.reject(
+                new AuthenticationFailedError(qs.error_description || 'Error from oauth: ' + qs.error),
+            );
         }
 
         if (!qs.code) {
-            throw new AuthenticationFailedError('No error was given, ' +
+             return Promise.reject(new AuthenticationFailedError('No error was given, ' +
                 'but a code was not present in the query string. Make sure ' +
-                'you\'re using the oauth client correctly.'); // silly devlopers
+                'you\'re using the oauth client correctly.')); // silly devlopers
         }
 
         return this.client.request<IOAuthTokenResponse>('post', '/oauth/token', {

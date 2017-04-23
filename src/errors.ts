@@ -35,7 +35,7 @@ export abstract class BeamClientError extends Error {
  * we can't decode, or has a type we don't know about.
  */
 export class BadMessageError extends BeamClientError {
-    constructor (msg: string) {
+    constructor(msg: string) {
         super(msg);
         BadMessageError.setProto(this);
     }
@@ -57,7 +57,7 @@ export class NoMethodHandlerError extends BeamClientError {
  */
 export abstract class ResponseError extends BeamClientError {
     constructor(public res: IncomingMessage | string) {
-        super('Response error');
+        super(typeof res === 'string' ? res : 'Response error');
     }
 }
 
@@ -90,5 +90,16 @@ export class NotAuthenticatedError extends ResponseError {
     constructor() {
         super('You do not have permission to view this.');
         NotAuthenticatedError.setProto(this);
+    }
+}
+
+/**
+ * A TimeoutError is thrown in call if we don't get a response from the
+ * chat server within a certain interval.
+ */
+export class TimeoutError extends BeamClientError {
+    constructor() {
+        super('Timeout');
+        TimeoutError.setProto(this);
     }
 }

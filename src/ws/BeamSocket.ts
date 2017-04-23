@@ -11,17 +11,11 @@ import {
     IUserTimeout,
     IUserUpdate,
 } from '../defs/chat';
-import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError } from '../errors';
+import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError, TimeoutError } from '../errors';
 import { Reply } from './Reply';
 
 // The method of the authentication packet to store.
 const authMethod = 'auth';
-
-/**
- * A TimeoutError is thrown in call if we don't get a response from the
- * chat server within a certain interval.
- */
-class TimeoutError extends Error {}
 
 /**
  * Return a promise which is rejected with a TimeoutError after the
@@ -242,13 +236,13 @@ export class BeamSocket extends EventEmitter {
     };
 
     /**
-     * _handleClose is called when the websocket closes or emits an error. If
+     * handleClose is called when the websocket closes or emits an error. If
      * we weren't gracefully closed, we'll try to reconnect.
      */
     private handleClose() {
         clearTimeout(<number>this._pingTimeoutHandle);
         this._pingTimeoutHandle = null;
-
+        const socket = this.ws;
         this.ws = null;
         this.removeAllListeners('WelcomeEvent');
 
@@ -261,7 +255,7 @@ export class BeamSocket extends EventEmitter {
         const interval = this.getNextReconnectInterval();
         this.status = BeamSocket.CONNECTING;
         this._reconnectTimeout = setTimeout(this.boot.bind(this), interval);
-        this.emit('reconnecting', { interval: interval, socket: this.ws });
+        this.emit('reconnecting', { interval: interval, socket });
     }
 
     /**
@@ -381,8 +375,8 @@ export class BeamSocket extends EventEmitter {
         }));
 
         // Websocket connection closed
-        ws.on('close', whilstSameSocket((...args: any[]) => {
-            this.handleClose.apply(this, args);
+        ws.on('close', whilstSameSocket(() => {
+            this.handleClose();
         }));
 
         // Websocket hit an error and is about to close.
@@ -407,7 +401,11 @@ export class BeamSocket extends EventEmitter {
         const bang = () => {
             // Send any spooled events that we have.
             for (let i = 0; i < this._spool.length; i++) {
-                this.send(this._spool[i].data, { force: true });
+                // tslint:disable-next-line no-floating-promises
+                this.send(this._spool[i].data, { force: true })
+                .catch(err => {
+                    this.emit('error', err);
+                });
                 this._spool[i].resolve();
             }
             this._spool = [];
@@ -416,7 +414,7 @@ export class BeamSocket extends EventEmitter {
             this._retries = 0;
             this.status = BeamSocket.CONNECTED;
             this.emit('connected');
-        }
+        };
 
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
@@ -536,7 +534,7 @@ export class BeamSocket extends EventEmitter {
     public call(method: 'ping', args: [any]): Promise<any>;
     public call(method: 'vote:start', args: [string, string[], number]): Promise<void>;
     public call(method: string, args: (string|number)[], options?: ICallOptions): Promise<any>;
-    public call<T>(method: string, args: any[] = [], options: ICallOptions = {}): Promise<T> {
+    public call<T>(method: string, args: any[] = [], options: ICallOptions = {}): Promise<T | void> {
         // Send out the data
         const id = this._callNo++;
 
@@ -564,7 +562,7 @@ export class BeamSocket extends EventEmitter {
 
             return BeamSocket.Promise.race([
                 <Promise<T>><any>timeout(options.timeout || this.options.callTimeout),
-                <Promise<T>><any>replyPromise,
+                <Promise<T>>replyPromise,
             ]);
         })
         .catch((err: Error) => {

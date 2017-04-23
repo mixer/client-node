@@ -7,7 +7,8 @@ beam.use('password', {
     username: 'connor',
     password: 'password',
 })
-.attempt().then(() => beam.chat.join(channel))
+.attempt()
+.then(() => beam.chat.join(channel))
 .then(res => {
     console.log('join chat response:', res);
 })

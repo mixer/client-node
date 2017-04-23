@@ -1,4 +1,3 @@
-var Bluebird = require('bluebird');
 var errors = require('../../src/errors');
 var sinon = require('sinon');
 var expect = require('chai').expect;
@@ -37,7 +36,7 @@ describe('providers', function () {
 
         it('successfully attempts', function () {
             var stub = sinon.stub(this.client, 'request')
-            .returns(Bluebird.resolve(okResponse));
+            .resolves(okResponse);
 
             return provider.attempt()
             .then(() =>{
@@ -69,9 +68,9 @@ describe('providers', function () {
             this.client.provider = provider;
             this.request.run = req => {
                 if (req.headers[PasswordProvider.CSRF_TOKEN_LOCATION] !== 'new token') {
-                    return Bluebird.reject(invalidCSRFResponse);
+                    return Promise.reject(invalidCSRFResponse);
                 } else {
-                    return Bluebird.resolve(okResponse);
+                    return Promise.resolve(okResponse);
                 }
             };
             return this.client.request('get', '/users/current').then(res => {
@@ -116,27 +115,29 @@ describe('providers', function () {
 
         it('denies when error in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
-            .catch(errors.AuthenticationFailedError, () =>{
+            .catch(err => {
+                expect(err).to.be.instanceof(errors.AuthenticationFailedError);
                 expect(this.client.request.called).to.be.false;
             });
         });
 
         it('denies when no code in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
-            .catch(errors.AuthenticationFailedError, () => {
+            .catch(err => {
+                expect(err).to.be.instanceof(errors.AuthenticationFailedError);
                 expect(this.client.request.called).to.be.false;
             });
         });
 
         it('denies when error from API', function() {
-            this.client.request.returns(Bluebird.resolve({
+            this.client.request.resolves({
                 statusCode: 400,
                 body: { error: 'invalid_grant' },
-            }));
+            });
 
             return provider.attempt(redir, { code: 'asdf' })
-            .bind(this)
-            .catch(errors.AuthenticationFailedError, function () {
+            .catch(err => {
+                expect(err).to.be.instanceof(errors.AuthenticationFailedError);
                 sinon.assert.calledWith(this.client.request, 'post', '/oauth/token', {
                     form: {
                         grant_type: 'authorization_code',
@@ -150,10 +151,10 @@ describe('providers', function () {
         });
 
         it('allows when all good', function() {
-            this.client.request.returns(Bluebird.resolve({
+            this.client.request.resolves({
                 statusCode: 200,
                 body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
-            }));
+            });
 
             return provider.attempt(redir, { code: 'asdf' }).then(() =>{
                 expect(provider.isAuthenticated()).to.be.true;
@@ -190,10 +191,10 @@ describe('providers', function () {
         });
 
         it('refreshes correctly', function() {
-            this.client.request.returns(Bluebird.resolve({
+            this.client.request.resolves({
                 statusCode: 200,
                 body: { access_token: 'access', refresh_token: 'refresh', expires_in: 60 * 60 },
-            }));
+            });
 
             provider.tokens = { access: 'old', refresh: 'oldRefresh', expires: new Date() };
 

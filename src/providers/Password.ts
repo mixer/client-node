@@ -52,7 +52,7 @@ export class PasswordProvider extends Provider {
         if (err.statusCode === PasswordProvider.INVALID_CSRF_CODE) {
             if (err.headers[PasswordProvider.CSRF_TOKEN_LOCATION] !== this.csrfToken) {
                 this.csrfToken = err.headers[PasswordProvider.CSRF_TOKEN_LOCATION];
-                return this.client.request.apply(this.client, requestOption);
+                return this.client.request(undefined, undefined, requestOption);
             }
         }
         return Promise.reject(err);

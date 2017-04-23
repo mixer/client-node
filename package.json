@@ -2,10 +2,12 @@
   "name": "beam-client-node",
   "version": "0.13.0",
   "description": "Client library for interacting with the beam API.",
-  "main": "dist/index.js",
+  "main": "dist/index",
   "typings": "dist/index",
   "scripts": {
     "test:unit": "mocha --compilers ts:ts-node/register test/unit/**/*.test.js",
+    "test:integrate": "mocha --compilers ts:ts-node/register test/integration/**/*.test.js",
+    "test": "npm run test:unit && npm run lint",
     "build": "rimraf dist && tsc",
     "prepublish": "npm run build",
     "lint": "tslint --type-check --project tsconfig.json \"src/**/*.ts\""
@@ -29,7 +31,7 @@
   "homepage": "https://github.com/WatchBeam/beam-client-node",
   "devDependencies": {
     "@types/chai": "^3.4.34",
-    "@types/chai-as-promised": "0.0.29",
+    "@types/chai-as-promised": "0.0.30",
     "@types/lodash.defaultsdeep": "^4.6.2",
     "@types/mocha": "^2.2.33",
     "@types/node": "^6.0.51",
@@ -40,13 +42,12 @@
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "rimraf": "^2.5.4",
-    "sinon": "^1.17.6",
+    "sinon": "^2.1.0",
     "sinon-chai": "^2.8.0",
     "ts-node": "^3.0.2",
     "tslint": "^4.5.1",
     "tslint-microsoft-contrib": "^4.0.1",
-    "typescript": "^2.0.10",
-    "bluebird": "^3.4.6"
+    "typescript": "^2.0.10"
   },
   "dependencies": {
     "lodash.defaultsdeep": "^4.6.0",

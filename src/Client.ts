@@ -38,7 +38,7 @@ export class Client {
 
     private buildUserAgent() {
         const client = `BeamClient/${packageVersion}`;
-
+        // tslint:disable-next-line no-typeof-undefined
         if (typeof navigator !== 'undefined') { // in-browser
             return navigator.userAgent + ' ' + client;
         }
@@ -49,10 +49,10 @@ export class Client {
     /**
      * Sets the the API/public URLs for the client.
      */
-    public setUrl(kind: 'api' | 'public',  url: string): this {
-        (<{ [prop: string]: string }>this.urls)[kind] = url;
+    public setUrl(kind: 'api' | 'public', url: string): this {
+        this.urls[kind] = url;
         return this;
-    };
+    }
 
     /**
      * Builds a path to the Beam API by concating it with the address.
@@ -102,8 +102,8 @@ export class Client {
         const req = defaultsDeep<IOptionalUrlRequestOptions, IRequestOptions>(
             data,
             {
-                method: method,
-                url: this.buildAddress(this.urls.api, path),
+                method: method || '',
+                url: this.buildAddress(this.urls.api, path || ''),
                 headers: {
                     'User-Agent': this.userAgent,
                 },
