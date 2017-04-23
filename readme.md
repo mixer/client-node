@@ -1,8 +1,8 @@
 # beam-client-node
 
-[![Build Status](https://travis-ci.org/WatchBeam/beam-client-node.svg)](https://travis-ci.org/WatchBeam/beam-client-node) [![](https://badges.gitter.im/MCProHosting/beam.png)](https://gitter.im/MCProHosting/beam-dev)
+[![Build Status](https://travis-ci.org/WatchBeam/beam-client-node.svg)](https://travis-ci.org/WatchBeam/beam-client-node) [![](https://badges.gitter.im/WatchBeam/beam.png)](https://gitter.im/WatchBeam/beam-dev)
 
-This is a client library for [Beam](https://beam.pro) written in Node.js. 
+This is a client library for [Beam](https://beam.pro) written in Node.js.
 
 ## Getting Started.
 
@@ -18,6 +18,6 @@ We have tutorials on our [Developer Site](https://dev.beam.pro) to help you get 
 
 
 ## Getting Help
-Chat with us and other developers on our [gitter](https://gitter.im/MCProHosting/beam-dev)
+Chat with us and other developers on our [gitter](https://gitter.im/WatchBeam/beam-dev)
 
 
