@@ -9,6 +9,9 @@ import { IncomingMessage } from 'http';
 export abstract class BeamClientError extends Error {
     constructor(public readonly message: string) {
         super();
+        if (this.stack) {
+            return;
+        }
         if (Error.captureStackTrace) { // chrome etc.
             Error.captureStackTrace(this, this.constructor);
             return;

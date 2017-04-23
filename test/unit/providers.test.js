@@ -67,11 +67,11 @@ describe('providers', function () {
 
         it('updates a csrf token on a 461 response code and then retries the request', function () {
             this.client.provider = provider;
-            this.request.run = (req, cb) => {
-                if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
-                    cb(invalidCSRFResponse);
+            this.request.run = req => {
+                if (req.headers[PasswordProvider.CSRF_TOKEN_LOCATION] !== 'new token') {
+                    return Bluebird.reject(invalidCSRFResponse);
                 } else {
-                    cb(null, okResponse);
+                    return Bluebird.resolve(okResponse);
                 }
             };
             return this.client.request('get', '/users/current').then(res => {
@@ -116,7 +116,6 @@ describe('providers', function () {
 
         it('denies when error in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
-            .bind(this)
             .catch(errors.AuthenticationFailedError, () =>{
                 expect(this.client.request.called).to.be.false;
             });
