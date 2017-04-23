@@ -1,5 +1,5 @@
 var Beam = require('../');
-var ChatService = require('../src/services/chat');
+var ChatService = require('../src/Services/chat');
 
 var express = require('express');
 var app = express();

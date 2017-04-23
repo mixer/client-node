@@ -1,18 +1,15 @@
-var request = require('../../src/request');
-var Client = require('../../src/client');
+const { Client } = require('../../src/Client');
 
 require('chai').use(require('chai-subset'));
 require('chai').use(require('sinon-chai'));
 
-beforeEach(() => {
-    this.client = new Client();
-    this.response = {};
-    request.run = (data, callback) => {
-        this.request = data;
-        callback(null, this.response);
+beforeEach(function () {
+    this.request = {
+        run: (data) => {
+            this.request = data;
+            return Promise.resolve(this.response);
+        }
     };
-});
-
-afterEach(() => {
-    request.restore();
+    this.client = new Client(this.request);
+    this.response = {};
 });

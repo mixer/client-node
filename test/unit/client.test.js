@@ -1,9 +1,7 @@
-var expect = require('chai').expect;
+const { expect } = require('chai');
 
-describe('beam client', () =>{
-    var request = require('../../src/request');
-
-    it('builds urls correctly', () =>{
+describe('beam client', function() {
+    it('builds urls correctly', function() {
         expect(this.client.buildAddress('https://beam.pro/', '/foo/bar'))
         .to.equal('https://beam.pro/foo/bar');
         expect(this.client.buildAddress('https://beam.pro/', 'foo/bar'))
@@ -14,16 +12,15 @@ describe('beam client', () =>{
         .to.equal('https://beam.pro/foo/bar');
     });
 
-    it('sets the url', () =>{
+    it('sets the url', function() {
         expect(this.client.setUrl('api', 'http://example.com'));
         expect(this.client.urls.api).to.equal('http://example.com');
     });
 
-    it('makes a request successfully', () =>{
+    it('makes a request successfully', function() {
         this.response.a = 'b';
 
         return this.client.request('get', '/users/current', { a: 'b' })
-        .bind(this)
         .then(res => {
             expect(this.request).to.containSubset({
                 a: 'b',
@@ -37,7 +34,7 @@ describe('beam client', () =>{
         });
     });
 
-    it('parses json results', () => {
+    it('parses json results', function() {
         this.response.body = { foo: 'bar' };
 
         return this.client.request('get', '/users/current', { a: 'b' })
@@ -46,9 +43,9 @@ describe('beam client', () =>{
         });
     });
 
-    it('makes a request with errors', () =>{
-        request.run = (d, cb) => {
-            cb(new Error('oh no!'));
+    it('makes a request with errors', function() {
+        this.request.run = (d, cb) => {
+            return Promise.reject(new Error('oh no!'));
         };
         return this.client.request('get', '/users/current', { a: 'b' })
         .catch(e => {
@@ -56,15 +53,15 @@ describe('beam client', () =>{
         });
     });
 
-    it('creates and uses a provider', () =>{
+    it('creates and uses a provider', function() {
         var creds = { username: 'connor', password: 'password' };
         var p = this.client.use('password', creds);
         expect(p.auth).to.deep.equal(creds);
         expect(this.client.getProvider()).to.equal(p);
     });
 
-    it('exposes services eagerly', () =>{
-        expect(this.client.chat).to.be.an.instanceof(require('../../src/services/chat'));
+    it('exposes services eagerly', function() {
+        expect(this.client.chat).to.be.an.instanceof(require('../../src/services/chat').Chat);
         expect(this.client.chat.join).to.be.a('function');
     });
 });

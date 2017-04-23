@@ -7,7 +7,6 @@ const events = require('events');
 
 describe('websocket', () =>{
     const { BeamSocket } = require('../../src/ws/BeamSocket');
-    var factory = require('../../src/ws/factory');
     const errors = require('../../src/errors');
     let socket;
     let raw;
@@ -24,10 +23,8 @@ describe('websocket', () =>{
         raw.close = sinon.spy();
         raw.send = sinon.spy();
 
-        factoryStub = sinon.stub(factory, 'create').returns(raw);
-
         clock = sinon.useFakeTimers();
-        socket = new BeamSocket(['a', 'b']).boot();
+        socket = new BeamSocket(raw, ['a', 'b']).boot();
     });
 
     afterEach(() =>{

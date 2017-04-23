@@ -12,7 +12,7 @@ import {
 } from './RequestRunner';
 
 // DO NOT EDIT, THIS IS UPDATE BY THE BUILD SCRIPT
-const packageVersion = ''; // package version
+const packageVersion = '0.13.0'; // package version
 
 export interface IRequestResponse<T> extends RequestResponse {
     body: T;
@@ -39,7 +39,7 @@ export class Client {
     private buildUserAgent() {
         const client = `BeamClient/${packageVersion}`;
 
-        if (navigator !== undefined) { // in-browser
+        if (typeof navigator !== 'undefined') { // in-browser
             return navigator.userAgent + ' ' + client;
         }
 

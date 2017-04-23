@@ -1,6 +1,5 @@
 var Bluebird = require('bluebird');
 var errors = require('../../src/errors');
-var request = require('../../src/request');
 var sinon = require('sinon');
 var expect = require('chai').expect;
 
@@ -68,7 +67,7 @@ describe('providers', () =>{
 
         it('updates a csrf token on a 461 response code and then retries the request', () =>{
             this.client.provider = provider;
-            request.run = (req, cb) => {
+            this.request.run = (req, cb) => {
                 if (req.headers[Provider.CSRF_TOKEN_LOCATION] !== 'new token') {
                     cb(invalidCSRFResponse);
                 } else {
@@ -82,12 +81,12 @@ describe('providers', () =>{
         });
     });
 
-    describe('oauth', () =>{
+    describe('oauth', function () {
         var Provider = require('../../src/providers/oauth');
         var provider;
         var redir = 'http://localhost';
 
-        beforeEach(() =>{
+        beforeEach(function () {
             provider = new Provider(this.client, {
                 clientId: 'eye-dee',
                 secret: 'seekrit',
@@ -96,11 +95,11 @@ describe('providers', () =>{
             this.clock = sinon.useFakeTimers();
         });
 
-        afterEach(() =>{
+        afterEach(function () {
             this.clock.restore();
         });
 
-        it('has a correct initial state', () =>{
+        it('has a correct initial state', function () {
             expect(provider.isAuthenticated()).to.be.false;
             expect(provider.accessToken()).to.be.undefined;
             expect(provider.refreshToken()).to.be.undefined;
@@ -108,14 +107,14 @@ describe('providers', () =>{
             expect(provider.getRequest()).to.deep.equal({});
         });
 
-        it('generates an authorization url', () =>{
+        it('generates an authorization url', function () {
             expect(provider.getRedirect(redir, ['foo', 'bar']))
             .to.equal('https://beam.pro/oauth/authorize?redirect_uri=' +
                           'http%3A%2F%2Flocalhost&response_type=code&scope=foo%20bar' +
                           '&client_id=eye-dee');
         });
 
-        it('denies when error in query string', () =>{
+        it('denies when error in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
             .bind(this)
             .catch(errors.AuthenticationFailedError, () =>{
@@ -123,10 +122,9 @@ describe('providers', () =>{
             });
         });
 
-        it('denies when no code in query string', () =>{
+        it('denies when no code in query string', function () {
             return provider.attempt(redir, { error: 'invalid_grant' })
-            .bind(this)
-            .catch(errors.AuthenticationFailedError, () =>{
+            .catch(errors.AuthenticationFailedError, () => {
                 expect(this.client.request.called).to.be.false;
             });
         });

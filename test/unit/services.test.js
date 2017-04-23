@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var errors = require('../../src/errors');
 
 describe('services', () =>{
-    var Service = require('../../src/services/service');
+    var Service = require('../../src/services/Service');
     var service;
 
     beforeEach(() => {
