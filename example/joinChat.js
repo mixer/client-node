@@ -1,7 +1,11 @@
-var Beam = require('../');
+const { Client, PasswordProvider } = require('beam-client-node');
 
-var channel = 2;
-var beam = new Beam();
+const channel = 2;
+const beam = new Client();
+beam.user(new PasswordProvider(beam, {
+    username: 'connor',
+    password: 'password',
+}))
 
 beam.use('password', {
     username: 'connor',

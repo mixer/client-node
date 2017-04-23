@@ -1,7 +1,6 @@
 // tslint:disable-next-line import-name no-require-imports
 import defaultsDeep = require('lodash.defaultsdeep');
 import * as querystring from 'querystring';
-import { RequestResponse } from 'request';
 
 import { Provider } from './providers/Provider';
 import {
@@ -9,14 +8,11 @@ import {
     IOptionalUrlRequestOptions,
     IRequestOptions,
     IRequestRunner,
+    IResponse,
 } from './RequestRunner';
 
 // DO NOT EDIT, THIS IS UPDATE BY THE BUILD SCRIPT
 const packageVersion = '0.13.0'; // package version
-
-export interface IRequestResponse<T> extends RequestResponse {
-    body: T;
-}
 
 /**
  * Main client.
@@ -82,9 +78,9 @@ export class Client {
     /**
      * Creates and returns an authentication provider instance.
      */
-    public use(provider: Provider): this {
+    public use(provider: Provider): Provider {
         this.provider = provider;
-        return this;
+        return provider;
     }
 
     /**
@@ -98,7 +94,7 @@ export class Client {
     /**
      * Attempts to run a given request.
      */
-    public request<T>(method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<IRequestResponse<T>> {
+    public request<T>(method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<IResponse<T>> {
         const req = defaultsDeep<IOptionalUrlRequestOptions, IRequestOptions>(
             data,
             {

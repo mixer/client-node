@@ -48,11 +48,11 @@ export class PasswordProvider extends Provider {
         return req;
     };
 
-    public handleResponseError(err: IResponse<any>, requestOption: Options) {
+    public handleResponseError(err: IResponse<any>, requestOption: Options): Promise<IResponse<any>> {
         if (err.statusCode === PasswordProvider.INVALID_CSRF_CODE) {
             if (err.headers[PasswordProvider.CSRF_TOKEN_LOCATION] !== this.csrfToken) {
                 this.csrfToken = err.headers[PasswordProvider.CSRF_TOKEN_LOCATION];
-                return this.client.request(undefined, undefined, requestOption);
+                return this.client.request<any>(undefined, undefined, requestOption);
             }
         }
         return Promise.reject(err);

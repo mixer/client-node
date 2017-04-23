@@ -8,11 +8,11 @@ Your usage may look something like this:
 
 ```js
 // Require the socket
-var BeamSocket = require('beam/src/ws');
+const { BeamSocket } = require('beam-client-node');
 // Some function that gets the JSON response from `GET /chats/:id`.
-var data = getDataFromChannelJoinEndpoint();
+const data = getDataFromChannelJoinEndpoint();
 
-var socket = new BeamSocket(data.endpoints).boot();
+const socket = new BeamSocket(data.endpoints).boot();
 
 // You don't need to wait for the socket to connect before calling methods,
 // we spool them and run them when connected automatically!

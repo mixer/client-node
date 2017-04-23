@@ -1,21 +1,18 @@
-var Beam = require('../');
-var ChatService = require('../src/services/chat');
+const { Client, OAuthProvider, ChatService } = require('../');
 
-var express = require('express');
-var app = express();
-
+const express = require('express');
+const app = express();
 
 /**
  * Returns a client set up to use OAuth.
  * @return {Client}
  */
 function getClient() {
-    var client = new Beam();
-
-    client.use('oauth', {
+    const client = new Client();
+    client.use(new OAuthProvider(client, {
         clientId: 'your-client-id',
         secret: 'your-optional-secret-key',
-    });
+    }));
 
     return client;
 }
@@ -34,9 +31,7 @@ function getRedirectUri() {
  * Beam site to give authorization for you to connect to chat.
  */
 app.get('/', (req, res) => {
-    var url = getClient().getProvider().getRedirect(
-            getRedirectUri(), ['chat:connect']);
-
+    const url = getClient().getProvider().getRedirect(getRedirectUri(), ['chat:connect']);
     res.redirect(url);
 });
 
@@ -45,8 +40,8 @@ app.get('/', (req, res) => {
  * you can do whatever you'd like.
  */
 app.get('/returned', (req, res) => {
-    var client = getClient();
-    var oauth = client.getProvider();
+    const client = getClient();
+    const oauth = client.getProvider();
 
     oauth.attempt(getRedirectUri(), req.query)
     .then(() => new ChatService(client).join(1))

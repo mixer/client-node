@@ -1,21 +1,21 @@
-var errors = require('../../src/errors');
-var sinon = require('sinon');
-var expect = require('chai').expect;
+const errors = require('../../src/errors');
+const sinon = require('sinon');
+const { expect } = require('chai');
 
 describe('providers', function () {
     describe('password', function () {
         const { PasswordProvider } = require('../../src/providers/password');
-        var provider;
-        var csrfToken = 'abc123';
-        var body = JSON.stringify({ username: 'connor4312' });
-        var okResponse = {
+        let provider;
+        const csrfToken = 'abc123';
+        const body = JSON.stringify({ username: 'connor4312' });
+        const okResponse = {
             statusCode: 200,
             body: body,
             headers: {},
         };
         okResponse.headers[PasswordProvider.CSRF_TOKEN_LOCATION] = csrfToken;
 
-        var invalidCSRFResponse = {
+        const invalidCSRFResponse = {
             statusCode: PasswordProvider.INVALID_CSRF_CODE,
             headers: {},
             body: {
@@ -35,7 +35,7 @@ describe('providers', function () {
         });
 
         it('successfully attempts', function () {
-            var stub = sinon.stub(this.client, 'request')
+            const stub = sinon.stub(this.client, 'request')
             .resolves(okResponse);
 
             return provider.attempt()
