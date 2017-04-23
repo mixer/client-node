@@ -37,7 +37,6 @@ export interface IQueryAttemptQueryString {
 
 /**
  * Provider for password-based authentication.
- *
  */
 export class OAuthProvider extends Provider {
     private details: {
@@ -47,7 +46,7 @@ export class OAuthProvider extends Provider {
 
     private tokens: IParsedTokens;
 
-    constructor (client: Client, options: IOAuthProviderOptions) {
+    constructor(client: Client, options: IOAuthProviderOptions) {
         super(client);
         this.details = { client_id: options.clientId, client_secret: options.secret };
         this.setTokens(options.tokens);
@@ -57,7 +56,7 @@ export class OAuthProvider extends Provider {
      * Returns if the client is currently authenticated: they must
      * have a non-expired key pair.
      */
-    public isAuthenticated (): boolean {
+    public isAuthenticated(): boolean {
         return this.tokens.access !== undefined && this.tokens.expires.getTime() > Date.now();
     }
 
@@ -144,7 +143,7 @@ export class OAuthProvider extends Provider {
      * Returns a promise which is rejected if there was an error
      * in obtaining authentication.
      */
-    public attempt (redirect: string, qs: IQueryAttemptQueryString): Promise<void> {
+    public attempt(redirect: string, qs: IQueryAttemptQueryString): Promise<void> {
         if (qs.error) {
             throw new AuthenticationFailedError(
                 qs.error_description || 'Error from oauth: ' + qs.error);
@@ -163,7 +162,7 @@ export class OAuthProvider extends Provider {
                     code: qs.code,
                     redirect_uri: redirect,
                 },
-                this.details
+                this.details,
             ),
         })
         .then(res => this.unpackResponse(res));
@@ -173,7 +172,7 @@ export class OAuthProvider extends Provider {
      * Refreshes the authentication tokens, bumping the expires time.
      * @return {Promise}
      */
-    public refresh (): Promise<void> {
+    public refresh(): Promise<void> {
         if (!this.tokens.refresh) {
             return Promise.reject(new AuthenticationFailedError('Attempted to ' +
                 'refresh without a refresh token present.'));
@@ -185,7 +184,7 @@ export class OAuthProvider extends Provider {
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refresh,
                 },
-                this.details
+                this.details,
             ),
         })
         .then(res => this.unpackResponse(res));

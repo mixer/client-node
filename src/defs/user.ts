@@ -113,7 +113,7 @@ export interface IBeamUserSelf extends IBeamUser {
          * Is 2FA enabled.
          */
         enabled: boolean;
-    }
+    };
 }
 
 export interface IUserGroup {

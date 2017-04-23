@@ -1,7 +1,6 @@
 import { Client } from '../Client';
 import { UnknownCodeError } from '../errors';
 import { IOptionalUrlRequestOptions, IResponse } from '../RequestRunner';
-import { IncomingMessage } from 'http';
 
 export interface ICtor {
     new (msg: any): void;
@@ -12,14 +11,14 @@ export interface ICtor {
  * It can be passed into the client and used magically.
  */
 export class Service {
-    constructor (private client: Client) {}
+    constructor(private client: Client) {}
 
     /**
      * Takes a response. If the status code isn't 200, attempt to find an
      * error handler for it or throw unknown error. If it's all good,
      * we return the response synchronously.
      */
-    protected handleResponse (res: IncomingMessage, handlers?: { [key: string]: ICtor }) {
+    protected handleResponse(res: IResponse<any>, handlers?: { [key: string]: ICtor }) {
         // 200 codes are already great!
         if (res.statusCode === 200) {
             return res;
@@ -37,11 +36,11 @@ export class Service {
     /**
      * Simple wrapper that makes and handles a response in one go.
      */
-    protected makeHandled<T> (
+    protected makeHandled<T>(
         method: string,
         path: string,
         data?: IOptionalUrlRequestOptions,
-        handlers?: { [key: string]: ICtor }
+        handlers?: { [key: string]: ICtor },
     ): Promise<IResponse<T>> {
         return this.client.request(method, path, data)
         .then(res => this.handleResponse(res, handlers));

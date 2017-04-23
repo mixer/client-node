@@ -32,6 +32,11 @@
     "no-unsafe-any": false,
     "strict-boolean-expressions": false,
     "promise-function-async": false,
-    "space-before-function-paren": [true, "never"]
+    "space-before-function-paren": [true, "never"],
+    "unified-signatures": false,
+    "no-unnecessary-override": false,
+    "insecure-random": false,
+    "no-bitwise": false,
+    "no-banned-terms": false
   }
 }

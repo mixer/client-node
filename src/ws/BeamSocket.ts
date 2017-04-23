@@ -29,27 +29,25 @@ class TimeoutError extends Error {}
  * @param  {Number} delay
  * @return {Promise}
  */
-function timeout (delay: number): Promise<void> {
+function timeout(delay: number): Promise<void> {
     return new BeamSocket.Promise<void>((_resolve, reject) => {
-        setTimeout(() => {
-            reject(new TimeoutError());
-        }, delay);
+        setTimeout(() => reject(new TimeoutError()), delay);
     });
 }
 
-function isBrowserWebSocket (socket: any): socket is WebSocket {
+function isBrowserWebSocket(socket: any): socket is WebSocket {
     return !socket.ping;
 }
 
-function isNodeWebSocket (socket: any): socket is NodeWebSocket {
+function isNodeWebSocket(socket: any): socket is NodeWebSocket {
     return !isBrowserWebSocket(socket);
 }
 
 /**
  * Wraps a DOM socket with EventEmitter-like syntax.
  */
-function wrapDOM (socket: WebSocket) {
-    function wrapHandler (event: string, fn: (ev: Event) => void) {
+function wrapDOM(socket: WebSocket) {
+    function wrapHandler(event: string, fn: (ev: Event) => void) {
         return (ev: Event) => {
             if (event === 'message') {
                 fn((<MessageEvent>ev).data);
@@ -142,6 +140,7 @@ class BeamSocket extends EventEmitter {
      */
     public static CONNECTING = 4;
 
+    // tslint:disable-next-line variable-name
     public static Promise: typeof Promise;
 
     public on(event: 'reconnecting', cb: (data: { interval: number, socket: WebSocket }) => any): this;
@@ -164,18 +163,21 @@ class BeamSocket extends EventEmitter {
         return super.on(event, cb);
     }
 
-    constructor (
+    constructor(
         private wsCtor: IGenericWebSocket,
         addresses: string[],
-        private options: { pingInterval: number, pingTimeout: number, callTimeout: number}
+        private options: { pingInterval: number, pingTimeout: number, callTimeout: number },
     ) {
         super();
 
-        this.options = Object.assign({
-            pingInterval: 15 * 1000,
-            pingTimeout: 5 * 1000,
-            callTimeout: 20 * 1000,
-        }, options);
+        this.options = Object.assign(
+            {
+                pingInterval: 15 * 1000,
+                pingTimeout: 5 * 1000,
+                callTimeout: 20 * 1000,
+            },
+            options,
+        );
 
         // Which connection we use in our load balancing.
         this._addressOffset = Math.floor(Math.random() * addresses.length);
@@ -208,21 +210,21 @@ class BeamSocket extends EventEmitter {
     /**
      * Gets the status of the socket connection.
      */
-    public getStatus (): number {
+    public getStatus(): number {
         return this.status;
     }
 
     /**
      * Returns whether the socket is currently connected.
      */
-    public isConnected (): boolean {
+    public isConnected(): boolean {
         return this.status === BeamSocket.CONNECTED;
     }
 
     /**
      * Retrieves a chat endpoint to connect to. We use round-robin balancing.
      */
-    protected getAddress (): string {
+    protected getAddress(): string {
         if (++this._addressOffset >= this._addresses.length) {
             this._addressOffset = 0;
         }
@@ -234,7 +236,7 @@ class BeamSocket extends EventEmitter {
      * Returns how long to wait before attempting to reconnect. This does TCP-style
      * limited exponential backoff.
      */
-    private _getNextReconnectInterval (): number {
+    private getNextReconnectInterval(): number {
         const power = (this._retries++ % this._retryWrap) + Math.round(Math.random());
         return (1 << power) * 500;
     };
@@ -243,7 +245,7 @@ class BeamSocket extends EventEmitter {
      * _handleClose is called when the websocket closes or emits an error. If
      * we weren't gracefully closed, we'll try to reconnect.
      */
-    private _handleClose () {
+    private handleClose() {
         clearTimeout(<number>this._pingTimeoutHandle);
         this._pingTimeoutHandle = null;
 
@@ -256,7 +258,7 @@ class BeamSocket extends EventEmitter {
             return;
         }
 
-        const interval = this._getNextReconnectInterval();
+        const interval = this.getNextReconnectInterval();
         this.status = BeamSocket.CONNECTING;
         this._reconnectTimeout = setTimeout(this.boot.bind(this), interval);
         this.emit('reconnecting', { interval: interval, socket: this.ws });
@@ -268,19 +270,17 @@ class BeamSocket extends EventEmitter {
      * from the socket (there's no need to ping when we know the socket
      * is still alive).
      */
-    private _resetPingTimeout () {
+    private resetPingTimeout() {
         clearTimeout(<number>this._pingTimeoutHandle);
 
-        this._pingTimeoutHandle = setTimeout(() => {
-            this.ping().catch(() => {});
-        }, this.options.pingInterval);
+        this._pingTimeoutHandle = setTimeout(() => this.ping().catch(() => undefined), this.options.pingInterval);
     }
 
     /**
      * Resets the connection timeout handle. This will run the handler
      * after a short amount of time.
      */
-    private _resetConnectionTimeout (handler: () => void) {
+    private resetConnectionTimeout(handler: () => void) {
         clearTimeout(<number>this._pingTimeoutHandle);
         this._pingTimeoutHandle = setTimeout(handler, this.options.pingTimeout);
     }
@@ -289,7 +289,7 @@ class BeamSocket extends EventEmitter {
      * Ping runs a ping against the server and returns a promise which is
      * resolved if the server responds, or rejected on timeout.
      */
-    public ping (): Promise<void> {
+    public ping(): Promise<void> {
         const { ws } = this;
         clearTimeout(<number>this._pingTimeoutHandle);
 
@@ -315,7 +315,7 @@ class BeamSocket extends EventEmitter {
         }
 
         return promise
-        .then(this._resetPingTimeout.bind(this))
+        .then(this.resetPingTimeout.bind(this))
         .catch((err: Error) => {
             if (!(err instanceof TimeoutError)) {
                 throw err;
@@ -329,7 +329,7 @@ class BeamSocket extends EventEmitter {
 
                 // trigger a close immediately -- some browsers are slow about this,
                 // leading to a delay before we try reconnecting.
-                this._handleClose();
+                this.handleClose();
             }
 
             throw err;
@@ -344,7 +344,7 @@ class BeamSocket extends EventEmitter {
      * @fires BeamSocket#closed
      * @fires BeamSocket#error
      */
-    public boot () {
+    public boot() {
         const ws = this.ws = new this.wsCtor(this.getAddress());
         if (isBrowserWebSocket(ws)) {
             wrapDOM(<WebSocket><any>ws);
@@ -360,28 +360,28 @@ class BeamSocket extends EventEmitter {
         this.status = BeamSocket.CONNECTING;
 
         // If the connection doesn't open fast enough
-        this._resetConnectionTimeout(() => { ws.close(); });
+        this.resetConnectionTimeout(() => { ws.close(); });
 
         // Websocket connection has been established.
         ws.on('open', whilstSameSocket(() => {
             // If we don't get a WelcomeEvent, kill the connection
-            this._resetConnectionTimeout(() => { ws.close(); });
+            this.resetConnectionTimeout(() => { ws.close(); });
         }));
 
         // Chat server has acknowledged our connection
-        this.once('WelcomeEvent', function () {
+        this.once('WelcomeEvent', function() {
             this._resetPingTimeout();
             this.unspool.apply(this, arguments);
         });
 
         // We got an incoming data packet.
-        ws.on('message', whilstSameSocket(function () {
+        ws.on('message', whilstSameSocket(function() {
             this._resetPingTimeout();
             this.parsePacket.apply(this, arguments);
         }));
 
         // Websocket connection closed
-        ws.on('close', whilstSameSocket(function () {
+        ws.on('close', whilstSameSocket(function() {
             this._handleClose.apply(this, arguments);
         }));
 
@@ -401,12 +401,12 @@ class BeamSocket extends EventEmitter {
      * race conditions where packets could get send before authentication
      * is reestablished.
      */
-    protected unspool () {
+    protected unspool() {
         // Helper function that's called when we're fully reestablished and
         // ready to take direct calls again.
-        function bang () {
+        function bang() {
             // Send any spooled events that we have.
-            for (var i = 0; i < this._spool.length; i++) {
+            for (let i = 0; i < this._spool.length; i++) {
                 this.send(this._spool[i].data, { force: true });
                 this._spool[i].resolve();
             }
@@ -421,6 +421,7 @@ class BeamSocket extends EventEmitter {
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
         if (this._authpacket) {
+            // tslint:disable-next-line no-floating-promises
             this.call(authMethod, this._authpacket, { force: true })
             .then(result => this.emit('authresult', result))
             .then(bang)
@@ -439,7 +440,7 @@ class BeamSocket extends EventEmitter {
      * @fires BeamSocket#error
      * @fires BeamSocket#packet
      */
-    protected parsePacket (data: string, flags?: { binary: boolean }) {
+    protected parsePacket(data: string, flags?: { binary: boolean }) {
         if (flags && flags.binary) {
             // We can't handle binary packets. Why the fudge are we here?
             this.emit('error', new BadMessageError('Cannot parse binary packets. Wat.'));
@@ -461,7 +462,7 @@ class BeamSocket extends EventEmitter {
         case 'reply':
             // Try to look up the packet reply handler, and call it if we can.
             const reply = this._replies[packet.id];
-            if (typeof reply !== 'undefined') {
+            if (reply !== undefined) {
                 reply.handle(packet);
                 delete this._replies[packet.id];
             } else {
@@ -486,9 +487,9 @@ class BeamSocket extends EventEmitter {
      * @fires BeamSocket#sent
      * @fires BeamSocket#spooled
      */
-    protected send (
+    protected send(
         data: { id: number, type: string, method: string, arguments: any[] },
-        options: { force?: boolean } = {}
+        options: { force?: boolean } = {},
     ): Promise<void> {
         if (this.isConnected() || options.force) {
             this.ws.send(JSON.stringify(data));
@@ -509,7 +510,7 @@ class BeamSocket extends EventEmitter {
      * and join a specified channel. If you wish to join anonymously, user
      * and authkey can be omitted.
      */
-    public auth (id: number, user: number, authkey: string): Promise<IUserAuthenticated> {
+    public auth(id: number, user: number, authkey: string): Promise<IUserAuthenticated> {
         this._authpacket = [id, user, authkey];
 
         // Two cases here: if we're already connected, with send the auth
@@ -535,7 +536,7 @@ class BeamSocket extends EventEmitter {
     public call(method: 'ping', args: [any]): Promise<any>;
     public call(method: 'vote:start', args: [string, string[], number]): Promise<void>;
     public call(method: string, args: (string|number)[], options?: ICallOptions): Promise<any>;
-    public call <T>(method: string, args: any[] = [], options: ICallOptions = {}): Promise<T> {
+    public call<T>(method: string, args: any[] = [], options: ICallOptions = {}): Promise<T> {
         // Send out the data
         const id = this._callNo++;
 
@@ -545,12 +546,15 @@ class BeamSocket extends EventEmitter {
             this._replies[id] = new Reply(resolve, reject);
         });
 
-        return this.send({
-            type: 'method',
-            method: method,
-            arguments: args,
-            id: id,
-        }, options)
+        return this.send(
+            {
+                type: 'method',
+                method: method,
+                arguments: args,
+                id: id,
+            },
+            options,
+        )
         .then(() => {
             // Then create and return a promise that's resolved when we get
             // a reply, if we expect one to be given.
@@ -574,7 +578,7 @@ class BeamSocket extends EventEmitter {
     /**
      * Closes the websocket gracefully.
      */
-    public close () {
+    public close() {
         if (this.ws) {
             this.ws.close();
             this.status = BeamSocket.CLOSING;

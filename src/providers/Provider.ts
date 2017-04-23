@@ -1,15 +1,17 @@
 import { Client } from '../Client';
-import { IRequestOptions } from '../RequestRunner';
-import http from 'http';
+import { IRequestOptions, IResponse } from '../RequestRunner';
 
+/**
+ * Base class for service provider.
+ */
 export abstract class Provider {
-    constructor (protected client: Client) {}
+    constructor(protected client: Client) {}
 
-    public abstract attempt (...args: any[]): Promise<void>;
+    public abstract attempt(...args: any[]): Promise<void>;
     /**
      * Returns info to add to the client's request.
      */
-    public getRequest (): Object {
+    public getRequest(): Object {
         return {};
     }
 
@@ -17,7 +19,7 @@ export abstract class Provider {
      * Given a failing response from the client, processes the error object and returns a Promise
      * which allows for a provider to retry a request or carry out some other process
      */
-    public handleResponseError (err: http.IncomingMessage, _requestOptions: IRequestOptions): Promise<http.IncomingMessage> {
+    public handleResponseError(err: IResponse<any>, _requestOptions: IRequestOptions): Promise<IResponse<any>> {
         return Promise.reject(err);
     }
 }

@@ -40,7 +40,7 @@ export interface IVersion {
      */
     state: 'published' | 'draft' | 'pending';
     /**
-     * TODO: Find more info.
+     * Number to allow easy ordering of versions.
      */
     versionOrder: number;
     /**
@@ -72,31 +72,33 @@ export interface IVersion {
     /**
      * The controls.
      */
-    controls: Object;
+    controls: IControls;
+}
+
+export interface IControls {
+    /**
+     * How frequently the interactive app and the controls on Beam communicate.
+     */
+    reportInterval: number;
+    /**
+     * The buttons being used.
+     */
+    tactiles: ITactile[];
+    /**
+     * The joysticks being used.
+     */
+    joysticks: IJoystick[];
+    /**
+     * The screens being used.
+     */
+    screens: IScreens[];
 }
 
 export interface IChannelVersion extends IVersion {
     /**
      * The controllers schema for the game version.
      */
-    controls: {
-        /**
-         * How frequently the interactive app and the controls on Beam communicate.
-         */
-        reportInterval: number;
-        /**
-         * The buttons being used.
-         */
-        tactiles: ITactile[];
-        /**
-         * The joysticks being used.
-         */
-        joysticks: IJoystick[];
-        /**
-         * The screens being used.
-         */
-        screens: IScreens[];
-    };
+    controls: IControls;
     /**
      * The Interactive game Id.
      */
@@ -158,7 +160,7 @@ export interface IControl {
     /**
      * The blueprints for the control.
      */
-    blueprint: Blueprint[];
+    blueprint: IBlueprint[];
     /**
      * Text displayed on the control.
      */
@@ -242,7 +244,7 @@ export interface IScreens extends IControl {
     };
 }
 
-export interface Blueprint {
+export interface IBlueprint {
     /**
      * The width of the control.
      */

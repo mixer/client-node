@@ -1,11 +1,13 @@
 import { IncomingMessage } from 'http';
 
+// tslint:disable max-classes-per-file
+
 /**
  * Base error for all fe2 stuff.
  * This also acts as a polyfill when building with ES5 target.
  */
 export abstract class BeamClientError extends Error {
-    constructor (public readonly message: string) {
+    constructor(public readonly message: string) {
         super();
         if (Error.captureStackTrace) { // chrome etc.
             Error.captureStackTrace(this, this.constructor);
@@ -33,7 +35,7 @@ export class NoMethodHandlerError extends BeamClientError {}
  * Basic "response" error message from which others inherit.
  */
 export abstract class ResponseError extends BeamClientError {
-    constructor (public res: IncomingMessage | string) {
+    constructor(public res: IncomingMessage | string) {
         super('Response error');
     }
 }

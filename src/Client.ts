@@ -1,4 +1,5 @@
-import { defaultsDeep } from 'lodash';
+// tslint:disable-next-line import-name no-require-imports
+import defaultsDeep = require('lodash.defaultsdeep');
 import * as querystring from 'querystring';
 import { RequestResponse } from 'request';
 
@@ -17,6 +18,9 @@ export interface IRequestResponse<T> extends RequestResponse {
     body: T;
 }
 
+/**
+ * Main client.
+ */
 export class Client {
     private provider: Provider;
     private userAgent: string;
@@ -28,14 +32,14 @@ export class Client {
      * The primary Beam client, responsible for storing authentication state
      * and dispatching requests to the API.
      */
-    constructor (private requestRunner: IRequestRunner = new DefaultRequestRunner()) {
+    constructor(private requestRunner: IRequestRunner = new DefaultRequestRunner()) {
         this.userAgent = this.buildUserAgent();
     }
 
-    private buildUserAgent () {
+    private buildUserAgent() {
         const client = `BeamClient/${packageVersion}`;
 
-        if (typeof navigator !== 'undefined') { // in-browser
+        if (navigator !== undefined) { // in-browser
             return navigator.userAgent + ' ' + client;
         }
 
@@ -45,7 +49,7 @@ export class Client {
     /**
      * Sets the the API/public URLs for the client.
      */
-    public setUrl (kind: 'api' | 'public',  url: string): this {
+    public setUrl(kind: 'api' | 'public',  url: string): this {
         (<{ [prop: string]: string }>this.urls)[kind] = url;
         return this;
     };
@@ -53,7 +57,7 @@ export class Client {
     /**
      * Builds a path to the Beam API by concating it with the address.
      */
-    public buildAddress (base: string, path: string, querystr?: (string | Object)): string {
+    public buildAddress(base: string, path: string, querystr?: (string | Object)): string {
         let url = base;
 
         // Strip any trailing slash from the base
@@ -78,7 +82,7 @@ export class Client {
     /**
      * Creates and returns an authentication provider instance.
      */
-    public use (provider: Provider): this {
+    public use(provider: Provider): this {
         this.provider = provider;
         return this;
     }
@@ -87,7 +91,7 @@ export class Client {
      * Returns the associated provider instance, as set by the
      * `use` method.
      */
-    public getProvider (): Provider {
+    public getProvider(): Provider {
         return this.provider;
     }
 
@@ -105,7 +109,7 @@ export class Client {
                 },
                 json: true,
             },
-            this.provider && this.provider.getRequest()
+            this.provider && this.provider.getRequest(),
         );
 
         return this.requestRunner.run(req)

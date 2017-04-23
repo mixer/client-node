@@ -82,19 +82,19 @@ export interface IBeamChannel {
      */
     hasVod: boolean;
     /**
-     * TODO: Find out what this is for.
+     * Language id.
      */
-    languageId: number;
+    languageId: string;
     /**
      * The Id of the cover the channel has set.
      */
     coverId: number;
     /**
-     * TODO: Find out what this is for.
+     * Id of the channel thumbnail resource.
      */
     thumbnailId: number;
     /**
-     * TODO: Find out what this is for.
+     * Id of the channel badge resource.
      */
     badgeId: number;
     /**
@@ -137,9 +137,9 @@ export interface IBeamChannel {
         /**
          * The type of the cover.
          */
-            type: string;
+        type: string;
         /**
-         * TODO: Find out what this is for.
+         * Channel id
          */
         relid: number;
         /**
@@ -159,10 +159,6 @@ export interface IBeamChannel {
          */
         updatedAt: string;
     };
-    /**
-     * TODO: Find out what this is for.
-     */
-    badge: string;
     /**
      * Data about the "game" type being streamed.
      */
