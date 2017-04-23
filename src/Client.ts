@@ -1,8 +1,8 @@
-import { Provider } from './providers/Provider';
-const pkg = require('../package.json'); // tslint:disable-line no-var-requires no-require-imports
 import { defaultsDeep } from 'lodash';
+import * as querystring from 'querystring';
 import { RequestResponse } from 'request';
 
+import { Provider } from './providers/Provider';
 import {
     DefaultRequestRunner,
     IOptionalUrlRequestOptions,
@@ -10,7 +10,8 @@ import {
     IRequestRunner,
 } from './RequestRunner';
 
-import * as querystring from 'querystring';
+// DO NOT EDIT, THIS IS UPDATE BY THE BUILD SCRIPT
+const packageVersion = ''; // package version
 
 export interface IRequestResponse<T> extends RequestResponse {
     body: T;
@@ -32,7 +33,7 @@ export class Client {
     }
 
     private buildUserAgent () {
-        const client = 'BeamClient/' + pkg.version;
+        const client = `BeamClient/${packageVersion}`;
 
         if (typeof navigator !== 'undefined') { // in-browser
             return navigator.userAgent + ' ' + client;

@@ -1,8 +1,18 @@
-import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError } from '../errors';
-import { Reply } from './Reply';
 import { EventEmitter } from 'events';
 import * as NodeWebSocket from 'ws';
-import { IUserAuthenticated, IChatMessage, IUserUpdate, IPollEvent, IPurgeMessage, IUserConnection, IUserTimeout, IDeleteMessage } from '../defs/chat';
+
+import {
+    IChatMessage,
+    IDeleteMessage,
+    IPollEvent,
+    IPurgeMessage,
+    IUserAuthenticated,
+    IUserConnection,
+    IUserTimeout,
+    IUserUpdate,
+} from '../defs/chat';
+import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError } from '../errors';
+import { Reply } from './Reply';
 
 // The method of the authentication packet to store.
 const authMethod = 'auth';
@@ -66,13 +76,13 @@ function wrapDOM (socket: WebSocket) {
 }
 
 export interface IGenericWebSocket {
+    // tslint:disable-next-line: no-misused-new
     new (address: string): IGenericWebSocket;
     close() : void;
     on(ev: string, listener: (arg: any) => void): this;
     once(ev: string, listener: (arg: any) => void): this;
     send(data: string): void;
 }
-
 
 export interface ICallOptions {
     /**
