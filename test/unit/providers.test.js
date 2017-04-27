@@ -2,10 +2,9 @@ const sinon = require('sinon');
 const { expect } = require('chai');
 
 describe('providers', function () {
-    const { AuthenticationFailedError } = require('../..');
+    const { AuthenticationFailedError, OAuthProvider } = require('../../src');
 
     describe('oauth', function () {
-        const { OAuthProvider } = require('../..');
         let provider;
         const redir = 'http://localhost';
 

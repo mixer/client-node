@@ -11,7 +11,7 @@ describe('websocket', () =>{
         BadMessageError,
         TimeoutError,
         NoMethodHandlerError,
-    } = require('../..');
+    } = require('../../src');
     let socket;
     let raw;
     let factoryStub;

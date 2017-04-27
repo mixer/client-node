@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 
 describe('services', () =>{
-    const { Service, NotAuthenticatedError, UnknownCodeError } = require('../..');
+    const { Service, NotAuthenticatedError, UnknownCodeError } = require('../../src');
     let service;
 
     beforeEach(() => {
