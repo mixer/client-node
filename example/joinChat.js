@@ -1,16 +1,11 @@
-const { Client, PasswordProvider } = require('beam-client-node');
+const { Client, OAuthProvider } = require('beam-client-node');
 
 const channel = 2;
 const beam = new Client();
-beam.user(new PasswordProvider(beam, {
-    username: 'connor',
-    password: 'password',
+beam.use(new OAuthProvider(beam, {
+    clientId: 'your-client-id',
+    secret: 'your-optional-secret-key',
 }))
-
-beam.use('password', {
-    username: 'connor',
-    password: 'password',
-})
 .attempt()
 .then(() => beam.chat.join(channel))
 .then(res => {

@@ -1,5 +1,5 @@
 // tslint:disable-next-line import-name no-require-imports
-import defaultsDeep = require('lodash.defaultsdeep');
+import { all } from 'deepmerge';
 import * as querystring from 'querystring';
 
 import { Provider } from './providers/Provider';
@@ -95,8 +95,8 @@ export class Client {
      * Attempts to run a given request.
      */
     public request<T>(method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<IResponse<T>> {
-        const req = defaultsDeep<IOptionalUrlRequestOptions, IRequestOptions>(
-            data,
+        const req = all([
+            this.provider ? this.provider.getRequest() : {},
             {
                 method: method || '',
                 url: this.buildAddress(this.urls.api, path || ''),
@@ -105,13 +105,13 @@ export class Client {
                 },
                 json: true,
             },
-            this.provider && this.provider.getRequest(),
-        );
+            data,
+        ]);
 
-        return this.requestRunner.run(req)
+        return this.requestRunner.run(<IRequestOptions>req)
         .catch(err => {
             if (this.provider) {
-                return this.provider.handleResponseError(err, req);
+                return this.provider.handleResponseError(err, <IRequestOptions>req);
             }
             throw err;
         });

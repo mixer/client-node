@@ -1,5 +1,5 @@
 import { Client } from '../Client';
-import { IRequestOptions, IResponse } from '../RequestRunner';
+import { IOptionalUrlRequestOptions, IRequestOptions, IResponse } from '../RequestRunner';
 
 /**
  * Base class for service provider.
@@ -11,7 +11,7 @@ export abstract class Provider {
     /**
      * Returns info to add to the client's request.
      */
-    public getRequest(): Object {
+    public getRequest(): IOptionalUrlRequestOptions {
         return {};
     }
 
