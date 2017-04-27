@@ -54,8 +54,12 @@ describe('beam client', function() {
     });
 
     it('creates and uses a provider', function() {
-        const { PasswordProvider } = require('../..');
-        const provider = new PasswordProvider(this.client, { username: 'connor', password: 'password' })
+        const { OAuthProvider } = require('../..');
+        const provider = new OAuthProvider(this.client, {
+            clientId: 'dummy',
+            secret: 'dummy',
+            tokens: {},
+        })
         this.client.use(provider);
         expect(this.client.getProvider()).to.equal(provider);
     });

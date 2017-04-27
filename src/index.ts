@@ -4,7 +4,6 @@ export * from './defs/interactive';
 export * from './defs/oauth';
 export * from './defs/user';
 export * from './providers/OAuth';
-export * from './providers/Password';
 export * from './providers/Provider';
 export * from './services/Channel';
 export * from './services/Chat';

@@ -36,7 +36,7 @@ export interface IQueryAttemptQueryString {
 }
 
 /**
- * Provider for password-based authentication.
+ * Provider for oauth-based authentication.
  */
 export class OAuthProvider extends Provider {
     private details: {
