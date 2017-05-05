@@ -1,7 +1,7 @@
-const { Client, OAuthProvider } = require('beam-client-node');
+const { Client, OAuthProvider, DefaultRequestRunner } = require('beam-client-node');
 
 const channel = 2;
-const beam = new Client();
+const beam = new Client(new DefaultRequestRunner());
 beam.use(new OAuthProvider(beam, {
     clientId: 'your-client-id',
     secret: 'your-optional-secret-key',

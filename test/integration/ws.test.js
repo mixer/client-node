@@ -3,13 +3,13 @@
 const { expect } = require('chai');
 
 describe('websocket', () => {
-    const { BeamSocket, Client, ChatService, OAuthProvider } = require('../..');
+    const { BeamSocket, Client, ChatService, OAuthProvider, DefaultRequestRunner } = require('../../src');
     const WebSocket = require('ws');
     let socket;
     let body;
 
     beforeEach(() => {
-        const client = new Client();
+        const client = new Client(new DefaultRequestRunner());
         client.setUrl('http://localhost:1337/api/v1');
         // TODO: Fix this!
         client.use(new OAuthProvider(client, {

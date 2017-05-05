@@ -1,4 +1,4 @@
-const { Client, OAuthProvider, ChatService } = require('../');
+const { Client, OAuthProvider, ChatService, DefaultRequestRunner } = require('../');
 
 const express = require('express');
 const app = express();
@@ -8,7 +8,7 @@ const app = express();
  * @return {Client}
  */
 function getClient() {
-    const client = new Client();
+    const client = new Client(new DefaultRequestRunner());
     client.use(new OAuthProvider(client, {
         clientId: 'your-client-id',
         secret: 'your-optional-secret-key',

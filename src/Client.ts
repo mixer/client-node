@@ -93,7 +93,7 @@ export class Client {
     /**
      * Attempts to run a given request.
      */
-    public request<T>(method: string, path: string, data?: IOptionalUrlRequestOptions): Promise<IResponse<T>> {
+    public request<T>(method: string, path: string, data: IOptionalUrlRequestOptions = {}): Promise<IResponse<T>> {
         const req = all([
             this.provider ? this.provider.getRequest() : {},
             {
