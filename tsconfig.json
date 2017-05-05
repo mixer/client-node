@@ -11,12 +11,11 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "strictNullChecks": false,
-        "module": "commonjs",
+        "module": "es2015",
         "sourceMap": true,
         "target": "es5",
-        "pretty": true,
+        "outDir": "dist/module",
         "declaration": true,
-        "outDir": "dist",
         "lib": [
             "dom",
             "es2015"

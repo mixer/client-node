@@ -4,7 +4,6 @@ import * as querystring from 'querystring';
 
 import { Provider } from './providers/Provider';
 import {
-    DefaultRequestRunner,
     IOptionalUrlRequestOptions,
     IRequestOptions,
     IRequestRunner,
@@ -28,7 +27,7 @@ export class Client {
      * The primary Beam client, responsible for storing authentication state
      * and dispatching requests to the API.
      */
-    constructor(private requestRunner: IRequestRunner = new DefaultRequestRunner()) {
+    constructor(private requestRunner: IRequestRunner) {
         this.userAgent = this.buildUserAgent();
     }
 
