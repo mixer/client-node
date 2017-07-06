@@ -487,7 +487,8 @@ export class Socket extends EventEmitter {
      * @fires Socket#spooled
      */
     protected send(
-        data: { id: number, type: string, method: string, args: any[] },
+        // tslint:disable-next-line no-banned-terms
+        data: { id: number, type: string, method: string, arguments: any[] },
         options: { force?: boolean } = {},
     ): Promise<void> {
         if (this.isConnected() || options.force) {
@@ -549,7 +550,7 @@ export class Socket extends EventEmitter {
             {
                 type: 'method',
                 method: method,
-                args,
+                arguments: args,
                 id: id,
             },
             options,
