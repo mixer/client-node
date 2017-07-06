@@ -7,7 +7,7 @@ export interface IOptionalUrlRequestOptions extends request.CoreOptions {
 export type IRequestOptions = request.CoreOptions & (request.UriOptions | request.UrlOptions);
 
 export interface IRequestRunner {
-    run(options: IRequestOptions) : Promise<request.RequestResponse>;
+    run(options: IRequestOptions): Promise<request.RequestResponse>;
 }
 
 export interface IResponse<T> extends request.RequestResponse {

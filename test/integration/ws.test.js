@@ -3,7 +3,7 @@
 const { expect } = require('chai');
 
 describe('websocket', () => {
-    const { BeamSocket, Client, ChatService, OAuthProvider, DefaultRequestRunner } = require('../../src');
+    const { Socket, Client, ChatService, OAuthProvider, DefaultRequestRunner } = require('../../src');
     const WebSocket = require('ws');
     let socket;
     let body;
@@ -23,7 +23,7 @@ describe('websocket', () => {
         }))
         return new ChatService(client).join(2)
         .then(res => {
-            socket = new BeamSocket(WebSocket, res.body.endpoints);
+            socket = new Socket(WebSocket, res.body.endpoints);
             body = res.body;
             socket.boot();
         });

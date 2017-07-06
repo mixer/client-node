@@ -1,6 +1,6 @@
-import { IBeamChannel } from './channel';
+import { IChannel } from './channel';
 
-export interface IBeamUser {
+export interface IUser {
     /**
      * The user Id.
      */
@@ -76,7 +76,7 @@ export interface IBeamUser {
     deletedAt: string;
 }
 
-export interface IBeamUserSelf extends IBeamUser {
+export interface IUserSelf extends IUser {
     /**
      *
      */
@@ -84,7 +84,7 @@ export interface IBeamUserSelf extends IBeamUser {
     /**
      * The users channel.
      */
-    channel: IBeamChannel;
+    channel: IChannel;
     /**
      * The users email address.
      */

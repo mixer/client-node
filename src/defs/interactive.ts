@@ -77,7 +77,7 @@ export interface IVersion {
 
 export interface IControls {
     /**
-     * How frequently the interactive app and the controls on Beam communicate.
+     * How frequently the interactive app and the controls on Mixer communicate.
      */
     reportInterval: number;
     /**

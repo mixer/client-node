@@ -1,6 +1,6 @@
-import { IBeamUser, IUserGroup } from './user';
+import { IUser, IUserGroup } from './user';
 
-export interface IBeamChannel {
+export interface IChannel {
     /**
      * The channel Id.
      */
@@ -198,7 +198,7 @@ export interface IBeamChannel {
     };
 }
 
-export interface IBeamChannelUser<T> extends IBeamChannel {
+export interface IChannelWithUser<T> extends IChannel {
     /**
      * The user object.
      */
@@ -220,7 +220,7 @@ export interface IChannelPreferences {
     sharetext: string;
 }
 
-export interface IChannelUser extends IBeamUser {
+export interface IChannelUser extends IUser {
     /**
      * The array of groups which the user has on the channel. I.E. Mod
      */

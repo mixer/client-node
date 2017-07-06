@@ -1,13 +1,13 @@
 const { Client, OAuthProvider, DefaultRequestRunner } = require('beam-client-node');
 
 const channel = 2;
-const beam = new Client(new DefaultRequestRunner());
-beam.use(new OAuthProvider(beam, {
+const client = new Client(new DefaultRequestRunner());
+client.use(new OAuthProvider(client, {
     clientId: 'your-client-id',
     secret: 'your-optional-secret-key',
 }))
 .attempt()
-.then(() => beam.chat.join(channel))
+.then(() => client.chat.join(channel))
 .then(res => {
     console.log('join chat response:', res);
 })

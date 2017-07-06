@@ -9,7 +9,7 @@ export * from './services/Channel';
 export * from './services/Chat';
 export * from './services/Game';
 export * from './services/Service';
-export * from './ws/BeamSocket';
+export * from './ws/Socket';
 export * from './ws/Reply';
 export * from './Client';
 export * from './errors';

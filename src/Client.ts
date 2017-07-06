@@ -20,11 +20,11 @@ export class Client {
     private provider: Provider;
     private userAgent: string;
     public urls = {
-        api: 'https://beam.pro/api/v1',
-        public: 'https://beam.pro',
+        api: 'https://mixer.com/api/v1',
+        public: 'https://mixer.com',
     };
     /**
-     * The primary Beam client, responsible for storing authentication state
+     * The primary Mixer client, responsible for storing authentication state
      * and dispatching requests to the API.
      */
     constructor(private requestRunner: IRequestRunner) {
@@ -32,7 +32,7 @@ export class Client {
     }
 
     private buildUserAgent() {
-        const client = `BeamClient/${packageVersion}`;
+        const client = `MixerClient/${packageVersion}`;
         // tslint:disable-next-line no-typeof-undefined
         if (typeof navigator !== 'undefined') { // in-browser
             return navigator.userAgent + ' ' + client;
@@ -50,7 +50,7 @@ export class Client {
     }
 
     /**
-     * Builds a path to the Beam API by concating it with the address.
+     * Builds a path to the Mixer API by concating it with the address.
      */
     public buildAddress(base: string, path: string, querystr?: (string | Object)): string {
         let url = base;
@@ -114,5 +114,5 @@ export class Client {
             }
             throw err;
         });
-    };
+    }
 }

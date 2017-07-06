@@ -1,5 +1,5 @@
 import { IGame, IInteractiveChannel, IVersion } from '../defs/interactive';
-import { IBeamUser } from '../defs/user';
+import { IUser } from '../defs/user';
 import { IResponse } from '../RequestRunner';
 import { Service } from '../services/Service';
 
@@ -13,11 +13,11 @@ export interface IGameVersioned extends IGame {
 }
 
 export interface IPublished extends IGame {
-    owner: IBeamUser;
+    owner: IUser;
 }
 
 /**
- * Service for interacting with the game endpoints on the Beam REST API.
+ * Service for interacting with the game endpoints on the Mixer REST API.
  * @access public
  * @augments {Service}
  */
@@ -41,7 +41,9 @@ export class GameService extends Service {
      * Updates a game from a specified game ID.
      */
     public updateGame(gameId: number, data: Partial<IGame>): Promise<IResponse<IGame>> {
-        return this.makeHandled<IGame>('put', `interactive/games/${gameId}`, data);
+        return this.makeHandled<IGame>('put', `interactive/games/${gameId}`, {
+            body: data,
+        });
     }
 
     /**
@@ -70,7 +72,7 @@ export class GameService extends Service {
      */
     public ownedGameVersions(userId: number, gameId: number): Promise<IResponse<IGameVersioned>> {
         return this.makeHandled<IGameVersioned>('get', `interactive/games/owned?user=${userId}&where=id.eq.${gameId}`);
-    };
+    }
 
     /**
      * Gets all the games that are published.
@@ -83,7 +85,9 @@ export class GameService extends Service {
      * Creates a new interactive game.
      */
     public create(data: Pick<IGame, 'ownerId' | 'name' | 'description' | 'installation'>): Promise<IResponse<IGame>> {
-        return this.makeHandled<IGame>('post', 'interactive/games', data);
+        return this.makeHandled<IGame>('post', 'interactive/games', {
+            body: data,
+        });
     }
 
     /**
@@ -92,7 +96,9 @@ export class GameService extends Service {
     public createVersion(
         data: Pick<IVersion, 'gameId' | 'version' | 'changelog' | 'installation' | 'download' | 'controls'>,
     ): Promise<IResponse<IVersion>> {
-        return this.makeHandled<IVersion>('post', 'interactive/versions', data);
+        return this.makeHandled<IVersion>('post', 'interactive/versions', {
+            body: data,
+        });
     }
 
     /**
@@ -102,6 +108,8 @@ export class GameService extends Service {
         versionId: number,
         data: Pick<IVersion, 'version' | 'changelog' | 'installation' | 'download' | 'controls'>,
     ): Promise<IResponse<IVersion>> {
-        return this.makeHandled<IVersion>('put', `interactive/versions/${versionId}`, data);
+        return this.makeHandled<IVersion>('put', `interactive/versions/${versionId}`, {
+            body: data,
+        });
     }
 }

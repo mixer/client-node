@@ -1,18 +1,18 @@
-# Beam Websocket
+# Mixer Websocket
 
-This is a (the?) official reference for implementing the Beam websocket. It's made to be user-friendly, very high performant, and stable. Events are implemented using the standard EventEmitter and "method" calls are done like any other promise-based Node.js library.
+This is a (the?) official reference for implementing the Mixer websocket. It's made to be user-friendly, very high performant, and stable. Events are implemented using the standard EventEmitter and "method" calls are done like any other promise-based Node.js library.
 
-You can read more about the chat server on our developers site: [https://developer.beam.pro/api/chatproto](https://developer.beam.pro/api/chatproto).
+You can read more about the chat server on our developers site: [https://developer.mixer.com/api/chatproto](https://developer.mixer.com/api/chatproto).
 
 Your usage may look something like this:
 
 ```js
 // Require the socket
-const { BeamSocket } = require('beam-client-node');
+const { Socket } = require('beam-client-node');
 // Some function that gets the JSON response from `GET /chats/:id`.
 const data = getDataFromChannelJoinEndpoint();
 
-const socket = new BeamSocket(data.endpoints).boot();
+const socket = new Socket(data.endpoints).boot();
 
 // You don't need to wait for the socket to connect before calling methods,
 // we spool them and run them when connected automatically!
@@ -31,15 +31,15 @@ socket.on('ChatMessage', data => {
 });
 ```
 
-## Class: BeamSocket
+## Class: Socket
 
 A basic websocket client. It's an EventEmitter.
 
-### new BeamSocket(addresses)
+### new Socket(addresses)
 
 Construct a new socket client, using the list of addresses returned from the `GET /chats/:id` endpoint. Behind the scenes we load balance and do failover for you. How nice!
 
-### BeamSocket.{IDLE|CONNECTED|CLOSED|ABORTED}
+### Socket.{IDLE|CONNECTED|CLOSED|ABORTED}
 
 Status constants for comparison with what you get from `.getStatus()`. Note that these are attached to the _class_, not the _prototype_.
 
@@ -49,7 +49,7 @@ Starts up the client; attempts to connect to the server.
 
 ### socket.getStatus()
 
-Returns a status constant (as listed above). Should be compared like `socket.getStatus === BeamSocket.CONNECTED`.
+Returns a status constant (as listed above). Should be compared like `socket.getStatus === Socket.CONNECTED`.
 
 ### socket.isConnected()
 

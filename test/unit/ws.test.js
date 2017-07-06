@@ -7,7 +7,7 @@ const { EventEmitter } = require('events');
 describe('websocket', () =>{
     const {
         AuthenticationFailedError,
-        BeamSocket,
+        Socket,
         BadMessageError,
         TimeoutError,
         NoMethodHandlerError,
@@ -43,7 +43,7 @@ describe('websocket', () =>{
         MockSocket.prototype.send = sinon.spy();
 
         clock = sinon.useFakeTimers();
-        socket = new BeamSocket(MockSocket, ['a', 'b']).boot();
+        socket = new Socket(MockSocket, ['a', 'b']).boot();
     });
 
     afterEach(() =>{
@@ -58,10 +58,10 @@ describe('websocket', () =>{
     });
 
     it('gets status and connected correctly', () =>{
-        socket = new BeamSocket(MockSocket, ['a', 'b']);
-        expect(socket.getStatus()).to.equal(BeamSocket.IDLE);
+        socket = new Socket(MockSocket, ['a', 'b']);
+        expect(socket.getStatus()).to.equal(Socket.IDLE);
         expect(socket.isConnected()).to.be.false;
-        socket.status = BeamSocket.CONNECTED;
+        socket.status = Socket.CONNECTED;
         expect(socket.isConnected()).to.be.true;
     });
 
@@ -70,11 +70,11 @@ describe('websocket', () =>{
         socket.on('error', (err) => { lastErr = err; });
         const parse = sinon.stub(socket, 'parsePacket');
 
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(Socket.CONNECTING);
 
         raw.emit('open');
         socket.emit('WelcomeEvent');
-        expect(socket.status).to.equal(BeamSocket.CONNECTED);
+        expect(socket.status).to.equal(Socket.CONNECTED);
 
         raw.emit('message', 'asdf');
         expect(parse.calledWith('asdf')).to.be.true;
@@ -84,14 +84,14 @@ describe('websocket', () =>{
         expect(lastErr).to.equal(err);
         expect(raw.close.called).to.be.true;
         raw.emit('close');
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(Socket.CONNECTING);
     });
 
     it('kills the connection if no WelcomeEvent is received', () =>{
         socket.on('error', () =>{});
 
         raw.emit('open');
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(Socket.CONNECTING);
         clock.tick(5000);
 
         expect(raw.close).to.have.been.calledOnce;
@@ -110,7 +110,7 @@ describe('websocket', () =>{
         socket.on('error', () =>{});
         socket.on('reconnecting', reconnectStub);
 
-        expect(socket.status).to.equal(BeamSocket.CONNECTING);
+        expect(socket.status).to.equal(Socket.CONNECTING);
         expect(factoryStub.callCount).to.equal(1);
         sinon.stub(socket, 'getNextReconnectInterval').returns(500);
 
@@ -136,9 +136,9 @@ describe('websocket', () =>{
     it('closes the websocket connection', () =>{
         socket.close();
         expect(raw.close.called).to.be.true;
-        expect(socket.status).to.equal(BeamSocket.CLOSING);
+        expect(socket.status).to.equal(Socket.CLOSING);
         raw.emit('close');
-        expect(socket.status).to.equal(BeamSocket.CLOSED);
+        expect(socket.status).to.equal(Socket.CLOSED);
     });
 
     it('cancels reconnection on close', () =>{
@@ -332,7 +332,7 @@ describe('websocket', () =>{
 
     describe('method calling', () =>{
         beforeEach(() =>{
-            socket.status = BeamSocket.CONNECTED;
+            socket.status = Socket.CONNECTED;
             sinon.stub(socket, 'send').returns(resolveSync);
         });
 

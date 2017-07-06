@@ -6,7 +6,7 @@ import { IncomingMessage } from 'http';
  * Base error for all fe2 stuff.
  * This also acts as a polyfill when building with ES5 target.
  */
-export abstract class BeamClientError extends Error {
+export abstract class ClientError extends Error {
     constructor(public readonly message: string) {
         super();
         if (this.stack) {
@@ -21,7 +21,7 @@ export abstract class BeamClientError extends Error {
         this.stack = stack.join('\n');
     }
 
-    protected static setProto(error: BeamClientError) {
+    protected static setProto(error: ClientError) {
         if (Object.setPrototypeOf) {
             Object.setPrototypeOf(error, this.prototype);
             return;
@@ -34,7 +34,7 @@ export abstract class BeamClientError extends Error {
  * Emitted by our WebSocket when we get a bad packet; one that is binary,
  * we can't decode, or has a type we don't know about.
  */
-export class BadMessageError extends BeamClientError {
+export class BadMessageError extends ClientError {
     constructor(msg: string) {
         super(msg);
         BadMessageError.setProto(this);
@@ -45,7 +45,7 @@ export class BadMessageError extends BeamClientError {
  * Emitted by our WebSocket when we get get a "reply" to a method
  * that we don't have a handler for.
  */
-export class NoMethodHandlerError extends BeamClientError {
+export class NoMethodHandlerError extends ClientError {
     constructor(msg: string) {
         super(msg);
         NoMethodHandlerError.setProto(this);
@@ -55,14 +55,14 @@ export class NoMethodHandlerError extends BeamClientError {
 /**
  * Basic "response" error message from which others inherit.
  */
-export abstract class ResponseError extends BeamClientError {
+export abstract class ResponseError extends ClientError {
     constructor(public res: IncomingMessage | string) {
         super(typeof res === 'string' ? res : 'Response error');
     }
 }
 
 /**
- * Emitted when we try to connect to the Beam API, but have invalid
+ * Emitted when we try to connect to the Mixer API, but have invalid
  * credentials.
  */
 export class AuthenticationFailedError extends ResponseError {
@@ -97,7 +97,7 @@ export class NotAuthenticatedError extends ResponseError {
  * A TimeoutError is thrown in call if we don't get a response from the
  * chat server within a certain interval.
  */
-export class TimeoutError extends BeamClientError {
+export class TimeoutError extends ClientError {
     constructor() {
         super('Timeout');
         TimeoutError.setProto(this);

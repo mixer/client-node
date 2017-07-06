@@ -28,7 +28,7 @@ function getRedirectUri() {
 
 /**
  * Users going to the index page are redirected to the main
- * Beam site to give authorization for you to connect to chat.
+ * Mixer site to give authorization for you to connect to chat.
  */
 app.get('/', (req, res) => {
     const url = getClient().getProvider().getRedirect(getRedirectUri(), ['chat:connect']);
