@@ -1,18 +1,16 @@
-var Beam = require('../');
+const { Client, OAuthProvider, DefaultRequestRunner } = require('beam-client-node');
 
-var channel = 2;
-var beam = new Beam();
-
-beam.use('password', {
-    username: 'connor',
-    password: 'password',
-})
-.attempt().then(function () {
-    return beam.chat.join(channel);
-})
-.then(function (res) {
+const channel = 2;
+const client = new Client(new DefaultRequestRunner());
+client.use(new OAuthProvider(client, {
+    clientId: 'your-client-id',
+    secret: 'your-optional-secret-key',
+}))
+.attempt()
+.then(() => client.chat.join(channel))
+.then(res => {
     console.log('join chat response:', res);
 })
-.catch(function (err) {
+.catch(err => {
     console.log('error joining chat:', err);
 });

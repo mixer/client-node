@@ -1,0 +1,92 @@
+{
+    "extends": "tslint-microsoft-contrib",
+    "rulesDirectory": [
+        "node_modules/tslint-microsoft-contrib"
+    ],
+    "rules": {
+
+        // Basic
+        "import-blacklist": [
+            true,
+            "rxjs/Rx",
+            "rxjs"
+        ],
+        "no-multiline-string": false,
+        "arrow-parens": [true, "ban-single-arg-parens"],
+        "max-file-line-count": [false],
+        "jsdoc-format": true,
+        //"cyclomatic-complexity": [true, 20],
+        // Basic w/ types
+        "no-for-in-array": false, // These are disables as `--type-check` causes a crash with the angular compiler.
+        "restrict-plus-operands": false,
+
+        // Microsoft
+        "no-relative-imports": false,
+        "mocha-no-side-effect-code": false,
+        "no-reserved-keywords": false,
+        "missing-jsdoc": false,
+        "export-name": false,
+        "no-any": false,
+        "no-increment-decrement": false,
+        "trailing-comma": [true, {"multiline": "always", "singleline": "never"}],
+        "no-typeof-undefined": false,
+        "underscore-consistent-invocation": false,
+        "no-backbone-get-set-outside-model": false,
+        "function-name": [true, {
+            "method-regex": "^[a-z][\\w\\d]+$",
+            "private-method-regex": "^[a-z][\\w\\d]+$",
+            "static-method-regex": "^[a-z][\\w\\d]+$",
+            "function-regex": "^[a-z][\\w\\d]+$"
+        }],
+        "typedef-whitespace": [
+            true,
+            {
+                "call-signature": "nospace",
+                "index-signature": "nospace",
+                "parameter": "nospace",
+                "property-declaration": "nospace",
+                "variable-declaration": "nospace"
+            },
+            {
+                "call-signature": "onespace",
+                "index-signature": "onespace",
+                "parameter": "onespace",
+                "property-declaration": "onespace",
+                "variable-declaration": "onespace"
+            }
+        ],
+        "no-stateless-class": false,
+        "insecure-random": false,
+        "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"], // for unused params
+        "completed-docs": [false],
+
+        "typedef": [false],
+        "no-import-side-effect": false,
+        "newline-before-return": false,
+        "no-unsafe-any": false,
+        "promise-function-async": false,
+        "no-void-expression": false,
+        "no-parameter-properties": false,
+        "no-single-line-block-comment": false,
+        "strict-boolean-expressions": false,
+        "member-ordering": [false],
+        "no-floating-promises": false,
+        "prefer-method-signature": false,
+        "prefer-template": false,
+        "max-classes-per-file": [false],
+        "no-unnecessary-callback-wrapper": false,
+        "prefer-for-of": false,
+        "no-invalid-template-strings": false,
+        "no-use-before-declare": false,
+        "unified-signatures": false,
+        "match-default-export-name": false,
+
+        "no-suspicious-comment": false, // For the duration of pre-release development these will be fine, rm and fix on before release.
+        "no-string-literal": false,
+        "no-string-throw": true,
+        "no-empty-line-after-opening-brace": false,
+        "no-function-expression": true,
+        "no-unused-expression": false,
+        "no-bitwise": false
+    }
+}

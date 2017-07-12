@@ -1,34 +1,33 @@
-var expect = require('chai').expect;
-var errors = require('../../lib/errors');
+const expect = require('chai').expect;
 
-describe('services', function () {
-    var Service = require('../../lib/services/service');
-    var service;
+describe('services', () =>{
+    const { Service, NotAuthenticatedError, UnknownCodeError } = require('../../src');
+    let service;
 
-    beforeEach(function () {
+    beforeEach(() => {
         service = new Service();
     });
 
-    it('handles a successful response', function () {
-        var res = { statusCode: 200, body: 'foo' };
+    it('handles a successful response', () => {
+        const res = { statusCode: 200, body: 'foo' };
         expect(service.handleResponse(res, {})).to.deep.equal({ statusCode: 200, body: 'foo' });
     });
 
-    it('handles a response given a handler', function () {
-        var res = { statusCode: 401, body: '"foo"' };
-        expect(function () {
+    it('handles a response given a handler', () => {
+        const res = { statusCode: 401, body: '"foo"' };
+        expect(() => {
             service.handleResponse(res, {
-                401: errors.NotAuthenticatedError,
+                401: NotAuthenticatedError,
             });
-        }).to.throw(errors.NotAuthenticatedError);
+        }).to.throw(NotAuthenticatedError);
     });
 
-    it('handles a response that has no handler', function () {
-        var res = { statusCode: 500, body: '"foo"' };
-        expect(function () {
+    it('handles a response that has no handler', () => {
+        const res = { statusCode: 500, body: '"foo"' };
+        expect(() => {
             service.handleResponse(res, {
-                401: errors.NotAuthenticatedError,
+                401: NotAuthenticatedError,
             });
-        }).to.throw(errors.UnknownCodeError);
+        }).to.throw(UnknownCodeError);
     });
 });

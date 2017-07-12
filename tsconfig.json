@@ -1,10 +1,42 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es5"
-  },
-  "exclude": [
-    "node_modules"
-  ]
+    "compilerOptions": {
+        "forceConsistentCasingInFileNames": true,
+        "allowSyntheticDefaultImports": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictNullChecks": false,
+        "module": "es2015",
+        "sourceMap": true,
+        "target": "es5",
+        "outDir": "dist/module",
+        "declaration": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ],
+        "typeRoots": [
+            "node_modules/@types"
+        ],
+        "types": [
+            "node"
+        ]
+    },
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "angularCompilerOptions": {
+        "genDir": "compiled",
+        "skipMetadataEmit": false,
+        "strictMetadataEmit": true
+    }
 }
