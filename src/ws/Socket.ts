@@ -510,14 +510,14 @@ export class Socket extends EventEmitter {
      * and join a specified channel. If you wish to join anonymously, user
      * and authkey can be omitted.
      */
-    public auth(id: number, user: number, authkey: string): Promise<IUserAuthenticated> {
-        this._authpacket = [id, user, authkey];
+    public auth(id: number, user: number, authkey: string, accessKey?: string): Promise<IUserAuthenticated> {
+        this._authpacket = [id, user, authkey, accessKey];
 
         // Two cases here: if we're already connected, with send the auth
         // packet immediately. Otherwise we wait for a `connected` event,
         // which won't be sent until after we re-authenticate.
         if (this.isConnected()) {
-            return this.call('auth', [id, user, authkey]);
+            return this.call('auth', [id, user, authkey, accessKey]);
         }
 
         return new Socket.Promise(resolve => this.once('authresult', resolve));

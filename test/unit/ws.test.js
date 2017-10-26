@@ -314,7 +314,7 @@ describe('websocket', () =>{
                 done();
             });
 
-            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
+            expect(socket._authpacket).to.deep.equal([1, 2, 3, undefined]);
             expect(called).to.be.false;
             socket.emit('authresult', 'ok');
         });
@@ -325,8 +325,18 @@ describe('websocket', () =>{
 
             sinon.stub(socket, 'call').returns('ok!');
             expect(socket.auth(1, 2, 3)).to.equal('ok!');
-            expect(socket._authpacket).to.deep.equal([1, 2, 3]);
-            expect(socket.call.calledWith('auth', [1, 2, 3])).to.be.true;
+            expect(socket._authpacket).to.deep.equal([1, 2, 3, undefined]);
+            expect(socket.call.calledWith('auth', [1, 2, 3, undefined])).to.be.true;
+        });
+
+        it('passes through the access key', () =>{
+            raw.emit('open');
+            socket.emit('WelcomeEvent');
+
+            sinon.stub(socket, 'call').returns('ok!');
+            expect(socket.auth(1, 2, 3, 'heyo')).to.equal('ok!');
+            expect(socket._authpacket).to.deep.equal([1, 2, 3, 'heyo']);
+            expect(socket.call.calledWith('auth', [1, 2, 3, 'heyo'])).to.be.true;
         });
     });
 
