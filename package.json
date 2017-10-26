@@ -1,6 +1,6 @@
 {
   "name": "beam-client-node",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "main": "dist/commonjs",
   "module": "dist/module",
   "typings": "dist/module/index.d.ts",
