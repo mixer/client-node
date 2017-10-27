@@ -40,7 +40,7 @@ function isNodeWebSocket(socket: any): socket is NodeWebSocket {
 /**
  * Wraps a DOM socket with EventEmitter-like syntax.
  */
-function wrapDOM(socket: WebSocket) {
+export function wrapDOM(socket: WebSocket) {
     function wrapHandler(event: string, fn: (ev: Event) => void) {
         return (ev: Event) => {
             if (event === 'message') {
@@ -69,7 +69,7 @@ function wrapDOM(socket: WebSocket) {
 
 export interface IGenericWebSocket {
     // tslint:disable-next-line: no-misused-new
-    new (address: string): IGenericWebSocket;
+    new (address: string, subprotocols?: string[]): IGenericWebSocket;
     close(): void;
     on(ev: string, listener: (arg: any) => void): this;
     once(ev: string, listener: (arg: any) => void): this;
@@ -161,7 +161,12 @@ export class Socket extends EventEmitter {
     constructor(
         private wsCtor: IGenericWebSocket,
         addresses: string[],
-        private options: { pingInterval: number, pingTimeout: number, callTimeout: number },
+        private options: {
+            pingInterval: number,
+            pingTimeout: number,
+            callTimeout: number,
+            protocolVersion?: string,
+        },
     ) {
         super();
 
@@ -170,6 +175,7 @@ export class Socket extends EventEmitter {
                 pingInterval: 15 * 1000,
                 pingTimeout: 5 * 1000,
                 callTimeout: 20 * 1000,
+                protocolVersion: '1.0',
             },
             options,
         );
@@ -340,7 +346,11 @@ export class Socket extends EventEmitter {
      * @fires Socket#error
      */
     public boot() {
-        const ws = this.ws = new this.wsCtor(this.getAddress());
+        const ws = this.ws = new this.wsCtor(
+            this.getAddress(),
+            [`mixer-chat-${this.options.protocolVersion}`],
+        );
+
         if (isBrowserWebSocket(ws)) {
             wrapDOM(<WebSocket><any>ws);
         }
