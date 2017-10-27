@@ -36,4 +36,3 @@ typings
 *.sublime-project
 *.sublime-workspace
 /dist
-/package-lock.json
