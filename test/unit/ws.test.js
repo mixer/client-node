@@ -25,7 +25,6 @@ describe('websocket', () =>{
         catch: () => {},
     };
 
-
     beforeEach(() =>{
         factoryStub = sinon.spy()
         MockSocket = class MockSocket extends EventEmitter {

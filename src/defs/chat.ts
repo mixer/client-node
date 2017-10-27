@@ -25,6 +25,7 @@ export interface IMessageMeta {
     whisper?: boolean;
     // Whether the message was a `/me` prefixed message
     me?: boolean;
+    censored?: boolean;
 }
 
 /**
