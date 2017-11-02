@@ -49,11 +49,18 @@ describe('websocket', () =>{
         clock.restore();
     });
 
-    it('balances requests', () =>{
+    it('balances requests', () => {
+        socket._addressOffset = 0;
+
         let i;
         for (i = []; i.length < 5;) i.push(socket.getAddress());
         if (i[0] === 'a') i = i.slice(1);
-        expect(i.slice(0, 4)).to.deep.equal(['b', 'a', 'b', 'a']);
+        expect(i.slice(0, 4)).to.deep.equal([
+            'b?version=1.0',
+            'a?version=1.0',
+            'b?version=1.0',
+            'a?version=1.0',
+        ]);
     });
 
     it('gets status and connected correctly', () =>{

@@ -230,7 +230,7 @@ export class Socket extends EventEmitter {
             this._addressOffset = 0;
         }
 
-        return this._addresses[this._addressOffset];
+        return `${this._addresses[this._addressOffset]}?version=${this.options.protocolVersion}`;
     }
 
     /**
@@ -346,10 +346,7 @@ export class Socket extends EventEmitter {
      * @fires Socket#error
      */
     public boot() {
-        const ws = this.ws = new this.wsCtor(
-            this.getAddress(),
-            [`mixer-chat-${this.options.protocolVersion}`],
-        );
+        const ws = this.ws = new this.wsCtor(this.getAddress());
 
         if (isBrowserWebSocket(ws)) {
             wrapDOM(<WebSocket><any>ws);
