@@ -11,7 +11,7 @@ import {
     IUserTimeout,
     IUserUpdate,
 } from '../defs/chat';
-import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError, TimeoutError } from '../errors';
+import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError, TimeoutError, UNOTFOUND } from '../errors';
 import { Reply } from './Reply';
 
 // The method of the authentication packet to store.
@@ -431,8 +431,12 @@ export class Socket extends EventEmitter {
             this.call(authMethod, this._authpacket, { force: true })
             .then(result => this.emit('authresult', result))
             .then(bang)
-            .catch(() => {
-                this.emit('error', new AuthenticationFailedError('?'));
+            .catch((e: Error) => {
+                let message = 'Authentication Failed, please check your credentials.'
+                if(e.message === UNOTFOUND) {
+                    message = 'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound'
+                }
+                this.emit('error', new AuthenticationFailedError(message));
                 this.close();
             });
         } else {

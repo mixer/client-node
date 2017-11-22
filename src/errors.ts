@@ -2,6 +2,8 @@ import { IncomingMessage } from 'http';
 
 // tslint:disable max-classes-per-file
 
+export const UNOTFOUND = 'UNOTFOUND';
+
 /**
  * Base error for all fe2 stuff.
  * This also acts as a polyfill when building with ES5 target.
