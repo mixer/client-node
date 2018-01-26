@@ -20,8 +20,6 @@ const authMethod = 'auth';
 /**
  * Return a promise which is rejected with a TimeoutError after the
  * provided delay.
- * @param  {Number} delay
- * @return {Promise}
  */
 function timeout(delay: number): Promise<void> {
     return new Socket.Promise<void>((_resolve, reject) => {
@@ -98,7 +96,7 @@ export interface ICallOptions {
 export class Socket extends EventEmitter {
     private _addressOffset: number;
     // Spool to store events queued when the connection is lost.
-    private _spool: { data: any, resolve: any }[] = [];
+    private _spool: { data: any; resolve: any }[] = [];
     private _addresses: string[];
     // The WebSocket instance we're currently connected with.
     private ws: IGenericWebSocket;
@@ -137,7 +135,7 @@ export class Socket extends EventEmitter {
     // tslint:disable-next-line variable-name
     public static Promise: typeof Promise = Promise;
 
-    public on(event: 'reconnecting', cb: (data: { interval: number, socket: WebSocket }) => any): this;
+    public on(event: 'reconnecting', cb: (data: { interval: number; socket: WebSocket }) => any): this;
     public on(event: 'connected', cb: () => any): this;
     public on(event: 'closed', cb: () => any): this;
     public on(event: 'error', cb: (err: Error) => any): this;
@@ -162,23 +160,21 @@ export class Socket extends EventEmitter {
         private wsCtor: IGenericWebSocket,
         addresses: string[],
         private options: {
-            pingInterval: number,
-            pingTimeout: number,
-            callTimeout: number,
-            protocolVersion?: string,
+            pingInterval: number;
+            pingTimeout: number;
+            callTimeout: number;
+            protocolVersion?: string;
         },
     ) {
         super();
 
-        this.options = Object.assign(
-            {
-                pingInterval: 15 * 1000,
-                pingTimeout: 5 * 1000,
-                callTimeout: 20 * 1000,
-                protocolVersion: '1.0',
-            },
-            options,
-        );
+        this.options = {
+            pingInterval: 15 * 1000,
+            pingTimeout: 5 * 1000,
+            callTimeout: 20 * 1000,
+            protocolVersion: '1.0',
+            ...options,
+        };
 
         // Which connection we use in our load balancing.
         this._addressOffset = Math.floor(Math.random() * addresses.length);
@@ -291,7 +287,7 @@ export class Socket extends EventEmitter {
      * resolved if the server responds, or rejected on timeout.
      */
     public ping(): Promise<void> {
-        const { ws } = this;
+        const ws = this.ws;
         clearTimeout(<number>this._pingTimeoutHandle);
 
         if (!this.isConnected()) {
@@ -340,7 +336,6 @@ export class Socket extends EventEmitter {
     /**
      * Starts a socket client. Attaches events and tries to connect to a
      * chat server.
-     * @access public
      * @fires Socket#connected
      * @fires Socket#closed
      * @fires Socket#error
@@ -458,7 +453,7 @@ export class Socket extends EventEmitter {
         }
 
         // Unpack the packet data.
-        let packet: { id: number, type: string, event: any, data: any, error: string };
+        let packet: { id: number; type: string; event: any; data: any; error: string };
         try {
             packet = JSON.parse(data);
         } catch (e) {
@@ -499,7 +494,7 @@ export class Socket extends EventEmitter {
      */
     protected send(
         // tslint:disable-next-line no-banned-terms
-        data: { id: number, type: string, method: string, arguments: any[] },
+        data: { id: number; type: string; method: string; arguments: any[] },
         options: { force?: boolean } = {},
     ): Promise<void> {
         if (this.isConnected() || options.force) {

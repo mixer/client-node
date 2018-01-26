@@ -129,7 +129,7 @@ export interface IChannel {
              * The URL to the small version of the cover.
              */
             small: string;
-        }
+        };
         /**
          * The Id for the cover.
          */
