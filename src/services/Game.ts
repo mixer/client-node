@@ -18,8 +18,6 @@ export interface IPublished extends IGame {
 
 /**
  * Service for interacting with the game endpoints on the Mixer REST API.
- * @access public
- * @augments {Service}
  */
 export class GameService extends Service {
 

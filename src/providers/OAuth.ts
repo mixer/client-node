@@ -156,22 +156,23 @@ export class OAuthProvider extends Provider {
                 'you\'re using the oauth client correctly.')); // silly devlopers
         }
 
-        return this.client.request<IOAuthTokenResponse>('post', '/oauth/token', {
-            form: Object.assign(
-                {
+        return this.client.request<IOAuthTokenResponse>(
+            'post',
+            '/oauth/token',
+            {
+                form: {
                     grant_type: 'authorization_code',
                     code: qs.code,
                     redirect_uri: redirect,
+                    ...this.details,
                 },
-                this.details,
-            ),
-        })
+            },
+        )
         .then(res => this.unpackResponse(res));
     }
 
     /**
      * Refreshes the authentication tokens, bumping the expires time.
-     * @return {Promise}
      */
     public refresh(): Promise<void> {
         if (!this.tokens.refresh) {
@@ -179,15 +180,17 @@ export class OAuthProvider extends Provider {
                 'refresh without a refresh token present.'));
         }
 
-        return this.client.request<IOAuthTokenResponse>('post', '/oauth/token', {
-            form: Object.assign(
-                {
+        return this.client.request<IOAuthTokenResponse>(
+            'post',
+            '/oauth/token',
+            {
+                form: {
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refresh,
+                    ...this.details,
                 },
-                this.details,
-            ),
-        })
+            },
+        )
         .then(res => this.unpackResponse(res));
     }
 

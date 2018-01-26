@@ -13,7 +13,7 @@
     "build:ts:commonjs": "tsc --outDir dist/commonjs --module commonjs --target es6",
     "build": "rimraf dist && npm run build:ts:module && npm run build:ts:commonjs",
     "prepublish": "npm run build",
-    "lint": "tslint --type-check --project tsconfig.json \"src/**/*.ts\""
+    "lint": "tslint --project tsconfig.json \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "deepmerge": "^1.4.4",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "ws": "^1.1.5"
   }
 }

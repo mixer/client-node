@@ -10,7 +10,7 @@ export class ChannelService extends Service {
     /**
      * Retrieves a list of all channels.
      */
-    public all(data: { page: number, limit: number }): Promise<IResponse<IChannel[]>> {
+    public all(data: { page: number; limit: number }): Promise<IResponse<IChannel[]>> {
         return this.makeHandled<IChannel[]>('get', 'channels', {
             qs: data,
         });

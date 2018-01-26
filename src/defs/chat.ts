@@ -46,13 +46,13 @@ export interface IMessageEmoticonComponent {
     pack: string;
     source: 'builtin' | 'subscriber';
     coords: {
-        x: number,
-        y: number,
-        width: number,
-        height: number,
+        x: number;
+        y: number;
+        width: number;
+        height: number;
     };
     alt: {
-        [language: string]: string,
+        [language: string]: string;
     };
 }
 

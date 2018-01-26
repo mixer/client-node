@@ -59,12 +59,13 @@ export class Client {
         if (url.slice(-1) === '/') {
             url = url.slice(0, -1);
         }
+        let sanitizedPath = path;
         // And any leading slash from the path.
-        if (path.charAt(0) === '/') {
-            path = path.slice(1);
+        if (sanitizedPath.charAt(0) === '/') {
+            sanitizedPath = sanitizedPath.slice(1);
         }
 
-        url = url + '/' + path;
+        url = url + '/' + sanitizedPath;
 
         // And just add the query string
         if (querystr) {
