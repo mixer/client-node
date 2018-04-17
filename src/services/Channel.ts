@@ -1,4 +1,4 @@
-import { IChannel, IChannelPreferences } from '../defs/channel';
+import { IChannel, IChannelPreferences, IBroadcast } from '../defs/channel';
 import { IResponse } from '../RequestRunner';
 import { Service } from './Service';
 
@@ -28,5 +28,12 @@ export class ChannelService extends Service {
      */
     public getPreferences(channelId: number): Promise<IResponse<IChannelPreferences>> {
         return this.makeHandled<IChannelPreferences>('get', `channels/${channelId}/preferences`);
+    }
+
+    /**
+     * Retrieves broadcast for a channel specified by channelId
+     */
+    public getBroadcast(channelId: number): Promise<IResponse<IBroadcast>> {
+        return this.makeHandled<IBroadcast>('get', `channels/${channelId}/broadcast`);
     }
 }
