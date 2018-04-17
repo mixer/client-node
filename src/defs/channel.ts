@@ -118,6 +118,14 @@ export interface IChannel {
      */
     deletedAt: string;
     /**
+     * Url of the banner.
+     */
+    bannerUrl: string;
+    /**
+     * ID of the co-streamer if present.
+     */
+    costreamId: number;
+    /**
      * The background cover for the channel.
      */
     cover: {
@@ -218,6 +226,25 @@ export interface IChannelPreferences {
      * The share text used for when sharing the stream to social media.
      */
     sharetext: string;
+}
+
+export interface IBroadcast {
+    /**
+     * Channel Id of the broadcast
+     */
+    channelId: string;
+    /**
+     * Is broadcast currently broadcasting
+     */
+    online: boolean;
+    /**
+     * Is this a test stream
+     */
+    isTestStream: boolean;
+    /**
+     * Time the broadcast started
+     */
+    startedAt: string;
 }
 
 export interface IChannelUser extends IUser {
