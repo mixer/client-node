@@ -108,7 +108,7 @@ export class Socket extends EventEmitter {
     private _reconnectTimeout: NodeJS.Timer | number;
     private _callNo: number;
     private status: number;
-    private _authpacket: [number, number, string];
+    private _authpacket: [number, number, string, string | undefined];
     private _replies: { [key: string]: Reply };
 
     /**
