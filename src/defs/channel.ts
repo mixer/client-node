@@ -232,19 +232,19 @@ export interface IBroadcast {
     /**
      * Channel Id of the broadcast
      */
-    channelId: string,
+    channelId: string;
     /**
      * Is broadcast currently broadcasting
      */
-    online: boolean,
+    online: boolean;
     /**
      * Is this a test stream
      */
-    isTestStream: boolean,
+    isTestStream: boolean;
     /**
      * Time the broadcast started
      */
-    startedAt: string,
+    startedAt: string;
 }
 
 export interface IChannelUser extends IUser {

@@ -1,4 +1,4 @@
-import { IChannel, IChannelPreferences, IBroadcast } from '../defs/channel';
+import { IBroadcast, IChannel, IChannelPreferences } from '../defs/channel';
 import { IResponse } from '../RequestRunner';
 import { Service } from './Service';
 
