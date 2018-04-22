@@ -1,6 +1,8 @@
 const sinon = require('sinon');
 const { expect } = require('chai');
 
+const CLIENT_ID = 'eye-dee';
+
 describe('providers', function () {
     const { AuthenticationFailedError, OAuthProvider } = require('../../src');
 
@@ -10,7 +12,7 @@ describe('providers', function () {
 
         beforeEach(function () {
             provider = new OAuthProvider(this.client, {
-                clientId: 'eye-dee',
+                clientId: CLIENT_ID,
                 secret: 'seekrit',
             });
             sinon.stub(this.client, 'request');
@@ -26,14 +28,18 @@ describe('providers', function () {
             expect(provider.accessToken()).to.be.undefined;
             expect(provider.refreshToken()).to.be.undefined;
             expect(provider.expires()).to.be.undefined;
-            expect(provider.getRequest()).to.deep.equal({});
+            expect(provider.getRequest()).to.deep.equal({
+                headers: {
+                    'Client-ID': CLIENT_ID,
+                },
+            });
         });
 
         it('generates an authorization url', function () {
             expect(provider.getRedirect(redir, ['foo', 'bar']))
             .to.equal('https://mixer.com/oauth/authorize?redirect_uri=' +
                           'http%3A%2F%2Flocalhost&response_type=code&scope=foo%20bar' +
-                          '&client_id=eye-dee');
+                          `&client_id=${CLIENT_ID}`);
         });
 
         it('denies when error in query string', function () {
@@ -66,7 +72,7 @@ describe('providers', function () {
                         grant_type: 'authorization_code',
                         code: 'asdf',
                         redirect_uri: redir,
-                        client_id: 'eye-dee',
+                        client_id: CLIENT_ID,
                         client_secret: 'seekrit',
                     },
                 });
@@ -85,7 +91,10 @@ describe('providers', function () {
                 expect(provider.refreshToken()).to.equal('refresh');
                 expect(+provider.expires()).to.equal(60 * 60 * 1000);
                 expect(provider.getRequest()).to.deep.equal({
-                    headers: { Authorization: 'Bearer access' },
+                    headers: {
+                        Authorization: 'Bearer access',
+                        'Client-ID': CLIENT_ID,
+                    },
                 });
             });
         });
@@ -103,7 +112,7 @@ describe('providers', function () {
 
         it('restores from tokens', function() {
             provider = new OAuthProvider(this.client, {
-                clientId: 'eye-dee',
+                clientId: CLIENT_ID,
                 tokens: {
                     access: 'access',
                     refresh: 'refresh',
@@ -127,7 +136,7 @@ describe('providers', function () {
                     form: {
                         grant_type: 'refresh_token',
                         refresh_token: 'oldRefresh',
-                        client_id: 'eye-dee',
+                        client_id: CLIENT_ID,
                         client_secret: 'seekrit',
                     },
                 });

@@ -198,12 +198,16 @@ export class OAuthProvider extends Provider {
      * Returns info to add to the client's request.
      */
     public getRequest() {
-        if (!this.isAuthenticated()) {
-            return {};
+        const headers: { [key: string]: string } = {
+            'Client-ID': this.details.client_id,
+        };
+
+        if (this.isAuthenticated()) {
+            headers['Authorization'] = 'Bearer ' + this.tokens.access;
         }
 
         return {
-            headers: { Authorization: 'Bearer ' + this.tokens.access },
+            headers,
         };
     }
 }
