@@ -203,7 +203,7 @@ export class OAuthProvider extends Provider {
         };
 
         if (this.isAuthenticated()) {
-            headers['Authorization'] = 'Bearer ' + this.tokens.access;
+            headers['Authorization'] = `Bearer ${this.tokens.access}`;
         }
 
         return {
