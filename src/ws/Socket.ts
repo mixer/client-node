@@ -65,9 +65,10 @@ export function wrapDOM(socket: WebSocket) {
     return socket;
 }
 
+export type WSCtor = new (address: string, subprotocols?: string[]) => IGenericWebSocket;
+export type WSFactory = (address: string, subprotocols?: string[]) => IGenericWebSocket;
+export type WSMaker = WSCtor | WSFactory;
 export interface IGenericWebSocket {
-    // tslint:disable-next-line: no-misused-new
-    new (address: string, subprotocols?: string[]): IGenericWebSocket;
     close(): void;
     on(ev: string, listener: (arg: any) => void): this;
     once(ev: string, listener: (arg: any) => void): this;
@@ -157,7 +158,7 @@ export class Socket extends EventEmitter {
     }
 
     constructor(
-        private wsCtor: IGenericWebSocket,
+        private wsFactory: WSMaker,
         addresses: string[],
         private options: {
             pingInterval: number;
@@ -341,7 +342,7 @@ export class Socket extends EventEmitter {
      * @fires Socket#error
      */
     public boot() {
-        const ws = this.ws = new this.wsCtor(this.getAddress());
+        const ws = this.ws = new (<WSCtor>this.wsFactory)(this.getAddress());
 
         if (isBrowserWebSocket(ws)) {
             wrapDOM(<WebSocket><any>ws);
