@@ -239,7 +239,11 @@ export class Socket extends EventEmitter {
             this._addressOffset = 0;
         }
 
-        return `${this._addresses[this._addressOffset]}?version=${this.options.protocolVersion}`;
+        return (
+            `${this._addresses[this._addressOffset]}` +
+            `?version=${this.options.protocolVersion}` +
+            `&Client-ID=${this.options.clientId}`
+        );
     }
 
     /**
