@@ -11,7 +11,13 @@ import {
     IUserTimeout,
     IUserUpdate,
 } from '../defs/chat';
-import { AuthenticationFailedError, BadMessageError, NoMethodHandlerError, TimeoutError, UNOTFOUND } from '../errors';
+import {
+    AuthenticationFailedError,
+    BadMessageError,
+    NoMethodHandlerError,
+    TimeoutError,
+    UNOTFOUND,
+} from '../errors';
 import { Reply } from './Reply';
 
 // The method of the authentication packet to store.
@@ -90,6 +96,14 @@ export interface ICallOptions {
     timeout?: number;
 }
 
+export interface ISocketOptions {
+    pingInterval?: number;
+    pingTimeout?: number;
+    callTimeout?: number;
+    protocolVersion?: string;
+    clientId: string;
+}
+
 /**
  * Manages a connect to Mixer's chat servers.
  */
@@ -135,7 +149,10 @@ export class Socket extends EventEmitter {
     // tslint:disable-next-line variable-name
     public static Promise: typeof Promise = Promise;
 
-    public on(event: 'reconnecting', cb: (data: { interval: number; socket: WebSocket }) => any): this;
+    public on(
+        event: 'reconnecting',
+        cb: (data: { interval: number; socket: WebSocket }) => any,
+    ): this;
     public on(event: 'connected', cb: () => any): this;
     public on(event: 'closed', cb: () => any): this;
     public on(event: 'error', cb: (err: Error) => any): this;
@@ -159,12 +176,7 @@ export class Socket extends EventEmitter {
     constructor(
         private wsCtor: IGenericWebSocket,
         addresses: string[],
-        private options: {
-            pingInterval: number;
-            pingTimeout: number;
-            callTimeout: number;
-            protocolVersion?: string;
-        },
+        private options?: ISocketOptions,
     ) {
         super();
 
@@ -173,6 +185,7 @@ export class Socket extends EventEmitter {
             pingTimeout: 5 * 1000,
             callTimeout: 20 * 1000,
             protocolVersion: '1.0',
+            clientId: '',
             ...options,
         };
 
@@ -234,7 +247,7 @@ export class Socket extends EventEmitter {
      * limited exponential backoff.
      */
     private getNextReconnectInterval(): number {
-        const power = (this._retries++ % this._retryWrap) + Math.round(Math.random());
+        const power = this._retries++ % this._retryWrap + Math.round(Math.random());
         return (1 << power) * 500;
     }
 
@@ -270,7 +283,10 @@ export class Socket extends EventEmitter {
     private resetPingTimeout() {
         clearTimeout(<number>this._pingTimeoutHandle);
 
-        this._pingTimeoutHandle = setTimeout(() => this.ping().catch(() => undefined), this.options.pingInterval);
+        this._pingTimeoutHandle = setTimeout(
+            () => this.ping().catch(() => undefined),
+            this.options.pingInterval,
+        );
     }
 
     /**
@@ -308,12 +324,12 @@ export class Socket extends EventEmitter {
             ws.ping();
         } else {
             // Otherwise we'll resort to sending a ping message over the socket.
-            promise = this.call('ping', [], { timeout: this.options.pingTimeout });
+            promise = this.call('ping', [], {
+                timeout: this.options.pingTimeout,
+            });
         }
 
-        return promise
-        .then(this.resetPingTimeout.bind(this))
-        .catch((err: Error) => {
+        return promise.then(this.resetPingTimeout.bind(this)).catch((err: Error) => {
             if (!(err instanceof TimeoutError)) {
                 throw err;
             }
@@ -341,10 +357,10 @@ export class Socket extends EventEmitter {
      * @fires Socket#error
      */
     public boot() {
-        const ws = this.ws = new this.wsCtor(this.getAddress());
+        const ws = (this.ws = new this.wsCtor(this.getAddress()));
 
         if (isBrowserWebSocket(ws)) {
-            wrapDOM(<WebSocket><any>ws);
+            wrapDOM(<WebSocket>(<any>ws));
         }
         const whilstSameSocket = (fn: (...inArgs: any[]) => void) => {
             return (...args: any[]) => {
@@ -357,13 +373,20 @@ export class Socket extends EventEmitter {
         this.status = Socket.CONNECTING;
 
         // If the connection doesn't open fast enough
-        this.resetConnectionTimeout(() => { ws.close(); });
+        this.resetConnectionTimeout(() => {
+            ws.close();
+        });
 
         // Websocket connection has been established.
-        ws.on('open', whilstSameSocket(() => {
-            // If we don't get a WelcomeEvent, kill the connection
-            this.resetConnectionTimeout(() => { ws.close(); });
-        }));
+        ws.on(
+            'open',
+            whilstSameSocket(() => {
+                // If we don't get a WelcomeEvent, kill the connection
+                this.resetConnectionTimeout(() => {
+                    ws.close();
+                });
+            }),
+        );
 
         // Chat server has acknowledged our connection
         this.once('WelcomeEvent', (...args: any[]) => {
@@ -372,21 +395,30 @@ export class Socket extends EventEmitter {
         });
 
         // We got an incoming data packet.
-        ws.on('message', whilstSameSocket((...args: any[]) => {
-            this.resetPingTimeout();
-            this.parsePacket.apply(this, args);
-        }));
+        ws.on(
+            'message',
+            whilstSameSocket((...args: any[]) => {
+                this.resetPingTimeout();
+                this.parsePacket.apply(this, args);
+            }),
+        );
 
         // Websocket connection closed
-        ws.on('close', whilstSameSocket(() => {
-            this.handleClose();
-        }));
+        ws.on(
+            'close',
+            whilstSameSocket(() => {
+                this.handleClose();
+            }),
+        );
 
         // Websocket hit an error and is about to close.
-        ws.on('error', whilstSameSocket((err: Error) => {
-            this.emit('error', err);
-            ws.close();
-        }));
+        ws.on(
+            'error',
+            whilstSameSocket((err: Error) => {
+                this.emit('error', err);
+                ws.close();
+            }),
+        );
 
         return this;
     }
@@ -405,8 +437,7 @@ export class Socket extends EventEmitter {
             // Send any spooled events that we have.
             for (let i = 0; i < this._spool.length; i++) {
                 // tslint:disable-next-line no-floating-promises
-                this.send(this._spool[i].data, { force: true })
-                .catch(err => {
+                this.send(this._spool[i].data, { force: true }).catch(err => {
                     this.emit('error', err);
                 });
                 this._spool[i].resolve();
@@ -424,16 +455,17 @@ export class Socket extends EventEmitter {
         if (this._authpacket) {
             // tslint:disable-next-line no-floating-promises
             this.call(authMethod, this._authpacket, { force: true })
-            .then(result => this.emit('authresult', result))
-            .then(bang)
-            .catch((e: Error) => {
-                let message = 'Authentication Failed, please check your credentials.';
-                if (e.message === UNOTFOUND) {
-                    message = 'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
-                }
-                this.emit('error', new AuthenticationFailedError(message));
-                this.close();
-            });
+                .then(result => this.emit('authresult', result))
+                .then(bang)
+                .catch((e: Error) => {
+                    let message = 'Authentication Failed, please check your credentials.';
+                    if (e.message === UNOTFOUND) {
+                        message =
+                            'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
+                    }
+                    this.emit('error', new AuthenticationFailedError(message));
+                    this.close();
+                });
         } else {
             // Otherwise, we can reestablish immediately
             bang();
@@ -453,7 +485,13 @@ export class Socket extends EventEmitter {
         }
 
         // Unpack the packet data.
-        let packet: { id: number; type: string; event: any; data: any; error: string };
+        let packet: {
+            id: number;
+            type: string;
+            event: any;
+            data: any;
+            error: string;
+        };
         try {
             packet = JSON.parse(data);
         } catch (e) {
@@ -464,24 +502,24 @@ export class Socket extends EventEmitter {
         this.emit('packet', packet);
 
         switch (packet.type) {
-        case 'reply':
-            // Try to look up the packet reply handler, and call it if we can.
-            const reply = this._replies[packet.id];
-            if (reply !== undefined) {
-                reply.handle(packet);
-                delete this._replies[packet.id];
-            } else {
-                // Otherwise emit an error. This might happen occasionally,
-                // but failing silently is lame.
-                this.emit('error', new NoMethodHandlerError('No handler for reply ID.'));
-            }
-            break;
-        case 'event':
-            // Just emit events out on this emitter.
-            this.emit(packet.event, packet.data);
-            break;
-        default:
-            this.emit('error', new BadMessageError('Unknown packet type ' + packet.type));
+            case 'reply':
+                // Try to look up the packet reply handler, and call it if we can.
+                const reply = this._replies[packet.id];
+                if (reply !== undefined) {
+                    reply.handle(packet);
+                    delete this._replies[packet.id];
+                } else {
+                    // Otherwise emit an error. This might happen occasionally,
+                    // but failing silently is lame.
+                    this.emit('error', new NoMethodHandlerError('No handler for reply ID.'));
+                }
+                break;
+            case 'event':
+                // Just emit events out on this emitter.
+                this.emit(packet.event, packet.data);
+                break;
+            default:
+                this.emit('error', new BadMessageError('Unknown packet type ' + packet.type));
         }
     }
 
@@ -516,7 +554,12 @@ export class Socket extends EventEmitter {
      * and join a specified channel. If you wish to join anonymously, user
      * and authkey can be omitted.
      */
-    public auth(id: number, user: number, authkey: string, accessKey?: string): Promise<IUserAuthenticated> {
+    public auth(
+        id: number,
+        user: number,
+        authkey: string,
+        accessKey?: string,
+    ): Promise<IUserAuthenticated> {
         this._authpacket = [id, user, authkey, accessKey];
 
         // Two cases here: if we're already connected, with send the auth
@@ -533,16 +576,28 @@ export class Socket extends EventEmitter {
      * Runs a method on the socket. Returns a promise that is rejected or
      * resolved upon reply.
      */
-    public call(method: 'auth', args: [number], options?: ICallOptions): Promise<IUserAuthenticated>;
-    public call(method: 'auth', args: [number, number, string], options?: ICallOptions): Promise<IUserAuthenticated>;
+    public call(
+        method: 'auth',
+        args: [number],
+        options?: ICallOptions,
+    ): Promise<IUserAuthenticated>;
+    public call(
+        method: 'auth',
+        args: [number, number, string],
+        options?: ICallOptions,
+    ): Promise<IUserAuthenticated>;
     public call(method: 'msg', args: [string], options?: ICallOptions): Promise<IChatMessage>;
     public call(method: 'whisper', args: [string, string], options?: ICallOptions): Promise<any>;
     public call(method: 'history', args: [number], options?: ICallOptions): Promise<IChatMessage[]>;
     public call(method: 'timeout', args: [string, string], options?: ICallOptions): Promise<string>;
     public call(method: 'ping', args: [any]): Promise<any>;
     public call(method: 'vote:start', args: [string, string[], number]): Promise<void>;
-    public call(method: string, args: (string|number)[], options?: ICallOptions): Promise<any>;
-    public call<T>(method: string, args: any[] = [], options: ICallOptions = {}): Promise<T | void> {
+    public call(method: string, args: (string | number)[], options?: ICallOptions): Promise<any>;
+    public call<T>(
+        method: string,
+        args: any[] = [],
+        options: ICallOptions = {},
+    ): Promise<T | void> {
         // Send out the data
         const id = this._callNo++;
 
@@ -561,24 +616,24 @@ export class Socket extends EventEmitter {
             },
             options,
         )
-        .then(() => {
-            // Then create and return a promise that's resolved when we get
-            // a reply, if we expect one to be given.
-            if (options.noReply) {
-                return undefined;
-            }
+            .then(() => {
+                // Then create and return a promise that's resolved when we get
+                // a reply, if we expect one to be given.
+                if (options.noReply) {
+                    return undefined;
+                }
 
-            return Socket.Promise.race([
-                <Promise<T>><any>timeout(options.timeout || this.options.callTimeout),
-                <Promise<T>>replyPromise,
-            ]);
-        })
-        .catch((err: Error) => {
-            if (err instanceof TimeoutError) {
-                delete this._replies[id];
-            }
-            throw err;
-        });
+                return Socket.Promise.race([
+                    <Promise<T>>(<any>timeout(options.timeout || this.options.callTimeout)),
+                    <Promise<T>>replyPromise,
+                ]);
+            })
+            .catch((err: Error) => {
+                if (err instanceof TimeoutError) {
+                    delete this._replies[id];
+                }
+                throw err;
+            });
     }
 
     /**

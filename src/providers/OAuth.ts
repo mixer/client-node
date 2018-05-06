@@ -100,7 +100,7 @@ export class OAuthProvider extends Provider {
      * Returns the set of tokens. These can be saved and used to
      * reload the provider later using OAuthProvider.fromTokens.
      */
-   public getTokens(): IParsedTokens {
+    public getTokens(): IParsedTokens {
         return this.tokens;
     }
 
@@ -132,7 +132,7 @@ export class OAuthProvider extends Provider {
         this.tokens = {
             access: res.body.access_token,
             refresh: res.body.refresh_token,
-            expires: new Date(Date.now() + (res.body.expires_in * 1000)),
+            expires: new Date(Date.now() + res.body.expires_in * 1000),
         };
     }
 
@@ -146,29 +146,32 @@ export class OAuthProvider extends Provider {
     public attempt(redirect: string, qs: IQueryAttemptQueryString): Promise<void> {
         if (qs.error) {
             return Promise.reject(
-                new AuthenticationFailedError(qs.error_description || 'Error from oauth: ' + qs.error),
+                new AuthenticationFailedError(
+                    qs.error_description || 'Error from oauth: ' + qs.error,
+                ),
             );
         }
 
         if (!qs.code) {
-             return Promise.reject(new AuthenticationFailedError('No error was given, ' +
-                'but a code was not present in the query string. Make sure ' +
-                'you\'re using the oauth client correctly.')); // silly devlopers
+            return Promise.reject(
+                new AuthenticationFailedError(
+                    `No error was given, ` +
+                        `but a code was not present in the query string. Make sure ` +
+                        `you're using the oauth client correctly.`,
+                ),
+            ); // silly devlopers
         }
 
-        return this.client.request<IOAuthTokenResponse>(
-            'post',
-            '/oauth/token',
-            {
+        return this.client
+            .request<IOAuthTokenResponse>('post', '/oauth/token', {
                 form: {
                     grant_type: 'authorization_code',
                     code: qs.code,
                     redirect_uri: redirect,
                     ...this.details,
                 },
-            },
-        )
-        .then(res => this.unpackResponse(res));
+            })
+            .then(res => this.unpackResponse(res));
     }
 
     /**
@@ -176,22 +179,22 @@ export class OAuthProvider extends Provider {
      */
     public refresh(): Promise<void> {
         if (!this.tokens.refresh) {
-            return Promise.reject(new AuthenticationFailedError('Attempted to ' +
-                'refresh without a refresh token present.'));
+            return Promise.reject(
+                new AuthenticationFailedError(
+                    'Attempted to ' + 'refresh without a refresh token present.',
+                ),
+            );
         }
 
-        return this.client.request<IOAuthTokenResponse>(
-            'post',
-            '/oauth/token',
-            {
+        return this.client
+            .request<IOAuthTokenResponse>('post', '/oauth/token', {
                 form: {
                     grant_type: 'refresh_token',
                     refresh_token: this.tokens.refresh,
                     ...this.details,
                 },
-            },
-        )
-        .then(res => this.unpackResponse(res));
+            })
+            .then(res => this.unpackResponse(res));
     }
 
     /**
@@ -209,5 +212,9 @@ export class OAuthProvider extends Provider {
         return {
             headers,
         };
+    }
+
+    public getClientId() {
+        return this.details.client_id;
     }
 }
