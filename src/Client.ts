@@ -2,6 +2,7 @@
 import { all } from 'deepmerge';
 import * as querystring from 'querystring';
 
+import { OAuthProvider } from './providers/OAuth';
 import { Provider } from './providers/Provider';
 import {
     IOptionalUrlRequestOptions,
@@ -9,6 +10,7 @@ import {
     IRequestRunner,
     IResponse,
 } from './RequestRunner';
+import { IGenericWebSocket, ISocketOptions, Socket } from './ws/Socket';
 
 // DO NOT EDIT, THIS IS UPDATE BY THE BUILD SCRIPT
 const packageVersion = '0.13.0'; // package version
@@ -34,7 +36,8 @@ export class Client {
     private buildUserAgent() {
         const client = `MixerClient/${packageVersion}`;
         // tslint:disable-next-line no-typeof-undefined
-        if (typeof navigator !== 'undefined') { // in-browser
+        if (typeof navigator !== 'undefined') {
+            // in-browser
             return navigator.userAgent + ' ' + client;
         }
 
@@ -52,7 +55,7 @@ export class Client {
     /**
      * Builds a path to the Mixer API by concating it with the address.
      */
-    public buildAddress(base: string, path: string, querystr?: (string | Object)): string {
+    public buildAddress(base: string, path: string, querystr?: string | Object): string {
         let url = base;
 
         // Strip any trailing slash from the base
@@ -94,7 +97,11 @@ export class Client {
     /**
      * Attempts to run a given request.
      */
-    public request<T>(method: string, path: string, data: IOptionalUrlRequestOptions = {}): Promise<IResponse<T>> {
+    public request<T>(
+        method: string,
+        path: string,
+        data: IOptionalUrlRequestOptions = {},
+    ): Promise<IResponse<T>> {
         const req = all([
             this.provider ? this.provider.getRequest() : {},
             {
@@ -108,12 +115,22 @@ export class Client {
             data,
         ]);
 
-        return this.requestRunner.run(<IRequestOptions>req)
-        .catch(err => {
+        return this.requestRunner.run(<IRequestOptions>req).catch(err => {
             if (this.provider) {
                 return this.provider.handleResponseError(err, <IRequestOptions>req);
             }
             throw err;
+        });
+    }
+
+    public createChatSocket(
+        ws: IGenericWebSocket,
+        endpoints: string[],
+        options: ISocketOptions,
+    ): Socket {
+        return new Socket(ws, endpoints, {
+            clientId: this.provider instanceof OAuthProvider ? this.provider.getClientId() : null,
+            ...options,
         });
     }
 }

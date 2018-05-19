@@ -6,8 +6,10 @@
   "typings": "dist/module/index.d.ts",
   "description": "Client library for interacting with the mixer API.",
   "scripts": {
-    "test:unit": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --compilers ts:ts-node/register test/unit/**/*.test.js",
-    "test:integrate": "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --compilers ts:ts-node/register test/integration/**/*.test.js",
+    "test:unit":
+      "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --compilers ts:ts-node/register test/unit/**/*.test.js",
+    "test:integrate":
+      "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --compilers ts:ts-node/register test/integration/**/*.test.js",
     "test": "npm run test:unit && npm run lint",
     "build:ts:module": "tsc --declaration",
     "build:ts:commonjs": "tsc --outDir dist/commonjs --module commonjs --target es6",
@@ -19,14 +21,7 @@
     "type": "git",
     "url": "https://github.com/mixer/beam-client-node.git"
   },
-  "keywords": [
-    "mixer",
-    "client",
-    "api",
-    "library",
-    "oauth",
-    "mixer"
-  ],
+  "keywords": ["mixer", "client", "api", "library", "oauth", "mixer"],
   "author": "Microsoft <contact@mixer.com>",
   "license": "MIT",
   "bugs": {
@@ -58,5 +53,11 @@
     "deepmerge": "^1.4.4",
     "request": "^2.79.0",
     "ws": "^1.1.5"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "singleQuote": true,
+    "printWidth": 100,
+    "parser": "typescript"
   }
 }
