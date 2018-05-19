@@ -372,9 +372,9 @@ describe('websocket', () => {
                     type: 'method',
                     method: 'foo',
                     arguments: [],
-                    id: 0,
+                    id: 0
                 },
-                { noReply: true },
+                { noReply: true }
             );
         });
 
@@ -401,8 +401,8 @@ describe('websocket', () => {
                     type: 'reply',
                     error: null,
                     id: 0,
-                    data: { authenticated: true, role: 'Owner' },
-                }),
+                    data: { authenticated: true, role: 'Owner' }
+                })
             );
         });
 
@@ -417,7 +417,7 @@ describe('websocket', () => {
                     error: 'foobar',
                     id: 0,
                     data: null,
-                }),
+                })
             );
         });
 
@@ -441,8 +441,8 @@ describe('websocket', () => {
                             type: 'reply',
                             error: null,
                             id: 0,
-                            data: 'ok',
-                        }),
+                            data: 'ok'
+                        })
                     );
                     return fn();
                 },
