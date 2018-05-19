@@ -129,7 +129,7 @@ export class Client {
         options: ISocketOptions,
     ): Socket {
         return new Socket(ws, endpoints, {
-            clientId: this.provider instanceof OAuthProvider ? this.provider.getClientId() : '',
+            clientId: this.provider instanceof OAuthProvider ? this.provider.getClientId() : null,
             ...options,
         });
     }

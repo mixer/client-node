@@ -153,11 +153,11 @@ export class OAuthProvider extends Provider {
         }
 
         if (!qs.code) {
+            // XXX: https://github.com/prettier/prettier/issues/3804
             return Promise.reject(
                 new AuthenticationFailedError(
-                    `No error was given, ` +
-                        `but a code was not present in the query string. Make sure ` +
-                        `you're using the oauth client correctly.`,
+                    'No error was given, but a code was not present in the query string. ' +
+                        `Make sure you're using the oauth client correctly.`,
                 ),
             ); // silly devlopers
         }
@@ -181,7 +181,7 @@ export class OAuthProvider extends Provider {
         if (!this.tokens.refresh) {
             return Promise.reject(
                 new AuthenticationFailedError(
-                    'Attempted to ' + 'refresh without a refresh token present.',
+                    'Attempted to refresh without a refresh token present.',
                 ),
             );
         }

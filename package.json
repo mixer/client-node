@@ -12,10 +12,8 @@
       "cross-env TS_NODE_COMPILER_OPTIONS={\\\"module\\\":\\\"commonjs\\\"} mocha --compilers ts:ts-node/register test/integration/**/*.test.js",
     "test": "npm run test:unit && npm run lint",
     "build:ts:module": "tsc --declaration",
-    "build:ts:commonjs":
-      "tsc --outDir dist/commonjs --module commonjs --target es6",
-    "build":
-      "rimraf dist && npm run build:ts:module && npm run build:ts:commonjs",
+    "build:ts:commonjs": "tsc --outDir dist/commonjs --module commonjs --target es6",
+    "build": "rimraf dist && npm run build:ts:module && npm run build:ts:commonjs",
     "prepublish": "npm run build",
     "lint": "tslint --project tsconfig.json \"src/**/*.ts\""
   },
@@ -59,6 +57,7 @@
   "prettier": {
     "trailingComma": "all",
     "singleQuote": true,
-    "printWidth": 100
+    "printWidth": 100,
+    "parser": "typescript"
   }
 }

@@ -101,6 +101,11 @@ describe('websocket', () => {
         expect(socket.getAddress()).to.contain(`Client-ID=${CLIENT_ID}`);
     });
 
+    it('does not include client id if not provided', () => {
+        socket = new Socket(MockSocket, ['a', 'b'], {});
+        expect(socket.getAddress()).to.not.contain('Client-ID');
+    })
+
     it('kills the connection if no WelcomeEvent is received', () => {
         socket.on('error', () => {});
 

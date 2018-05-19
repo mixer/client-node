@@ -185,7 +185,7 @@ export class Socket extends EventEmitter {
             pingTimeout: 5 * 1000,
             callTimeout: 20 * 1000,
             protocolVersion: '1.0',
-            clientId: '',
+            clientId: null,
             ...options,
         };
 
@@ -239,11 +239,15 @@ export class Socket extends EventEmitter {
             this._addressOffset = 0;
         }
 
-        return (
-            `${this._addresses[this._addressOffset]}` +
-            `?version=${this.options.protocolVersion}` +
-            `&Client-ID=${this.options.clientId}`
-        );
+        let address = this._addresses[this._addressOffset];
+
+        address += `?version=${this.options.protocolVersion}`;
+
+        if (this.options.clientId) {
+            address += `&Client-ID=${this.options.clientId}`;
+        }
+
+        return address;
     }
 
     /**
