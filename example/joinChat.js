@@ -1,4 +1,4 @@
-const { Client, OAuthProvider, DefaultRequestRunner } = require('beam-client-node');
+const { Client, OAuthProvider, DefaultRequestRunner } = require('@mixer/client-node');
 
 const channel = 2;
 const client = new Client(new DefaultRequestRunner());
