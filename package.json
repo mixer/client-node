@@ -1,5 +1,5 @@
 {
-  "name": "beam-client-node",
+  "name": "@mixer/client-node",
   "version": "2.0.0",
   "main": "dist/commonjs",
   "module": "dist/module",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mixer/beam-client-node.git"
+    "url": "https://github.com/mixer/client-node.git"
   },
   "keywords": [
     "mixer",
@@ -30,9 +30,9 @@
   "author": "Microsoft <contact@mixer.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mixer/beam-client-node/issues"
+    "url": "https://github.com/mixer/client-node/issues"
   },
-  "homepage": "https://github.com/mixer/beam-client-node",
+  "homepage": "https://github.com/mixer/client-node",
   "devDependencies": {
     "@types/chai": "^3.4.34",
     "@types/chai-as-promised": "0.0.30",

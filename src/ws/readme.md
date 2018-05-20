@@ -8,7 +8,7 @@ Your usage may look something like this:
 
 ```js
 // Require the socket
-const { Socket } = require('beam-client-node');
+const { Socket } = require('client-node');
 // Some function that gets the JSON response from `GET /chats/:id`.
 const data = getDataFromChannelJoinEndpoint();
 

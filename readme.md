@@ -1,6 +1,6 @@
-# beam-client-node
+# client-node
 
-[![Build Status](https://travis-ci.org/mixer/beam-client-node.svg)](https://travis-ci.org/mixer/beam-client-node) [![](https://badges.gitter.im/mixer/beam.png)](https://gitter.im/mixer/beam-dev)
+[![Build Status](https://travis-ci.org/mixer/client-node.svg)](https://travis-ci.org/mixer/client-node) [![](https://badges.gitter.im/mixer/developers.png)](https://gitter.im/mixer/developers)
 
 This is a client library for [Mixer](https://mixer.com) written in Node.js.
 
@@ -8,7 +8,7 @@ This is a client library for [Mixer](https://mixer.com) written in Node.js.
 
 It's available on npm:
 ```
-npm install --save beam-client-node
+npm install --save @mixer/client-node
 ```
 
 We have tutorials on our [Developer Site](https://dev.mixer.com) to help you get started.
