@@ -28,7 +28,7 @@ export class ClipsService extends Service {
 
     /**
      * Deletes a clip.
-     * 200: clip deleted
+     * 202: clip deleted
      * 400-500: cannot delete clip
      */
     public async deleteClip(shareableId: string): Promise<IResponse<void>> {
