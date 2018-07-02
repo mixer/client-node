@@ -9,42 +9,30 @@ import { Service } from './Service';
 export class ClipsService extends Service {
 
     /**
-     * Can a clip be created on the given broadcast.
+     * Can a clip be created on the given broadcast. Check the response code.
+     * 200: can clip
+     * 400-500: cannot clip
      */
-    public async canClip(broadcastId: string): Promise<boolean> {
-        try {
-            await this.makeHandled<boolean>('get', `clips/broadcasts/${broadcastId}/canClip`);
-        } catch {
-            return Promise.resolve(false);
-        }
-
-        return Promise.resolve(true);
+    public canClip(broadcastId: string): Promise<IResponse<void>> {
+        return this.makeHandled<void>('get', `clips/broadcasts/${broadcastId}/canClip`);
     }
 
     /**
      * Creates a clip.
+     * 200: clip created
+     * 400-500: cannot clip
      */
-    public async createClip(p: IClipRequest): Promise<boolean> {
-        try {
-            await this.makeHandled<boolean>('post', `clips/create`, { body: p });
-        } catch {
-            return Promise.resolve(false);
-        }
-
-        return Promise.resolve(true);
+    public async createClip(p: IClipRequest): Promise<IResponse<void>> {
+        return this.makeHandled<void>('post', `clips/create`, { body: p });
     }
 
     /**
      * Deletes a clip.
+     * 200: clip deleted
+     * 400-500: cannot delete clip
      */
-    public async deleteClip(shareableId: string): Promise<boolean> {
-        try {
-            await this.makeHandled<boolean>('delete', `clips/delete/${shareableId}`);
-        } catch {
-            return Promise.resolve(false);
-        }
-
-        return Promise.resolve(true);
+    public async deleteClip(shareableId: string): Promise<IResponse<void>> {
+        return this.makeHandled<void>('delete', `clips/delete/${shareableId}`);
     }
 
     /**
@@ -57,14 +45,8 @@ export class ClipsService extends Service {
     /**
      * Renames a clip.
      */
-    public async renameClip(shareableId: string, newTitle: string): Promise<boolean> {
-        try {
-            await this.makeHandled<IClipProperties>('post', `clips/${shareableId}/metadata`, { body: { title: newTitle } });
-        } catch {
-            return Promise.resolve(false);
-        }
-
-        return Promise.resolve(true);
+    public async renameClip(shareableId: string, newTitle: string): Promise<IResponse<IClipProperties>> {
+        return this.makeHandled<IClipProperties>('post', `clips/${shareableId}/metadata`, { body: { title: newTitle } });
     }
 
     /**
