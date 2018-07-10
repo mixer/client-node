@@ -3,7 +3,7 @@ import { ILocator } from './locator';
 export enum Maturity {
     Family = 1,
     Teen = 2,
-    EighteenPlus = 3
+    EighteenPlus = 3,
 }
 
 export interface IClipProperties {
@@ -54,7 +54,7 @@ export interface IClipProperties {
 
     /**
      * Date time, in string format, at which this highlight completed upload
-    */
+     */
     uploadDate: string;
 
     /**
