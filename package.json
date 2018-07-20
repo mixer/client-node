@@ -1,6 +1,6 @@
 {
   "name": "@mixer/client-node",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "main": "dist/commonjs",
   "module": "dist/module",
   "typings": "dist/module/index.d.ts",
