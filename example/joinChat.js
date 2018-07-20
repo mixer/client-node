@@ -1,4 +1,4 @@
-const Mixer = require('beam-client-node');
+const Mixer = require('@mixer/client-node');
 const ws = require('ws');
 
 let userInfo;
