@@ -19,5 +19,3 @@ We have tutorials on our [Developer Site](https://dev.mixer.com) to help you get
 
 ## Getting Help
 Chat with us and other developers on our [gitter](https://gitter.im/mixer/mixer-dev)
-
-
