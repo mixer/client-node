@@ -584,14 +584,8 @@ export class Socket extends EventEmitter {
      * optOutEvents sends a packet over the socket to opt out from receiving events
      * from a chat server. Pass in Events to be opted out from as args
      */
-    public optOutEvents(
-        args: string[],
-    ): Promise<void> {
-        if (this.isConnected()) {
-            return this.call('optOutEvents', args);
-        }
-
-        return Socket.Promise.resolve();
+    public optOutEvents(args: string[]): Promise<void> {
+        return this.call('optOutEvents', args);
     }
 
     /**
