@@ -581,6 +581,20 @@ export class Socket extends EventEmitter {
     }
 
     /**
+     * optOutEvents sends a packet over the socket to opt out from receiving events
+     * from a chat server. Pass in Events to be opted out from as args
+     */
+    public optOutEvents(
+        args: string[],
+    ): Promise<void> {
+        if (this.isConnected()) {
+            return this.call('optOutEvents', args);
+        }
+
+        return Socket.Promise.resolve();
+    }
+
+    /**
      * Runs a method on the socket. Returns a promise that is rejected or
      * resolved upon reply.
      */
@@ -598,6 +612,7 @@ export class Socket extends EventEmitter {
     public call(method: 'whisper', args: [string, string], options?: ICallOptions): Promise<any>;
     public call(method: 'history', args: [number], options?: ICallOptions): Promise<IChatMessage[]>;
     public call(method: 'timeout', args: [string, string], options?: ICallOptions): Promise<string>;
+    public call(method: 'optOutEvents', args: (string)[], options?: ICallOptions): Promise<void>;
     public call(method: 'ping', args: [any]): Promise<any>;
     public call(method: 'vote:start', args: [string, string[], number]): Promise<void>;
     public call(method: string, args: (string | number)[], options?: ICallOptions): Promise<any>;
