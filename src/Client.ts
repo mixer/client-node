@@ -13,6 +13,11 @@ import {
 } from './RequestRunner';
 import { IGenericWebSocket, ISocketOptions, Socket } from './ws/Socket';
 
+import { ChannelService } from './services/Channel';
+import { ChatService } from './services/Chat';
+import { ClipsService } from './services/Clips';
+import { GameService } from './services/Game';
+
 // DO NOT EDIT, THIS IS UPDATE BY THE BUILD SCRIPT
 const packageVersion = '0.13.0'; // package version
 
@@ -26,6 +31,12 @@ export class Client {
         api: 'https://mixer.com/api/v1',
         public: 'https://mixer.com',
     };
+
+    public channel = new ChannelService(this);
+    public chat = new ChatService(this);
+    public clips = new ClipsService(this);
+    public game = new GameService(this);
+
     /**
      * The primary Mixer client, responsible for storing authentication state
      * and dispatching requests to the API.
