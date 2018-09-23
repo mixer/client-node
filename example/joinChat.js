@@ -3,7 +3,7 @@ const ws = require('ws');
 
 let userInfo;
 
-const client = new Mixer.Client(new Mixer.DefaultRequestRunner());
+const client = new Mixer.Client();
 
 // With OAuth we don't need to log in. The OAuth Provider will attach
 // the required information to all of our requests after this call.

@@ -9,6 +9,7 @@ import {
     IRequestOptions,
     IRequestRunner,
     IResponse,
+    DefaultRequestRunner,
 } from './RequestRunner';
 import { IGenericWebSocket, ISocketOptions, Socket } from './ws/Socket';
 
@@ -29,8 +30,11 @@ export class Client {
      * The primary Mixer client, responsible for storing authentication state
      * and dispatching requests to the API.
      */
-    constructor(private requestRunner: IRequestRunner) {
+    constructor(private requestRunner?: IRequestRunner) {
         this.userAgent = this.buildUserAgent();
+        if (!requestRunner) {
+            this.requestRunner = new DefaultRequestRunner();
+        }
     }
 
     private buildUserAgent() {
