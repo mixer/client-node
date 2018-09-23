@@ -18,7 +18,7 @@ client.use(new Mixer.OAuthProvider(client, {
 client.request('GET', 'users/current')
 .then(response => {
     userInfo = response.body;
-    return new Mixer.ChatService(client).join(response.body.channel.id);
+    return client.chat.join(response.body.channel.id);
 })
 .then(response => {
     const body = response.body;
