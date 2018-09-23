@@ -5,6 +5,7 @@ import * as querystring from 'querystring';
 import { OAuthProvider } from './providers/OAuth';
 import { Provider } from './providers/Provider';
 import {
+    DefaultRequestRunner,
     IOptionalUrlRequestOptions,
     IRequestOptions,
     IRequestRunner,
@@ -29,8 +30,11 @@ export class Client {
      * The primary Mixer client, responsible for storing authentication state
      * and dispatching requests to the API.
      */
-    constructor(private requestRunner: IRequestRunner) {
+    constructor(private requestRunner?: IRequestRunner) {
         this.userAgent = this.buildUserAgent();
+        if (!requestRunner) {
+            this.requestRunner = new DefaultRequestRunner();
+        }
     }
 
     private buildUserAgent() {
