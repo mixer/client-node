@@ -5,11 +5,11 @@ import * as querystring from 'querystring';
 import { OAuthProvider } from './providers/OAuth';
 import { Provider } from './providers/Provider';
 import {
+    DefaultRequestRunner,
     IOptionalUrlRequestOptions,
     IRequestOptions,
     IRequestRunner,
     IResponse,
-    DefaultRequestRunner,
 } from './RequestRunner';
 import { IGenericWebSocket, ISocketOptions, Socket } from './ws/Socket';
 
