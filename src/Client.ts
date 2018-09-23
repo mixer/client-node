@@ -11,10 +11,11 @@ import {
     IResponse,
 } from './RequestRunner';
 import { IGenericWebSocket, ISocketOptions, Socket } from './ws/Socket';
+
+import { ChannelService } from './services/Channel';
 import { ChatService } from './services/Chat';
 import { ClipsService } from './services/Clips';
 import { GameService } from './services/Game';
-import { ChannelService } from './services/Channel';
 
 // DO NOT EDIT, THIS IS UPDATE BY THE BUILD SCRIPT
 const packageVersion = '0.13.0'; // package version
