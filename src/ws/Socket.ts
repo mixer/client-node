@@ -124,6 +124,7 @@ export class Socket extends EventEmitter {
     private status: number;
     private _authpacket: [number, number, string, string | undefined];
     private _replies: { [key: string]: Reply };
+    private _optOutEventsArgs: string[];
 
     /**
      * We've not tried connecting yet
@@ -464,6 +465,7 @@ export class Socket extends EventEmitter {
             // tslint:disable-next-line no-floating-promises
             this.call(authMethod, this._authpacket, { force: true })
                 .then(result => this.emit('authresult', result))
+                .then(() => this.optOutEvents(this._optOutEventsArgs))
                 .then(bang)
                 .catch((e: Error) => {
                     let message = 'Authentication Failed, please check your credentials.';
@@ -585,6 +587,7 @@ export class Socket extends EventEmitter {
      * from a chat server. Pass in Events to be opted out from as args
      */
     public optOutEvents(args: string[]): Promise<void> {
+        this._optOutEventsArgs = args;
         return this.call('optOutEvents', args);
     }
 
