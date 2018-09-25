@@ -124,6 +124,7 @@ export class Socket extends EventEmitter {
     private status: number;
     private _authpacket: [number, number, string, string | undefined];
     private _replies: { [key: string]: Reply };
+    private _optOutEventsArgs: string[] = [];
 
     /**
      * We've not tried connecting yet
@@ -464,6 +465,12 @@ export class Socket extends EventEmitter {
             // tslint:disable-next-line no-floating-promises
             this.call(authMethod, this._authpacket, { force: true })
                 .then(result => this.emit('authresult', result))
+                .then(() => {
+                    if (this._optOutEventsArgs.length > 0) {
+                        return this.call('optOutEvents', this._optOutEventsArgs, { force: true });
+                    }
+                    return Promise.resolve();
+                })
                 .then(bang)
                 .catch((e: Error) => {
                     let message = 'Authentication Failed, please check your credentials.';
@@ -581,6 +588,15 @@ export class Socket extends EventEmitter {
     }
 
     /**
+     * optOutEvents sends a packet over the socket to opt out from receiving events
+     * from a chat server. Pass in Events to be opted out from as args
+     */
+    public optOutEvents(args: string[]): Promise<void> {
+        this._optOutEventsArgs = args;
+        return this.call('optOutEvents', args);
+    }
+
+    /**
      * Runs a method on the socket. Returns a promise that is rejected or
      * resolved upon reply.
      */
@@ -598,6 +614,7 @@ export class Socket extends EventEmitter {
     public call(method: 'whisper', args: [string, string], options?: ICallOptions): Promise<any>;
     public call(method: 'history', args: [number], options?: ICallOptions): Promise<IChatMessage[]>;
     public call(method: 'timeout', args: [string, string], options?: ICallOptions): Promise<string>;
+    public call(method: 'optOutEvents', args: (string)[], options?: ICallOptions): Promise<void>;
     public call(method: 'ping', args: [any]): Promise<any>;
     public call(method: 'vote:start', args: [string, string[], number]): Promise<void>;
     public call(method: string, args: (string | number)[], options?: ICallOptions): Promise<any>;
