@@ -124,7 +124,7 @@ export class Socket extends EventEmitter {
     private status: number;
     private _authpacket: [number, number, string, string | undefined];
     private _replies: { [key: string]: Reply };
-    private _optOutEventsArgs: string[];
+    private _optOutEventsArgs: string[] = [];
 
     /**
      * We've not tried connecting yet
@@ -465,7 +465,12 @@ export class Socket extends EventEmitter {
             // tslint:disable-next-line no-floating-promises
             this.call(authMethod, this._authpacket, { force: true })
                 .then(result => this.emit('authresult', result))
-                .then(() => this.optOutEvents(this._optOutEventsArgs))
+                .then(() => {
+                    if (this._optOutEventsArgs.length > 0) {
+                        return this.call('optOutEvents', this._optOutEventsArgs, { force: true });
+                    }
+                    return Promise.resolve();
+                })
                 .then(bang)
                 .catch((e: Error) => {
                     let message = 'Authentication Failed, please check your credentials.';
