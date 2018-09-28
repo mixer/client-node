@@ -461,16 +461,13 @@ export class Socket extends EventEmitter {
 
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
-        if (this._authpacket) {
+        if (this._authpacket || this._optOutEventsArgs.length > 0) {
             // tslint:disable-next-line no-floating-promises
-            this.call(authMethod, this._authpacket, { force: true })
+            const promise = this._optOutEventsArgs.length > 0 ? this.call('optOutEvents', this._optOutEventsArgs, { force: true }) : Promise.resolve();
+            promise
+                .then(() => this.emit('optOutResult', undefined))
+                .then(() => this.call(authMethod, this._authpacket, { force: true }))
                 .then(result => this.emit('authresult', result))
-                .then(() => {
-                    if (this._optOutEventsArgs.length > 0) {
-                        return this.call('optOutEvents', this._optOutEventsArgs, { force: true });
-                    }
-                    return Promise.resolve();
-                })
                 .then(bang)
                 .catch((e: Error) => {
                     let message = 'Authentication Failed, please check your credentials.';
@@ -593,7 +590,10 @@ export class Socket extends EventEmitter {
      */
     public optOutEvents(args: string[]): Promise<void> {
         this._optOutEventsArgs = args;
-        return this.call('optOutEvents', args);
+        if (this.isConnected()) {
+            return this.call('optOutEvents', args);
+        }
+        return new Socket.Promise(resolve => this.once('optOutResult', resolve));
     }
 
     /**
