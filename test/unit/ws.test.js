@@ -13,6 +13,7 @@ describe('websocket', () => {
         BadMessageError,
         TimeoutError,
         NoMethodHandlerError,
+        UnknownCodeError,
     } = require('../../src');
     let socket;
     let raw;
@@ -285,7 +286,7 @@ describe('websocket', () => {
             ];
         });
 
-        it('connects directly if no previous auth packet', done => {
+        it('connects directly if no previous auth packet and no optOutEvents', done => {
             socket.on('connected', () => {
                 expect(raw.send.calledWith('"foo"')).to.be.true;
                 expect(raw.send.calledWith('"bar"')).to.be.true;
@@ -311,6 +312,19 @@ describe('websocket', () => {
             socket.unspool();
         });
 
+        it('tries to optOut of events successfully', done => {
+            const stub = sinon.stub(socket, 'call').resolves();
+
+            socket.on('connected', () => {
+                expect(socket.isConnected()).to.be.true;
+                expect(stub.calledWith('optOutEvents', ['UserJoin', 'UserLeave'], { force: true })).to.be.true;
+                done();
+            });
+
+            socket._optOutEventsArgs = ['UserJoin', 'UserLeave'];
+            socket.unspool();
+        });
+
         it('tries to auth rejects unsuccessful', done => {
             const stub = sinon.stub(socket, 'call').rejects();
             socket.on('error', err => {
@@ -320,6 +334,31 @@ describe('websocket', () => {
             });
 
             socket._authpacket = [1, 2, 3];
+            socket.unspool();
+        });
+
+        it('tries to optOutEvents rejects unsuccessful', done => {
+            const stub = sinon.stub(socket, 'call').rejects();
+            socket.on('error', err => {
+                expect(err).to.be.an.instanceof(UnknownCodeError);
+                done();
+                stub.restore();
+            });
+
+            socket._optOutEventsArgs = ['UserJoin', 'UserLeave'];
+            socket.unspool();
+        });
+
+        it('tries to optOutEvents resolves successfully with no events to opt out from', done => {
+            const stub = sinon.stub(socket, 'call');
+
+            socket.on('connected', () => {
+                expect(socket.isConnected()).to.be.true;
+                expect(stub.notCalled).to.be.true;
+                done();
+            });
+
+            socket._optOutEventsArgs = [];
             socket.unspool();
         });
     });
@@ -356,6 +395,31 @@ describe('websocket', () => {
             expect(socket.auth(1, 2, 3, 'heyo')).to.equal('ok!');
             expect(socket._authpacket).to.deep.equal([1, 2, 3, 'heyo']);
             expect(socket.call.calledWith('auth', [1, 2, 3, 'heyo'])).to.be.true;
+        });
+    });
+
+    describe('optOutEvents packet', () => {
+        it('waits for connection before sending', done => {
+            let called = false;
+            socket.optOutEvents(['UserJoin', 'UserLeave']).then(res => {
+                called = true;
+                expect(res).to.equal(undefined);
+                done();
+            });
+
+            expect(socket._optOutEventsArgs).to.deep.equal(['UserJoin', 'UserLeave']);
+            expect(called).to.be.false;
+            socket.emit('optOutResult');
+        });
+
+        it('sends immediately otherwise', () => {
+            raw.emit('open');
+            socket.emit('WelcomeEvent');
+
+            sinon.stub(socket, 'call').returns('ok!');
+            expect(socket.optOutEvents(['UserJoin', 'UserLeave'])).to.equal('ok!');
+            expect(socket._optOutEventsArgs).to.deep.equal(['UserJoin', 'UserLeave']);
+            expect(socket.call.calledWith('optOutEvents', ['UserJoin', 'UserLeave'])).to.be.true;
         });
     });
 
