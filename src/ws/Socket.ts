@@ -16,6 +16,7 @@ import {
     BadMessageError,
     NoMethodHandlerError,
     TimeoutError,
+    UnknownCodeError,
     UNOTFOUND,
 } from '../errors';
 import { Reply } from './Reply';
@@ -461,14 +462,15 @@ export class Socket extends EventEmitter {
 
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
-        if (this._authpacket || this._optOutEventsArgs.length > 0) {
+        if (this._authpacket || this._optOutEventsArgs.length) {
             // tslint:disable-next-line no-floating-promises
-            const promise =
-                this._optOutEventsArgs.length > 0
-                    ? this.call('optOutEvents', this._optOutEventsArgs, { force: true })
-                    : Promise.resolve();
+            const promise = this._optOutEventsArgs.length
+                ? this.call('optOutEvents', this._optOutEventsArgs, { force: true }).catch(() =>
+                      this.emit('error', new UnknownCodeError()),
+                  )
+                : Promise.resolve();
             promise
-                .then(() => this.emit('optOutResult', undefined))
+                .then(() => this.emit('optOutResult'))
                 .then(() => this.call(authMethod, this._authpacket, { force: true }))
                 .then(result => this.emit('authresult', result))
                 .then(bang)
