@@ -463,7 +463,10 @@ export class Socket extends EventEmitter {
         // establish authentication again.
         if (this._authpacket || this._optOutEventsArgs.length > 0) {
             // tslint:disable-next-line no-floating-promises
-            const promise = this._optOutEventsArgs.length > 0 ? this.call('optOutEvents', this._optOutEventsArgs, { force: true }) : Promise.resolve();
+            const promise =
+                this._optOutEventsArgs.length > 0
+                    ? this.call('optOutEvents', this._optOutEventsArgs, { force: true })
+                    : Promise.resolve();
             promise
                 .then(() => this.emit('optOutResult', undefined))
                 .then(() => this.call(authMethod, this._authpacket, { force: true }))
