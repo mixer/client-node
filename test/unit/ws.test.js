@@ -74,10 +74,24 @@ describe('websocket', () => {
         expect(socket.isConnected()).to.be.true;
     });
 
-    it('connects successfully', () => {
+    it('connects successfully', done => {
         let lastErr;
         socket.on('error', err => {
             lastErr = err;
+        });
+        socket.on('connected', () => {
+            expect(socket.status).to.equal(Socket.CONNECTED);
+
+            raw.emit('message', 'asdf');
+            expect(parse.calledWith('asdf')).to.be.true;
+
+            const err = new Error('oh no!');
+            raw.emit('error', err);
+            expect(lastErr).to.equal(err);
+            expect(raw.close.called).to.be.true;
+            raw.emit('close');
+            expect(socket.status).to.equal(Socket.CONNECTING);
+            done();
         });
         const parse = sinon.stub(socket, 'parsePacket');
 
@@ -85,17 +99,6 @@ describe('websocket', () => {
 
         raw.emit('open');
         socket.emit('WelcomeEvent');
-        expect(socket.status).to.equal(Socket.CONNECTED);
-
-        raw.emit('message', 'asdf');
-        expect(parse.calledWith('asdf')).to.be.true;
-
-        const err = new Error('oh no!');
-        raw.emit('error', err);
-        expect(lastErr).to.equal(err);
-        expect(raw.close.called).to.be.true;
-        raw.emit('close');
-        expect(socket.status).to.equal(Socket.CONNECTING);
     });
 
     it('includes client id if provided', () => {
@@ -105,7 +108,7 @@ describe('websocket', () => {
     it('does not include client id if not provided', () => {
         socket = new Socket(MockSocket, ['a', 'b'], {});
         expect(socket.getAddress()).to.not.contain('Client-ID');
-    })
+    });
 
     it('kills the connection if no WelcomeEvent is received', () => {
         socket.on('error', () => {});
@@ -317,7 +320,8 @@ describe('websocket', () => {
 
             socket.on('connected', () => {
                 expect(socket.isConnected()).to.be.true;
-                expect(stub.calledWith('optOutEvents', ['UserJoin', 'UserLeave'], { force: true })).to.be.true;
+                expect(stub.calledWith('optOutEvents', ['UserJoin', 'UserLeave'], { force: true }))
+                    .to.be.true;
                 done();
             });
 
@@ -378,23 +382,25 @@ describe('websocket', () => {
         });
 
         it('sends immediately otherwise', () => {
+            socket.on('connected', () => {
+                sinon.stub(socket, 'call').returns('ok!');
+                expect(socket.auth(1, 2, 3)).to.equal('ok!');
+                expect(socket._authpacket).to.deep.equal([1, 2, 3, undefined]);
+                expect(socket.call.calledWith('auth', [1, 2, 3, undefined])).to.be.true;
+            });
             raw.emit('open');
             socket.emit('WelcomeEvent');
-
-            sinon.stub(socket, 'call').returns('ok!');
-            expect(socket.auth(1, 2, 3)).to.equal('ok!');
-            expect(socket._authpacket).to.deep.equal([1, 2, 3, undefined]);
-            expect(socket.call.calledWith('auth', [1, 2, 3, undefined])).to.be.true;
         });
 
         it('passes through the access key', () => {
+            socket.on('connected', () => {
+                sinon.stub(socket, 'call').returns('ok!');
+                expect(socket.auth(1, 2, 3, 'heyo')).to.equal('ok!');
+                expect(socket._authpacket).to.deep.equal([1, 2, 3, 'heyo']);
+                expect(socket.call.calledWith('auth', [1, 2, 3, 'heyo'])).to.be.true;
+            });
             raw.emit('open');
             socket.emit('WelcomeEvent');
-
-            sinon.stub(socket, 'call').returns('ok!');
-            expect(socket.auth(1, 2, 3, 'heyo')).to.equal('ok!');
-            expect(socket._authpacket).to.deep.equal([1, 2, 3, 'heyo']);
-            expect(socket.call.calledWith('auth', [1, 2, 3, 'heyo'])).to.be.true;
         });
     });
 
@@ -413,13 +419,15 @@ describe('websocket', () => {
         });
 
         it('sends immediately otherwise', () => {
+            socket.on('connected', () => {
+                sinon.stub(socket, 'call').returns('ok!');
+                expect(socket.optOutEvents(['UserJoin', 'UserLeave'])).to.equal('ok!');
+                expect(socket._optOutEventsArgs).to.deep.equal(['UserJoin', 'UserLeave']);
+                expect(socket.call.calledWith('optOutEvents', ['UserJoin', 'UserLeave'])).to.be
+                    .true;
+            });
             raw.emit('open');
             socket.emit('WelcomeEvent');
-
-            sinon.stub(socket, 'call').returns('ok!');
-            expect(socket.optOutEvents(['UserJoin', 'UserLeave'])).to.equal('ok!');
-            expect(socket._optOutEventsArgs).to.deep.equal(['UserJoin', 'UserLeave']);
-            expect(socket.call.calledWith('optOutEvents', ['UserJoin', 'UserLeave'])).to.be.true;
         });
     });
 
@@ -436,9 +444,9 @@ describe('websocket', () => {
                     type: 'method',
                     method: 'foo',
                     arguments: [],
-                    id: 0
+                    id: 0,
                 },
-                { noReply: true }
+                { noReply: true },
             );
         });
 
@@ -465,8 +473,8 @@ describe('websocket', () => {
                     type: 'reply',
                     error: null,
                     id: 0,
-                    data: { authenticated: true, role: 'Owner' }
-                })
+                    data: { authenticated: true, role: 'Owner' },
+                }),
             );
         });
 
@@ -481,7 +489,7 @@ describe('websocket', () => {
                     error: 'foobar',
                     id: 0,
                     data: null,
-                })
+                }),
             );
         });
 
@@ -505,8 +513,8 @@ describe('websocket', () => {
                             type: 'reply',
                             error: null,
                             id: 0,
-                            data: 'ok'
-                        })
+                            data: 'ok',
+                        }),
                     );
                     return fn();
                 },
