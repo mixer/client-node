@@ -16,6 +16,7 @@ import {
     BadMessageError,
     NoMethodHandlerError,
     TimeoutError,
+    UnknownCodeError,
     UNOTFOUND,
 } from '../errors';
 import { Reply } from './Reply';
@@ -256,7 +257,7 @@ export class Socket extends EventEmitter {
      * limited exponential backoff.
      */
     private getNextReconnectInterval(): number {
-        const power = this._retries++ % this._retryWrap + Math.round(Math.random());
+        const power = (this._retries++ % this._retryWrap) + Math.round(Math.random());
         return (1 << power) * 500;
     }
 
@@ -459,32 +460,31 @@ export class Socket extends EventEmitter {
             this.emit('connected');
         };
 
+        let promise: Promise<boolean | void> = Promise.resolve();
+        if (this._optOutEventsArgs.length) {
+            promise = promise
+                .then(() => this.call('optOutEvents', this._optOutEventsArgs, { force: true }))
+                .then(() => this.emit('optOutResult'))
+                .catch(() => this.emit('error', new UnknownCodeError()));
+        }
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
         if (this._authpacket) {
             // tslint:disable-next-line no-floating-promises
-            this.call(authMethod, this._authpacket, { force: true })
-                .then(result => this.emit('authresult', result))
-                .then(() => {
-                    if (this._optOutEventsArgs.length > 0) {
-                        return this.call('optOutEvents', this._optOutEventsArgs, { force: true });
-                    }
-                    return Promise.resolve();
-                })
-                .then(bang)
-                .catch((e: Error) => {
-                    let message = 'Authentication Failed, please check your credentials.';
-                    if (e.message === UNOTFOUND) {
-                        message =
-                            'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
-                    }
-                    this.emit('error', new AuthenticationFailedError(message));
-                    this.close();
-                });
-        } else {
-            // Otherwise, we can reestablish immediately
-            bang();
+            promise = promise
+                .then(() => this.call(authMethod, this._authpacket, { force: true }))
+                .then(result => this.emit('authresult', result));
         }
+
+        promise.then(bang).catch((e: Error) => {
+            let message = 'Authentication Failed, please check your credentials.';
+            if (e.message === UNOTFOUND) {
+                message =
+                    'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
+            }
+            this.emit('error', new AuthenticationFailedError(message));
+            this.close();
+        });
     }
 
     /**
@@ -593,7 +593,10 @@ export class Socket extends EventEmitter {
      */
     public optOutEvents(args: string[]): Promise<void> {
         this._optOutEventsArgs = args;
-        return this.call('optOutEvents', args);
+        if (this.isConnected()) {
+            return this.call('optOutEvents', args);
+        }
+        return new Socket.Promise(resolve => this.once('optOutResult', resolve));
     }
 
     /**
