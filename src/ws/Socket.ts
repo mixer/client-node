@@ -464,8 +464,8 @@ export class Socket extends EventEmitter {
         if (this._optOutEventsArgs.length) {
             promise = promise
                 .then(() => this.call('optOutEvents', this._optOutEventsArgs, { force: true }))
-                .then(() => this.emit('optOutResult'))
-                .catch(() => this.emit('error', new UnknownCodeError()));
+                .catch(() => this.emit('error', new UnknownCodeError()))
+                .then(() => this.emit('optOutResult'));
         }
         // If we already authed, it means we're reconnecting and should
         // establish authentication again.
@@ -592,6 +592,9 @@ export class Socket extends EventEmitter {
      * from a chat server. Pass in Events to be opted out from as args
      */
     public optOutEvents(args: string[]): Promise<void> {
+        if (args.length === 0) {
+            return Promise.resolve();
+        }
         this._optOutEventsArgs = args;
         if (this.isConnected()) {
             return this.call('optOutEvents', args);
