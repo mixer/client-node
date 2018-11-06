@@ -19,6 +19,7 @@ import {
     UnknownCodeError,
     UNOTFOUND,
 } from '../errors';
+import { UACCESS } from '../errors';
 import { Reply } from './Reply';
 
 // The method of the authentication packet to store.
@@ -481,6 +482,10 @@ export class Socket extends EventEmitter {
             if (e.message === UNOTFOUND) {
                 message =
                     'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
+            }
+            if (e.message === UACCESS) {
+                message =
+                    'Authentication Failed: Channel is in test mode. The client user does not have access during test mode.';
             }
             this.emit('error', new AuthenticationFailedError(message));
             this.close();

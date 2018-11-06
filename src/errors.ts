@@ -3,6 +3,7 @@ import { IncomingMessage } from 'http';
 // tslint:disable max-classes-per-file
 
 export const UNOTFOUND = 'UNOTFOUND';
+export const UACCESS = 'UACCESS';
 
 /**
  * Base error for all fe2 stuff.
