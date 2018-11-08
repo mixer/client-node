@@ -27,8 +27,11 @@ const packageVersion = '0.13.0'; // package version
 export class Client {
     private provider: Provider;
     private userAgent: string;
-    public urls = {
-        api: 'https://mixer.com/api/v1',
+    public urls: { api: { [version: string]: string }, public: string } = {
+        api: {
+            v1: 'https://mixer.com/api/v1',
+            v2: 'https://mixer.com/api/v2',
+        },
         public: 'https://mixer.com',
     };
 
@@ -116,12 +119,17 @@ export class Client {
         method: string,
         path: string,
         data: IOptionalUrlRequestOptions = {},
+        apiVer: string = 'v1',
     ): Promise<IResponse<T>> {
+        let apiBase: string = this.urls.api[apiVer.toLowerCase()];
+        if (!apiBase) { // Default back to v1 if the one given is invalid.
+            apiBase = this.urls.api.v1;
+        }
         const req = all([
             this.provider ? this.provider.getRequest() : {},
             {
                 method: method || '',
-                url: this.buildAddress(this.urls.api, path || ''),
+                url: this.buildAddress(apiBase, path || ''),
                 headers: {
                     'User-Agent': this.userAgent,
                 },

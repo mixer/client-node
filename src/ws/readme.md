@@ -9,7 +9,7 @@ Your usage may look something like this:
 ```js
 // Require the socket
 const { Socket } = require('@mixer/client-node');
-// Some function that gets the JSON response from `GET /chats/:id`.
+// Some function that gets the JSON response from `GET /chat/:id`.
 const data = getDataFromChannelJoinEndpoint();
 
 const socket = new Socket(data.endpoints).boot();
@@ -37,7 +37,7 @@ A basic websocket client. It's an EventEmitter.
 
 ### new Socket(addresses)
 
-Construct a new socket client, using the list of addresses returned from the `GET /chats/:id` endpoint. Behind the scenes we load balance and do failover for you. How nice!
+Construct a new socket client, using the list of addresses returned from the `GET /chat/:id` endpoint. Behind the scenes we load balance and do failover for you. How nice!
 
 ### Socket.{IDLE|CONNECTED|CLOSED|ABORTED}
 
@@ -57,7 +57,7 @@ Return whether the socket is currently connected.
 
 ### socket.auth(channel[, user, authkey])
 
-Joins the chat of a certain channel by its ID. If you want to join anonymously (without being able to chat) you can omit the `user` and `authkey`. The `user` is the user ID you're authenticating as, the authkey is the alphanumeric token returns from `GET /api/v1/chats/:id`.
+Joins the chat of a certain channel by its ID. If you want to join anonymously (without being able to chat) you can omit the `user` and `authkey`. The `user` is the user ID you're authenticating as, the authkey is the alphanumeric token returns from `GET /api/v1/chat/:id`.
 
 ### socket.call(method, [args], [options])
 

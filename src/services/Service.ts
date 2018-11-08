@@ -6,6 +6,8 @@ export interface ICtor {
     new (msg: any): void;
 }
 
+const apiVerRegex = /^v[0-9]\//;
+
 /**
  * A service is basically a bridge/handler function for various endpoints.
  * It can be passed into the client and used magically.
@@ -42,7 +44,12 @@ export class Service {
         data?: IOptionalUrlRequestOptions,
         handlers?: { [key: string]: ICtor },
     ): Promise<IResponse<T>> {
-        return this.client.request(method, path, data)
+        let apiVersion: string;
+        if (apiVerRegex.test(path)) {
+            apiVersion = path.match(apiVerRegex)[0].slice(0, -1);
+            path = path.slice(3);
+        }
+        return this.client.request(method, path, data, apiVersion)
         .then(res => this.handleResponse(res, handlers));
     }
 }
