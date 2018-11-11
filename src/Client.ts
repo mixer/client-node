@@ -64,9 +64,15 @@ export class Client {
 
     /**
      * Sets the the API/public URLs for the client.
+     *
+     * If you are changing the URL for the API, you can set the version to which to set with the URL given.
      */
-    public setUrl(kind: 'api' | 'public', url: string): this {
-        this.urls[kind] = url;
+    public setUrl(kind: 'api' | 'public', url: string, apiVer: 'v1' | 'v2' = 'v1'): this {
+        if (kind === 'api') {
+            this.urls.api[apiVer] = url;
+        } else {
+            this.urls[kind] = url;
+        }
         return this;
     }
 
