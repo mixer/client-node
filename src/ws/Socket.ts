@@ -16,10 +16,10 @@ import {
     BadMessageError,
     NoMethodHandlerError,
     TimeoutError,
+    UACCESS,
     UnknownCodeError,
     UNOTFOUND,
 } from '../errors';
-import { UACCESS } from '../errors';
 import { Reply } from './Reply';
 
 // The method of the authentication packet to store.

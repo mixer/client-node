@@ -2,9 +2,7 @@ import { Client } from '../Client';
 import { UnknownCodeError } from '../errors';
 import { IOptionalUrlRequestOptions, IResponse } from '../RequestRunner';
 
-export interface ICtor {
-    new (msg: any): void;
-}
+export type ICtor = new (msg: any) => void;
 
 /**
  * A service is basically a bridge/handler function for various endpoints.
