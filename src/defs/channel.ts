@@ -22,6 +22,10 @@ export interface IChannel {
      */
     featured: boolean;
     /**
+     * The featured level for this channel. Its value controls the position and order of channels in the featured carousel.
+     */
+    featureLevel: number;
+    /**
      * Is the channel partnered.
      */
     partnered: boolean;
