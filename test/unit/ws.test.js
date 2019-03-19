@@ -382,9 +382,9 @@ describe('websocket', () => {
         });
 
         it('sends immediately otherwise', () => {
-            socket.on('connected', () => {
-                sinon.stub(socket, 'call').returns('ok!');
-                expect(socket.auth(1, 2, 3)).to.equal('ok!');
+            socket.on('connected', async () => {
+                sinon.stub(socket, 'call').resolves('ok!');
+                expect(await socket.auth(1, 2, 3)).to.equal('ok!');
                 expect(socket._authpacket).to.deep.equal([1, 2, 3, undefined]);
                 expect(socket.call.calledWith('auth', [1, 2, 3, undefined])).to.be.true;
             });
@@ -393,11 +393,25 @@ describe('websocket', () => {
         });
 
         it('passes through the access key', () => {
-            socket.on('connected', () => {
-                sinon.stub(socket, 'call').returns('ok!');
-                expect(socket.auth(1, 2, 3, 'heyo')).to.equal('ok!');
+            socket.on('connected', async () => {
+                sinon.stub(socket, 'call').resolves('ok!');
+                expect(await socket.auth(1, 2, 3, 'heyo')).to.equal('ok!');
                 expect(socket._authpacket).to.deep.equal([1, 2, 3, 'heyo']);
                 expect(socket.call.calledWith('auth', [1, 2, 3, 'heyo'])).to.be.true;
+            });
+            raw.emit('open');
+            socket.emit('WelcomeEvent');
+        });
+
+        it('disconnects and retries on AuthServerError', () => {
+            socket.on('connected', async () => {
+                sinon.stub(socket, 'call').rejects({ code: 4006 });
+                try {
+                    await socket.auth(1, 2, 3, 'heyo');
+                } catch (err) {
+                    expect(err).to.deep.equal({ code: 4006 });
+                }
+                expect(socket.status).to.equal(Socket.CONNECTING);
             });
             raw.emit('open');
             socket.emit('WelcomeEvent');

@@ -14,16 +14,18 @@ import {
 import {
     AuthenticationFailedError,
     BadMessageError,
+    ErrorCode,
     NoMethodHandlerError,
     TimeoutError,
     UACCESS,
     UnknownCodeError,
     UNOTFOUND,
 } from '../errors';
-import { Reply } from './Reply';
+import { IErrorPacket, Reply } from './Reply';
 
 // The method of the authentication packet to store.
 const authMethod = 'auth';
+type authArgs = [number, number, string, string | undefined];
 
 /**
  * Return a promise which is rejected with a TimeoutError after the
@@ -124,7 +126,7 @@ export class Socket extends EventEmitter {
     private _reconnectTimeout: NodeJS.Timer | number;
     private _callNo: number;
     private status: number;
-    private _authpacket: [number, number, string, string | undefined];
+    private _authpacket: authArgs;
     private _replies: { [key: string]: Reply };
     private _optOutEventsArgs: string[] = [];
 
@@ -473,7 +475,7 @@ export class Socket extends EventEmitter {
         if (this._authpacket) {
             // tslint:disable-next-line no-floating-promises
             promise = promise
-                .then(() => this.call(authMethod, this._authpacket, { force: true }))
+                .then(() => this.callAuth(this._authpacket, { force: true }))
                 .then(result => this.emit('authresult', result));
         }
 
@@ -586,7 +588,7 @@ export class Socket extends EventEmitter {
         // packet immediately. Otherwise we wait for a `connected` event,
         // which won't be sent until after we re-authenticate.
         if (this.isConnected()) {
-            return this.call('auth', [id, user, authkey, accessKey]);
+            return this.callAuth([id, user, authkey, accessKey]);
         }
 
         return new Socket.Promise(resolve => this.once('authresult', resolve));
@@ -683,5 +685,15 @@ export class Socket extends EventEmitter {
             clearTimeout(<number>this._reconnectTimeout);
             this.status = Socket.CLOSED;
         }
+    }
+
+    private callAuth(args: authArgs, options?: ICallOptions) {
+        return this.call(authMethod, args, options).catch((err: IErrorPacket) => {
+            // If server returns Internal Server Error, close the socket and try again
+            if (err.code && err.code === ErrorCode.AuthServerError) {
+                this.handleClose();
+            }
+            throw err;
+        });
     }
 }
