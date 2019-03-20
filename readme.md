@@ -21,3 +21,5 @@ We have tutorials on our [Developer Site](https://dev.mixer.com) to help you get
 Chat with us and other developers on our [gitter](https://gitter.im/mixer/mixer-dev)
 
 
+## Contributing
+We always welcome contributions from our community! Head to [contributing](https://github.com/mixer/client-node/blob/master/CONTRIBUTING.md) to get started.

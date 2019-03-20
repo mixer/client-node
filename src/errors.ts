@@ -5,6 +5,16 @@ import { IncomingMessage } from 'http';
 export const UNOTFOUND = 'UNOTFOUND';
 export const UACCESS = 'UACCESS';
 
+export const enum ErrorCode {
+    Unknown = 4000,
+    PurgeUserNotFound,
+    PurgeNoPermissions,
+    MessageNotFound,
+    BadRequest,
+    RateLimited,
+    AuthServerError,
+}
+
 /**
  * Base error for all fe2 stuff.
  * This also acts as a polyfill when building with ES5 target.
