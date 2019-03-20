@@ -25,7 +25,7 @@ import { IErrorPacket, Reply } from './Reply';
 
 // The method of the authentication packet to store.
 const authMethod = 'auth';
-type authArgs = [number, number, string, string | undefined];
+export type AuthArgs = [number, number, string, string | undefined];
 
 /**
  * Return a promise which is rejected with a TimeoutError after the
@@ -126,7 +126,7 @@ export class Socket extends EventEmitter {
     private _reconnectTimeout: NodeJS.Timer | number;
     private _callNo: number;
     private status: number;
-    private _authpacket: authArgs;
+    private _authpacket: AuthArgs;
     private _replies: { [key: string]: Reply };
     private _optOutEventsArgs: string[] = [];
 
@@ -687,7 +687,7 @@ export class Socket extends EventEmitter {
         }
     }
 
-    private callAuth(args: authArgs, options?: ICallOptions) {
+    private callAuth(args: AuthArgs, options?: ICallOptions): Promise<IUserAuthenticated> {
         return this.call(authMethod, args, options).catch((err: IErrorPacket) => {
             // If server returns Internal Server Error, close the socket and try again
             if (err.code && err.code === ErrorCode.AuthServerError) {
