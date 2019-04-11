@@ -481,7 +481,7 @@ export class Socket extends EventEmitter {
 
         promise.then(bang).catch((e: Error) => {
             let message = 'Authentication Failed, please check your credentials.';
-            if (typeof e != 'error') {
+            if (!(e instanceof Error)) {
                 if (e === UNOTFOUND) {
                     message =
                         'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
