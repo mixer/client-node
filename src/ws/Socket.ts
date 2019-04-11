@@ -481,13 +481,15 @@ export class Socket extends EventEmitter {
 
         promise.then(bang).catch((e: Error) => {
             let message = 'Authentication Failed, please check your credentials.';
-            if (e === UNOTFOUND) {
-                message =
-                    'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
-            }
-            if (e === UACCESS) {
-                message =
-                    'Authentication Failed: Channel is in test mode. The client user does not have access during test mode.';
+            if (typeof e != 'error') {
+                if (e === UNOTFOUND) {
+                    message =
+                        'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
+                }
+                if (e === UACCESS) {
+                    message =
+                        'Authentication Failed: Channel is in test mode. The client user does not have access during test mode.';
+                }
             }
             this.emit('error', new AuthenticationFailedError(message));
             this.close();
