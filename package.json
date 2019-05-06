@@ -1,6 +1,6 @@
 {
   "name": "@mixer/client-node",
-  "version": "3.3.1",
+  "version": "3.4.0",
   "main": "dist/commonjs",
   "module": "dist/module",
   "sideEffects": false,
