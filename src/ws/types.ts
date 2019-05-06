@@ -13,6 +13,10 @@ export const enum StringError {
     AccessDenied = 'UACCESS',
 }
 
+/**
+ * Format of the response packet received in response
+ * to a method call through the chat socket
+ */
 export interface IPacket {
     id: number;
     type: string;
