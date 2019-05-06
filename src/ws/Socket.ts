@@ -14,14 +14,12 @@ import {
 import {
     AuthenticationFailedError,
     BadMessageError,
-    ErrorCode,
     NoMethodHandlerError,
     TimeoutError,
-    UACCESS,
     UnknownCodeError,
-    UNOTFOUND,
 } from '../errors';
-import { IErrorPacket, Reply } from './Reply';
+import { Reply } from './Reply';
+import { ErrorCode, IPacket, StringError } from './types';
 
 // The method of the authentication packet to store.
 const authMethod = 'auth';
@@ -479,17 +477,7 @@ export class Socket extends EventEmitter {
                 .then(result => this.emit('authresult', result));
         }
 
-        promise.then(bang).catch((e: Error) => {
-            let message = 'Authentication Failed, please check your credentials.';
-            if (e.message === UNOTFOUND) {
-                message =
-                    'Authentication Failed: User not found. Please check our guide at: https://aka.ms/unotfound';
-            }
-            if (e.message === UACCESS) {
-                message =
-                    'Authentication Failed: Channel is in test mode. The client user does not have access during test mode.';
-            }
-            this.emit('error', new AuthenticationFailedError(message));
+        promise.then(bang).catch(() => {
             this.close();
         });
     }
@@ -507,13 +495,7 @@ export class Socket extends EventEmitter {
         }
 
         // Unpack the packet data.
-        let packet: {
-            id: number;
-            type: string;
-            event: any;
-            data: any;
-            error: string;
-        };
+        let packet: IPacket;
         try {
             packet = JSON.parse(data);
         } catch (e) {
@@ -688,11 +670,42 @@ export class Socket extends EventEmitter {
     }
 
     private callAuth(args: AuthArgs, options?: ICallOptions): Promise<IUserAuthenticated> {
-        return this.call(authMethod, args, options).catch((err: IErrorPacket) => {
+        return this.call(authMethod, args, options).catch((err: IPacket['error']) => {
             // If server returns Internal Server Error, close the socket and try again
-            if (err.code && err.code === ErrorCode.AuthServerError) {
+            if (err === StringError.UserNotFound) {
+                this.emit(
+                    'error',
+                    new AuthenticationFailedError(
+                        'Authentication Failed: User not found or invalid key. Please check our guide at: https://aka.ms/unotfound',
+                        StringError.UserNotFound,
+                    ),
+                );
+            } else if (err === StringError.AccessDenied) {
+                this.emit(
+                    'error',
+                    new AuthenticationFailedError(
+                        'Authentication Failed: Channel is in test mode. The client user does not have access during test mode.',
+                        StringError.AccessDenied,
+                    ),
+                );
+            } else if (err.code && err.code === ErrorCode.AuthServerError) {
+                this.emit(
+                    'error',
+                    new AuthenticationFailedError(
+                        'Authentication Failed: Internal Server Error. Please try again later',
+                        err.code,
+                    ),
+                );
                 this.handleClose();
+            } else {
+                this.emit(
+                    'error',
+                    new AuthenticationFailedError(
+                        'Authentication Failed, please check your credentials.',
+                    ),
+                );
             }
+
             throw err;
         });
     }
