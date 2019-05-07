@@ -4,7 +4,8 @@ const { expect } = require('chai');
 const CLIENT_ID = 'eye-dee';
 
 describe('providers', function () {
-    const { AuthenticationFailedError, OAuthProvider } = require('../../src');
+    const { AuthenticationFailedError } = require('@mixer/chat-client-websocket');
+    const { OAuthProvider } = require('../../src');
 
     describe('oauth', function () {
         let provider;

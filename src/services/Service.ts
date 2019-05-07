@@ -1,5 +1,5 @@
+import { UnknownCodeError } from '@mixer/chat-client-websocket';
 import { Client } from '../Client';
-import { UnknownCodeError } from '../errors';
 import { IOptionalUrlRequestOptions, IResponse } from '../RequestRunner';
 
 export type ICtor = new (msg: any) => void;
