@@ -1,4 +1,5 @@
 // tslint:disable-next-line import-name no-require-imports
+import { IGenericWebSocket, ISocketOptions, Socket } from '@mixer/chat-client-websocket';
 import { all } from 'deepmerge';
 import * as querystring from 'querystring';
 
@@ -11,7 +12,6 @@ import {
     IRequestRunner,
     IResponse,
 } from './RequestRunner';
-import { IGenericWebSocket, ISocketOptions, Socket } from './ws/Socket';
 
 import { ChannelService } from './services/Channel';
 import { ChatService } from './services/Chat';

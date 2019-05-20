@@ -1,5 +1,5 @@
+import { AuthenticationFailedError } from '@mixer/chat-client-websocket';
 import { Client } from '../Client';
-import { AuthenticationFailedError } from '../errors';
 import { IResponse } from '../RequestRunner';
 import { Provider } from './Provider';
 
