@@ -9,8 +9,8 @@ export interface ITokenBase {
 }
 
 export interface ITokens extends ITokenBase {
-    // ISO Date
-    expires: string;
+    // ISO Date as string or Unix timestamp (in ms) or Date object
+    expires: number | string | Date;
 }
 
 export interface IParsedTokens extends ITokenBase {
