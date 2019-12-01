@@ -1,6 +1,6 @@
 import { AuthenticationFailedError } from '@mixer/chat-client-websocket';
 import { Client } from '../Client';
-import { IResponse } from '../RequestRunner';
+import { IOptionalUrlRequestOptions, IResponse } from '../RequestRunner';
 import { Provider } from './Provider';
 
 export interface ITokenBase {
@@ -200,7 +200,7 @@ export class OAuthProvider extends Provider {
     /**
      * Returns info to add to the client's request.
      */
-    public getRequest() {
+    public getRequest(): IOptionalUrlRequestOptions {
         const headers: { [key: string]: string } = {
             'Client-ID': this.details.client_id,
         };
