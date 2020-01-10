@@ -18,7 +18,7 @@ export interface IParsedTokens extends ITokenBase {
 }
 
 export interface IOAuthProviderOptions {
-    clientId: string;
+    clientId?: string;
     secret?: string;
     tokens?: ITokens;
 }
@@ -200,19 +200,19 @@ export class OAuthProvider extends Provider {
     /**
      * Returns info to add to the client's request.
      */
-    public getRequest() {
-        const headers: { [key: string]: string } = {
-            'Client-ID': this.details.client_id,
-        };
+    // public getRequest() {
+    //     const headers: { [key: string]: string } = {
+    //         'Client-ID': this.details.client_id,
+    //     };
 
-        if (this.isAuthenticated()) {
-            headers['Authorization'] = `Bearer ${this.tokens.access}`;
-        }
+    //     if (this.isAuthenticated()) {
+    //         headers['Authorization'] = `Bearer ${this.tokens.access}`;
+    //     }
 
-        return {
-            headers,
-        };
-    }
+    //     return {
+    //         headers,
+    //     };
+    // }
 
     public getClientId() {
         return this.details.client_id;
