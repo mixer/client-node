@@ -14,7 +14,11 @@ describe('client', function() {
 
     it('sets the url', function() {
         expect(this.client.setUrl('api', 'http://example.com'));
-        expect(this.client.urls.api).to.equal('http://example.com');
+        expect(this.client.urls.api.v1).to.equal('http://example.com');
+        expect(this.client.setUrl('api', 'http://example.net', 'v2'));
+        expect(this.client.urls.api.v2).to.equal('http://example.net');
+        expect(this.client.setUrl('public', 'http://example.io'));
+        expect(this.client.urls.public).to.equal('http://example.io');
     });
 
     it('makes a request successfully', function() {
